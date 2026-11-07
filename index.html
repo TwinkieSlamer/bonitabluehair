@@ -156,6 +156,11 @@ h1 { font-weight: 800; font-size: clamp(2.8rem, 7.4vw, 5.4rem); line-height: .92
 .c-now-txt { fill: var(--moon); font: 500 11px var(--mono); }
 .c-finish { fill: var(--gold); stroke: var(--night); stroke-width: 2; transform-box: fill-box; transform-origin: center; animation: glow 2.4s ease-in-out infinite; }
 .c-lab { fill: var(--moon); font: 600 12px var(--mono); }
+.c-hold { stroke: var(--tide); stroke-width: 2; stroke-dasharray: 4 4; opacity: .6; }
+.c-real.behind, .c-proj.behind, .c-hold.behind { stroke: var(--holly); }
+.c-dot.behind { fill: var(--holly); }
+.c-hollow.behind, .c-ping.behind { stroke: var(--holly); }
+.c-lab.behind { fill: var(--holly); }
 
 /* Milestones */
 .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -317,12 +322,13 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
     <div class="head">
       <p class="eyebrow">The race line</p>
       <h2 id="h-race">His level against the clock</h2>
-      <p class="lede">The dashed line is the pace he needs to make Christmas. The dotted line is where his own pace takes him. Both bend because the high levels take longer.</p>
+      <p class="lede">The dashed line is the pace he needs to make Christmas. The dotted line is where his own pace takes him. Both bend because the high levels take longer. Anything that dips under the needed pace turns red.</p>
     </div>
     <ul class="legend">
       <li><svg width="28" height="8" aria-hidden="true"><line x1="0" y1="4" x2="28" y2="4" class="c-real"></line></svg>His level</li>
       <li><svg width="28" height="8" aria-hidden="true"><line x1="0" y1="4" x2="28" y2="4" class="c-proj"></line></svg>His projected path</li>
       <li><svg width="28" height="8" aria-hidden="true"><line x1="0" y1="4" x2="28" y2="4" class="c-pace"></line></svg>Pace needed</li>
+      <li><svg width="28" height="8" aria-hidden="true"><line x1="0" y1="4" x2="28" y2="4" class="c-real behind"></line></svg>Behind the needed pace</li>
     </ul>
     <div class="chart" id="chart" role="img" aria-label="Chart of level over time with projection and required pace"></div>
   </section>
@@ -644,12 +650,19 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
       s.push('<polyline class="c-pace" points="' + pts.join(" ") + '"></polyline>');
       if (snaps.length) s.push('<line class="c-assume" x1="' + f(x(launch)) + '" y1="' + f(y(1)) + '" x2="' + f(x(snaps[0].t)) + '" y2="' + f(y(snaps[0].level)) + '"></line>');
       if (cur < 60 && rate > 0) {
-        var end = Math.min(deadline, proj60), pp = [];
-        for (var q = 0; q <= 120; q++) { var tt = last.t + (end - last.t) * q / 120; pp.push(f(x(tt)) + "," + f(y(projLevel(tt)))); }
-        s.push('<polyline class="c-proj" points="' + pp.join(" ") + '"></polyline>');
+        // The projection turns red for any stretch where it runs under the needed pace.
+        var end = Math.min(deadline, proj60), run = [], runBehind = null;
+        var flush = function () { if (run.length > 1) s.push('<polyline class="c-proj' + (runBehind ? " behind" : "") + '" points="' + run.join(" ") + '"></polyline>'); };
+        for (var q = 0; q <= 120; q++) {
+          var tt = last.t + (end - last.t) * q / 120, pl = projLevel(tt), b = pl < paceLevel(tt) - 0.05;
+          var pt = f(x(tt)) + "," + f(y(pl));
+          if (runBehind === null) runBehind = b;
+          if (b !== runBehind) { run.push(pt); flush(); run = [pt]; runBehind = b; } else run.push(pt);
+        }
+        flush();
         [30, 40, 50].forEach(function (L) {
           if (L <= cur) return; var tL = projAt(L); if (tL > deadline) return;
-          s.push('<circle class="c-hollow" cx="' + f(x(tL)) + '" cy="' + f(y(L)) + '" r="4"></circle>');
+          s.push('<circle class="c-hollow' + (tL > needBy(L) ? " behind" : "") + '" cx="' + f(x(tL)) + '" cy="' + f(y(L)) + '" r="4"></circle>');
         });
         if (proj60 <= deadline) {
           s.push('<circle class="c-finish" cx="' + f(x(proj60)) + '" cy="' + f(y(60)) + '" r="6"></circle>');
@@ -657,23 +670,43 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
           s.push('<text class="c-goal-txt" x="' + f(lx + off) + '" y="' + f(y(60) - 9) + '" text-anchor="' + anchor + '">60 ≈ ' + fmtDay(proj60) + "</text>");
         } else {
           var lc = projLevel(deadline);
-          s.push('<circle class="c-hollow" cx="' + f(x(deadline)) + '" cy="' + f(y(lc)) + '" r="5"></circle>');
-          s.push('<text class="c-lab" x="' + f(x(deadline) - 10) + '" y="' + f(y(lc) - 10) + '" text-anchor="end">≈ ' + Math.floor(lc) + " at Christmas</text>");
+          s.push('<circle class="c-hollow behind" cx="' + f(x(deadline)) + '" cy="' + f(y(lc)) + '" r="5"></circle>');
+          s.push('<text class="c-lab behind" x="' + f(x(deadline) - 10) + '" y="' + f(y(lc) - 10) + '" text-anchor="end">≈ ' + Math.floor(lc) + " at Christmas</text>");
         }
       }
       if (snaps.length) {
-        var path = "M" + f(x(snaps[0].t)) + "," + f(y(snaps[0].level));
-        for (var r = 1; r < snaps.length; r++) path += " H" + f(x(snaps[r].t)) + " V" + f(y(snaps[r].level));
-        s.push('<path class="c-real" d="' + path + '"></path>');
+        // His level holds between logouts (flat runs) and steps up at each new reading.
+        // Any piece that sits under the needed-pace line is drawn red.
+        var seg = function (t1, L1, t2, L2, cls, behind) {
+          s.push('<line class="' + cls + (behind ? " behind" : "") + '" x1="' + f(x(t1)) + '" y1="' + f(y(L1)) + '" x2="' + f(x(t2)) + '" y2="' + f(y(L2)) + '"></line>');
+        };
+        var flat = function (L, ta, tb, cls) {
+          if (tb <= ta) return;
+          var tc = L >= 60 ? Infinity : needBy(L); // the moment the pace line passes level L
+          if (tc > ta && tc < tb) { seg(ta, L, tc, L, cls, false); seg(tc, L, tb, L, cls, true); }
+          else seg(ta, L, tb, L, cls, ta >= tc);
+        };
+        var step = function (t, La, Lb) {
+          var p = paceLevel(t);
+          if (p > La && p < Lb) { seg(t, La, t, p, "c-real", true); seg(t, p, t, Lb, "c-real", false); }
+          else seg(t, La, t, Lb, "c-real", Lb <= p);
+        };
+        for (var r = 1; r < snaps.length; r++) {
+          flat(snaps[r - 1].level, snaps[r - 1].t, snaps[r].t, "c-real");
+          if (snaps[r].level !== snaps[r - 1].level) step(snaps[r].t, snaps[r - 1].level, snaps[r].level);
+        }
+        if (cur < 60 && now > last.t) flat(cur, last.t, Math.min(now, deadline), "c-hold");
+        var behindNow = cur < 60 && cur < paceLevel(Math.min(now, deadline)) - 0.05, bn = behindNow ? " behind" : "";
         snaps.forEach(function (sn, idx) {
           if (idx < snaps.length - 1 && snaps[idx + 1].level === sn.level) return;
-          if (idx === snaps.length - 1) {
-            s.push('<circle class="c-ping" cx="' + f(x(sn.t)) + '" cy="' + f(y(sn.level)) + '" r="6"></circle>');
-            s.push('<circle class="c-ping late" cx="' + f(x(sn.t)) + '" cy="' + f(y(sn.level)) + '" r="6"></circle>');
+          var isLast = idx === snaps.length - 1, b = isLast ? bn : (sn.level < paceLevel(sn.t) - 0.05 ? " behind" : "");
+          if (isLast) {
+            s.push('<circle class="c-ping' + bn + '" cx="' + f(x(sn.t)) + '" cy="' + f(y(sn.level)) + '" r="6"></circle>');
+            s.push('<circle class="c-ping late' + bn + '" cx="' + f(x(sn.t)) + '" cy="' + f(y(sn.level)) + '" r="6"></circle>');
           }
-          s.push('<circle class="c-dot" cx="' + f(x(sn.t)) + '" cy="' + f(y(sn.level)) + '" r="' + (idx === snaps.length - 1 ? 5.5 : 3.5) + '"></circle>');
+          s.push('<circle class="c-dot' + b + '" cx="' + f(x(sn.t)) + '" cy="' + f(y(sn.level)) + '" r="' + (isLast ? 5.5 : 3.5) + '"></circle>');
         });
-        s.push('<text class="c-lab" x="' + f(x(last.t) - 12) + '" y="' + f(y(cur) + 4) + '" text-anchor="end">' + cur + "</text>");
+        s.push('<text class="c-lab' + bn + '" x="' + f(x(last.t) - 8) + '" y="' + f(y(cur) - 10) + '" text-anchor="end">' + cur + "</text>");
       }
       if (now < deadline) {
         var nx = x(now);
