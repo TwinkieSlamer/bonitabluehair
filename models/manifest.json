@@ -1,0 +1,13 @@
+{
+  "model": null,
+  "bytes": 0,
+  "exportedAt": null,
+  "gearAsOf": null,
+  "idleClip": "Idle",
+  "orientation": "0deg 0deg 0deg",
+  "cameraOrbit": "0deg 84deg auto",
+  "cameraTarget": "auto auto auto",
+  "fieldOfView": "auto",
+  "autoload": true,
+  "source": "No model yet. The race page shows the Armory render until \"model\" points at a .glb in this folder. See README.md, \"The 3D stage\"."
+}

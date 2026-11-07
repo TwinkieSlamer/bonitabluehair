@@ -1,0 +1,16 @@
+{
+  "name": "bonita-model-tools",
+  "private": true,
+  "type": "module",
+  "description": "Helpers for preparing Bonita's 3D model for the race page's stage. Run these on your own machine, not in the browser.",
+  "scripts": {
+    "clips": "node keep-idle.mjs"
+  },
+  "dependencies": {
+    "@gltf-transform/cli": "4.5.1",
+    "@gltf-transform/core": "4.5.1",
+    "@gltf-transform/extensions": "4.5.1",
+    "@gltf-transform/functions": "4.5.1",
+    "meshoptimizer": "1.2.0"
+  }
+}

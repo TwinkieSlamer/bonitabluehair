@@ -95,7 +95,26 @@ h1 { font-size: clamp(2.8rem, 7.4vw, 5.4rem); line-height: .95; }
 .stage .disc { position: absolute; left: 50%; bottom: 34px; width: 96%; height: 30px; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(ellipse at 50% 50%, rgba(238, 241, 248, .26) 0%, rgba(238, 241, 248, .06) 46%, rgba(238, 241, 248, 0) 70%); }
 .stage .contact { position: absolute; left: 50%; bottom: 44px; width: 48%; height: 9px; transform: translateX(-50%); border-radius: 50%; background: rgba(0, 0, 0, .55); filter: blur(3px); }
 .stage .poster { position: relative; height: 250px; width: auto; max-width: 100%; margin-bottom: 38px; object-fit: contain; }
-.stage .chip3d { position: absolute; top: 6px; left: 0; z-index: 1; padding: 3px 6px; border: 1px solid rgba(151, 163, 194, .45); border-radius: 4px; background: rgba(10, 15, 30, .6); font: 500 10px/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); white-space: nowrap; }
+/* The 3D layer: <model-viewer> fades in over the render once loaded (see the module script at the end). */
+.stage[data-focus="true"] { outline: 2px solid var(--moon); outline-offset: 4px; border-radius: 6px; }
+.stage .poster { transition: opacity .4s var(--ease-out); }
+.mv-slot model-viewer { position: absolute; inset: 0; width: 100%; height: 100%; background: transparent; opacity: 0; transition: opacity .4s var(--ease-out); --poster-color: transparent; }
+.mv-slot model-viewer:focus, .mv-slot model-viewer:focus-visible { outline: none; }
+.stage[data-state="idle"] .poster { opacity: 0; }
+.stage[data-state="idle"] model-viewer { opacity: 1; }
+.stage .chip3d.is-3d { color: var(--tide); border-color: rgba(90, 214, 198, .45); }
+.chip3d .long { display: none; }
+.stage .front { position: absolute; top: 4px; right: 0; z-index: 2; min-width: 44px; min-height: 44px; padding: 0 12px; display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--rule); border-radius: 22px; background: rgba(10, 15, 30, .75); color: var(--moon); cursor: pointer; font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+.stage .front:hover { border-color: var(--mist); }
+.stage-progress { position: absolute; left: 10%; right: 10%; bottom: 6px; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 6px; font: 500 10px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
+.stage-progress .track { width: 100%; height: 3px; border-radius: 2px; background: var(--seg); overflow: hidden; }
+.stage-progress .fill { height: 100%; width: 0; background: var(--moon); transition: width .2s ease-out; }
+.stage-hint { position: absolute; left: 0; right: 0; bottom: 4px; z-index: 2; margin: 0; display: flex; justify-content: center; align-items: center; gap: 6px; pointer-events: none; font: 500 10px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
+.stage-offer { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; display: flex; flex-direction: column; gap: 8px; padding: 10px; border: 1px solid var(--rule); border-radius: 6px; background: rgba(10, 15, 30, .85); }
+.stage-offer p { margin: 0; font-size: 13px; line-height: 1.35; }
+.stage-offer button { min-height: 44px; padding: 0 10px; border: 1px solid var(--tide); border-radius: 6px; background: rgba(90, 214, 198, .08); color: var(--tide); cursor: pointer; font: 500 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+.stage-offer button:hover { background: rgba(90, 214, 198, .16); }
+.stage .chip3d { position: absolute; top: 6px; left: 0; z-index: 2; padding: 3px 6px; border: 1px solid rgba(151, 163, 194, .45); border-radius: 4px; background: rgba(10, 15, 30, .6); font: 500 10px/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); white-space: nowrap; }
 
 .level-row { grid-area: level; display: flex; flex-direction: column; gap: 12px; padding-bottom: 8px; min-width: 0; }
 .level-k { display: block; font: 500 11px/1.3 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--mist); }
@@ -447,6 +466,13 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
   .stage .contact { bottom: 64px; width: 46%; height: 14px; filter: blur(4px); }
   .stage .poster { height: 540px; margin-bottom: 52px; }
   .stage .chip3d { top: 10px; padding: 4px 8px; font-size: 11px; }
+  .chip3d .long { display: inline; }
+  .chip3d .short { display: none; }
+  .stage .front { top: 8px; }
+  .stage-progress { left: 12%; right: 12%; bottom: 14px; font-size: 11px; }
+  .stage-hint { bottom: 10px; gap: 8px; font-size: 11px; }
+  .stage-offer { left: 10px; right: 10px; bottom: 10px; }
+  .stage-offer p { font-size: 14px; }
   .level-row { flex-direction: row; flex-wrap: wrap; align-items: flex-end; gap: 20px 36px; padding-bottom: 0; }
   .level-k { font-size: 12px; }
   .level-n { gap: 10px; }
@@ -487,6 +513,7 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
 @media (prefers-reduced-motion: reduce) {
   /* The race chart keeps moving at the owner's request. Everything else holds still. */
   .stage .halo, .stamp.landing, .vchip.new { animation: none; }
+  .stage .poster, .mv-slot model-viewer, .stage-progress .fill { transition: none; }
   .split-bar span { transition: none; }
 }
 </style>
@@ -504,13 +531,25 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
     <span class="navstatus" id="navstatus"><span class="long">Deadline · Dec 25 · 12:00 AM ET</span><span class="short">Dec 25 deadline</span></span>
   </nav>
   <div class="wrap hero-grid">
-    <figure class="stage" id="stage">
+    <figure class="stage" id="stage" data-state="render" data-focus="false">
       <div class="halo" aria-hidden="true"></div>
       <div class="ring" aria-hidden="true"></div>
       <div class="disc" aria-hidden="true"></div>
       <div class="contact" aria-hidden="true"></div>
-      <img class="poster" id="hero-img" src="renders/latest.png" width="421" height="680" alt="Bonita Bluehair, a Night Elf druid, standing in the moonlight.">
-      <span class="chip3d">Armory render</span>
+      <img class="poster" id="hero-img" src="renders/latest.png" width="421" height="680" alt="Bonita Bluehair, a Night Elf druid, standing in the moonlight." fetchpriority="high">
+      <div class="mv-slot" id="mv-slot"></div>
+      <span class="chip3d" id="chip3d"><span class="long">Armory render</span><span class="short">Armory render</span></span>
+      <button class="front" id="stage-front" type="button" aria-label="Turn him to face front" hidden>
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8 A5 5 0 1 0 5 4"></path><path d="M5 1.5 V4.5 H2"></path></svg>
+        Front
+      </button>
+      <div class="stage-progress" id="stage-progress" hidden><div class="track"><div class="fill" id="stage-fill"></div></div><span id="stage-pct">Loading 3D · 0%</span></div>
+      <p class="stage-hint" id="stage-hint" hidden>
+        <svg aria-hidden="true" width="22" height="12" viewBox="0 0 22 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5 Q11 -1 20 5"></path><path d="M17 2.5 L20 5 L16.8 6.6"></path><path d="M3 9 Q11 13 19 9"></path></svg>
+        <span id="stage-hint-t">Drag to turn</span>
+      </p>
+      <div class="stage-offer" id="stage-offer" hidden><p id="stage-notice" hidden></p><button type="button" id="stage-offer-btn">Load 3D</button></div>
+      <p class="sr" id="stage-status" role="status" aria-live="polite"></p>
     </figure>
     <div class="hero-info">
       <div class="id">
@@ -837,6 +876,9 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
       var lk = looks[looks.length - 1], hi = $("hero-img");
       hi.src = lk.img; if (lk.w) { hi.width = lk.w; hi.height = lk.h; }
     }
+    // Tell the 3D stage when his look last changed, so it can say if the model's gear is out of date.
+    $("stage").dataset.latestLook = String(looks.length ? looks[looks.length - 1].t : 0);
+    document.dispatchEvent(new Event("bbh:looks"));
     $("name").textContent = C.name || "Bonita Bluehair";
     $("who").textContent = [C.race || "Night Elf", C.className || "Druid", "WoW: Forever"].join(" · ");
     var lvlEl = $("lvl");
@@ -1547,6 +1589,203 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
     if (!reduce) requestAnimationFrame(step);
   }
 })();
+</script>
+<script type="module">
+// The 3D character stage. The Armory render paints first and is the fallback for everything.
+// models/manifest.json says which .glb to show; while its "model" is null the stage stays on the render
+// and nothing else loads. <model-viewer> (vendor/, Google, Apache 2.0) is imported only once the page
+// decides to show the model, after the page has loaded. It never delays the verdict or the level.
+const LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+// QA switches (?sim=savedata|nowebgl, ?look=YYYY-MM-DD, ?model=path) work on localhost only.
+const params = new URLSearchParams(LOCAL ? location.search : "");
+const CONFIG = {
+  manifestUrl: "models/manifest.json",
+  modelViewerUrl: "./vendor/model-viewer-4.4.0.min.js",
+  meshoptDecoderUrl: "./vendor/meshopt_decoder-1.2.0.js",
+  loadTimeoutMs: 20000,
+  phi: "84deg",
+  turnedThresholdDeg: 4
+};
+const $ = (id) => document.getElementById(id);
+const stage = $("stage"), slot = $("mv-slot"), chip = $("chip3d"), front = $("stage-front");
+const progress = $("stage-progress"), fill = $("stage-fill"), pct = $("stage-pct");
+const hint = $("stage-hint"), hintText = $("stage-hint-t"), offer = $("stage-offer"), notice = $("stage-notice"), offerBtn = $("stage-offer-btn");
+const status = $("stage-status");
+const reducedMQ = matchMedia("(prefers-reduced-motion: reduce)"), wideMQ = matchMedia("(min-width: 960px)");
+const ui = { state: "render", progress: 0, turned: false, focused: false, offer: null };
+let manifest = null, mv = null, loading = false, timer = 0, onScreen = true, keyboardMode = false;
+
+const fmtDay = (t) => new Date(t).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+const gearDay = () => (manifest && manifest.gearAsOf ? fmtDay(Date.parse(manifest.gearAsOf + "T12:00:00")) : "");
+const mb = (bytes) => Math.max(0.1, (bytes || 0) / 1048576).toFixed(1);
+function say(text) { status.textContent = text; }
+function setChip(long, short) { chip.querySelector(".long").textContent = long; chip.querySelector(".short").textContent = short || long; }
+
+function paint() {
+  const is3d = ui.state === "idle", g = gearDay();
+  stage.dataset.state = ui.state;
+  stage.dataset.focus = String(is3d && ui.focused);
+  if (is3d) setChip(reducedMQ.matches ? "3D · idle paused" : "3D · gear as of " + g, reducedMQ.matches ? "3D · idle paused" : "3D · " + g + " gear");
+  else if (ui.state === "stale") setChip("Armory render · current", "Render · current");
+  else setChip("Armory render");
+  chip.classList.toggle("is-3d", is3d);
+  progress.hidden = ui.state !== "loading";
+  fill.style.width = ui.progress + "%";
+  pct.textContent = "Loading 3D · " + ui.progress + "%";
+  hint.hidden = !is3d || ui.turned;
+  hintText.textContent = ui.focused ? "← → turn · Home front" : wideMQ.matches ? "Drag or use arrow keys to turn" : "Drag to turn";
+  front.hidden = !(is3d && ui.turned);
+  offer.hidden = !ui.offer;
+  if (ui.offer) {
+    notice.hidden = !ui.offer.notice;
+    notice.textContent = ui.offer.notice || "";
+    offerBtn.textContent = ui.offer.label;
+  }
+}
+
+function hasWebGL() {
+  if (params.get("sim") === "nowebgl") return false;
+  try { const c = document.createElement("canvas"); return !!(c.getContext("webgl2") || c.getContext("webgl")); } catch (e) { return false; }
+}
+function isSlow() {
+  const sim = params.get("sim");
+  if (sim === "savedata" || sim === "slow") return true;
+  const c = navigator.connection;
+  return !!(c && (c.saveData || /2g|3g/.test(c.effectiveType || "")));
+}
+function whenIdleAfterLoad(fn) {
+  const go = () => ("requestIdleCallback" in window ? requestIdleCallback(fn, { timeout: 2500 }) : setTimeout(fn, 600));
+  if (document.readyState === "complete") go(); else addEventListener("load", go, { once: true });
+}
+// The newest gear-reel frame, which the race page's own script reports once it has read the data.
+function latestLook() {
+  return new Promise((resolve) => {
+    const read = () => resolve(Number(stage.dataset.latestLook || 0));
+    if (stage.dataset.latestLook != null) return read();
+    document.addEventListener("bbh:looks", read, { once: true });
+    setTimeout(read, 8000);
+  });
+}
+
+async function start() {
+  paint();
+  try {
+    const res = await fetch(CONFIG.manifestUrl, { cache: "no-cache" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    manifest = await res.json();
+  } catch (e) { return fail("manifest", e); }
+  if (params.get("model")) manifest.model = params.get("model");
+  if (!manifest || !manifest.model) return;          // No model yet: the render stays, quietly.
+  if (!hasWebGL()) return fail("no WebGL");
+  const lookT = params.get("look") ? Date.parse(params.get("look") + "T23:00:00") : await latestLook();
+  const exportT = manifest.exportedAt ? Date.parse(manifest.exportedAt) : manifest.gearAsOf ? Date.parse(manifest.gearAsOf + "T23:59:59") : 0;
+  if (lookT && exportT && lookT > exportT) {
+    ui.state = "stale";
+    ui.offer = { notice: "The 3D model still has his " + gearDay() + " gear.", label: "Show 3D anyway" };
+    return paint();
+  }
+  if (isSlow() || manifest.autoload === false) {
+    ui.state = "render";
+    ui.offer = { label: "Load 3D · " + mb(manifest.bytes) + " MB" };
+    return paint();
+  }
+  whenIdleAfterLoad(load3D);
+}
+
+async function load3D() {
+  if (loading || mv) return;
+  loading = true;
+  ui.offer = null; ui.state = "loading"; ui.progress = 0; paint();
+  try {
+    // Must be set before the library loads. Keeps every file on our own host.
+    self.ModelViewerElement = Object.assign(self.ModelViewerElement || {}, {
+      meshoptDecoderLocation: new URL(CONFIG.meshoptDecoderUrl, location.href).href
+    });
+    await import(CONFIG.modelViewerUrl);
+    await customElements.whenDefined("model-viewer");
+  } catch (e) { return fail("model-viewer library", e); }
+
+  mv = document.createElement("model-viewer");
+  const attrs = {
+    src: manifest.model,
+    alt: "Bonita Bluehair in 3D, standing in the moonlight. Use the left and right arrow keys to turn him.",
+    "camera-controls": "", "disable-zoom": "", "disable-pan": "", "disable-tap": "",
+    "interaction-prompt": "none",
+    "touch-action": "pan-y",
+    "camera-orbit": manifest.cameraOrbit || "0deg " + CONFIG.phi + " auto",
+    "min-camera-orbit": "auto " + CONFIG.phi + " auto",
+    "max-camera-orbit": "auto " + CONFIG.phi + " auto",
+    "camera-target": manifest.cameraTarget || "auto auto auto",
+    "field-of-view": manifest.fieldOfView || "auto",
+    orientation: manifest.orientation || "0deg 0deg 0deg",
+    "environment-image": "neutral",
+    "tone-mapping": "neutral",
+    exposure: "1",
+    "shadow-intensity": "0",
+    "animation-name": manifest.idleClip || "Idle"
+  };
+  if (!reducedMQ.matches) attrs.autoplay = "";
+  for (const [k, v] of Object.entries(attrs)) mv.setAttribute(k, v);
+  mv.addEventListener("progress", (e) => { ui.progress = Math.round((e.detail.totalProgress || 0) * 100); paint(); });
+  mv.addEventListener("load", onLoad, { once: true });
+  mv.addEventListener("error", (e) => fail("model file", e.detail), { once: true });
+  mv.addEventListener("camera-change", onCamera);
+  mv.addEventListener("focus", () => { ui.focused = keyboardMode; paint(); });
+  mv.addEventListener("blur", () => { ui.focused = false; paint(); });
+  mv.addEventListener("keydown", (e) => { if (e.key === "Home") { e.preventDefault(); faceFront(); } });
+  slot.append(mv);
+  timer = setTimeout(() => { if (ui.state === "loading") fail("timeout"); }, CONFIG.loadTimeoutMs);
+}
+
+function onLoad() {
+  clearTimeout(timer);
+  loading = false;
+  const clips = mv.availableAnimations || [];
+  if (clips.length && !clips.includes(mv.animationName)) mv.animationName = clips[0];
+  ui.state = "idle";
+  applyMotion();
+  say("3D model ready. Use the left and right arrow keys to turn him.");
+}
+// Pause the idle loop off screen, in a hidden tab, or with reduced motion. Turning still works.
+function applyMotion() {
+  if (mv && ui.state === "idle") {
+    if (reducedMQ.matches || document.hidden || !onScreen) mv.pause(); else mv.play();
+  }
+  paint();
+}
+const TAU = Math.PI * 2;
+const wrap = (t) => ((t % TAU) + TAU * 1.5) % TAU - Math.PI;
+function onCamera() {
+  if (!mv || ui.state !== "idle") return;
+  const turned = Math.abs(wrap(mv.getCameraOrbit().theta)) > CONFIG.turnedThresholdDeg * Math.PI / 180;
+  if (turned !== ui.turned) { ui.turned = turned; paint(); }
+}
+// Back to the nearest front-facing angle, so he never spins all the way round.
+function faceFront() {
+  if (!mv) return;
+  const theta = mv.getCameraOrbit().theta;
+  mv.cameraOrbit = (theta - wrap(theta)) + "rad " + CONFIG.phi + " auto";
+  say("Facing front.");
+}
+// Anything going wrong leaves the render in place, with no message in the hero.
+function fail(reason, detail) {
+  clearTimeout(timer);
+  if (reason !== "manifest") console.warn("[stage] showing the render instead of 3D:", reason, detail || "");
+  if (mv) { mv.remove(); mv = null; }
+  loading = false;
+  ui.state = "failed"; ui.offer = null; ui.turned = false; ui.focused = false;
+  paint();
+}
+
+front.addEventListener("click", faceFront);
+offerBtn.addEventListener("click", load3D);
+addEventListener("keydown", (e) => { if (e.key === "Tab") keyboardMode = true; }, true);
+addEventListener("pointerdown", () => { keyboardMode = false; }, true);
+reducedMQ.addEventListener("change", applyMotion);
+wideMQ.addEventListener("change", paint);
+document.addEventListener("visibilitychange", applyMotion);
+new IntersectionObserver(([entry]) => { onScreen = entry.isIntersecting; applyMotion(); }).observe(stage);
+start();
 </script>
 </body>
 </html>
