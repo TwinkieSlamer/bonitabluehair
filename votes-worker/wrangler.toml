@@ -1,0 +1,11 @@
+# Vote server for the "Does he make it?" section. Deploy from this folder:
+#   npx wrangler@4.152.0 deploy
+name = "bonita-votes"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "bonita-votes"
+database_id = "d15217e9-b096-4e06-b818-a352cc0f5391"

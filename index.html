@@ -216,6 +216,74 @@ table.ms { width: 100%; border-collapse: collapse; min-width: 600px; }
 .frame.next p { margin: 0; max-width: 24ch; }
 .frame.latest { border-color: var(--tide); }
 
+/* Vote: "Does he make it?" Gold is the side that says he reaches 60, red the side that says Christmas wins. */
+.vote-board { display: grid; gap: 12px; }
+.tally-top { display: flex; justify-content: space-between; align-items: end; gap: 16px; }
+.side-n { display: grid; gap: 6px; min-width: 0; }
+.side-n.no { justify-items: end; text-align: right; }
+.side-n .k { display: flex; align-items: center; gap: 8px; font: 500 .72rem/1.25 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
+.side-n .k::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--c); }
+.side-n.no .k { flex-direction: row-reverse; }
+.side-n .v { display: flex; align-items: baseline; gap: 10px; font: 800 clamp(2.4rem, 6vw, 3.4rem)/.9 var(--display); font-variant-numeric: tabular-nums; }
+.side-n.no .v { flex-direction: row-reverse; }
+.side-n .v small { font: 500 .85rem var(--mono); color: var(--mist); }
+.tallies { display: flex; gap: 6px; height: 18px; }
+.side-n.no .tallies { flex-direction: row-reverse; }
+.tallies svg { height: 18px; width: auto; overflow: visible; }
+.tallies line { stroke: var(--c); stroke-width: 2; stroke-linecap: round; }
+.yes { --c: var(--gold); }
+.no { --c: var(--holly); }
+.split-bar { display: flex; gap: 2px; height: 14px; border-radius: 4px; overflow: hidden; }
+.split-bar span { flex: 1 1 0; min-width: 0; background: var(--c); transition: flex-grow .6s cubic-bezier(.2, .8, .2, 1); }
+.split-bar.empty span { background: var(--seg); }
+.split-bar span:first-child { border-radius: 4px 0 0 4px; }
+.split-bar span:last-child { border-radius: 0 4px 4px 0; }
+.vs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 28px; margin: 6px 0 0; }
+.vs div { display: grid; gap: 4px; border-top: 1px solid var(--rule); padding-top: 12px; }
+.vs dt { font: 500 .68rem/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
+.vs dd { margin: 0; font-size: 1.02rem; }
+.vs dd b { font: 800 1.5rem/1.1 var(--display); margin-right: 6px; }
+.ballot { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px 16px; align-items: end; padding: 18px; border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); }
+.field { display: grid; gap: 6px; min-width: 0; }
+.field span { font: 500 .7rem var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
+.field input { font: 500 1rem var(--body); color: var(--moon); background: var(--night); border: 1px solid var(--rule); border-radius: 4px; padding: 12px; min-width: 0; width: 100%; }
+.field input::placeholder { color: var(--mist); opacity: .7; }
+.field input:focus-visible { outline: 2px solid var(--tide); outline-offset: 1px; }
+.picks { display: flex; gap: 10px; }
+.pick { display: grid; gap: 3px; min-height: 48px; text-align: left; font: inherit; color: var(--moon); background: transparent; border: 1px solid var(--rule); border-left: 4px solid var(--c); border-radius: 4px; padding: 9px 16px; cursor: pointer; transition: background-color .2s, border-color .2s; }
+.pick b { font: 600 1rem/1.2 var(--body); }
+.pick span { font: 400 .74rem var(--mono); color: var(--mist); }
+.pick:hover { border-color: var(--c); }
+.pick:focus-visible { outline: 2px solid var(--moon); outline-offset: 2px; }
+.pick[aria-pressed="true"] { border-color: var(--c); background: color-mix(in srgb, var(--c) 15%, transparent); }
+.pick[aria-pressed="true"] b::after { content: " \2713"; }
+.ballot-msg { grid-column: 1 / -1; margin: 0; min-height: 1.5em; color: var(--mist); font-size: .94rem; }
+.ballot-msg strong { color: var(--moon); font-weight: 600; }
+.ballot-msg.err { color: var(--holly); }
+.sides { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 28px; }
+.side h3 { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; font: 500 .72rem/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
+.side h3::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--c); }
+.side ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.side li { display: inline-flex; align-items: baseline; gap: 8px; padding: 7px 12px; border: 1px solid var(--rule); border-radius: 999px; background: var(--surface); font-size: .92rem; max-width: 100%; }
+.side li .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.side li .at { font: 400 .74rem var(--mono); color: var(--mist); white-space: nowrap; }
+.side li.me { border-color: var(--c); }
+.side li.me .you { font: 500 .66rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--c); }
+.side li.new { animation: pop .35s ease-out both; }
+.side li.none { border: 0; background: none; padding: 0; color: var(--mist); }
+.side li.anon .nm { color: var(--mist); font-style: italic; }
+.vs dd b { margin-right: 2px; }
+.side-note { margin: 0; color: var(--mist); font-size: .86rem; }
+.closed-note { margin: 0; padding: 14px 18px; border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); }
+.pick:disabled { opacity: .6; cursor: progress; }
+@keyframes pop { from { transform: scale(.9); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (max-width: 640px) {
+  .ballot { grid-template-columns: minmax(0, 1fr); padding: 14px; }
+  .picks .pick { flex: 1 1 0; padding-inline: 12px; }
+  .sides, .vs { grid-template-columns: minmax(0, 1fr); }
+  .vs div + div { margin-top: 12px; }
+}
+
 /* Footer */
 footer { border-top: 1px solid var(--rule); background: var(--surface); }
 .foot { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px 40px; padding-block: 30px calc(40px + env(safe-area-inset-bottom, 0px)); color: var(--mist); font-size: .9rem; }
@@ -329,6 +397,39 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
       <div class="stat"><span class="k">Pace target today</span><span class="v" id="s-target">—</span><span class="n" id="s-target-n"></span></div>
       <div class="stat"><span class="k">Projected level 60</span><span class="v" id="s-proj">—</span><span class="n" id="s-proj-n"></span></div>
     </div>
+  </section>
+
+  <section class="wrap block" id="vote" aria-labelledby="h-vote">
+    <div class="head">
+      <p class="eyebrow">Pick a side</p>
+      <h2 id="h-vote">Does he make it?</h2>
+      <p class="lede">Pick a side, and add your name if you want the credit. Every call is stamped with the level he was at when you made it, so an early call is worth more bragging rights than a late one.</p>
+    </div>
+    <div class="vote-board">
+      <div class="tally-top">
+        <div class="side-n yes"><span class="k">He makes it</span><span class="v"><span id="v-yes-n">0</span><small id="v-yes-p"></small></span><span class="tallies" id="v-yes-t" aria-hidden="true"></span></div>
+        <div class="side-n no"><span class="k">No chance</span><span class="v"><span id="v-no-n">0</span><small id="v-no-p"></small></span><span class="tallies" id="v-no-t" aria-hidden="true"></span></div>
+      </div>
+      <div class="split-bar" id="v-bar" role="img"><span class="yes" id="v-bar-yes"></span><span class="no" id="v-bar-no"></span></div>
+      <dl class="vs">
+        <div><dt>The crowd's odds</dt><dd id="v-crowd">—</dd></div>
+        <div><dt>The tracker's call</dt><dd id="v-math">—</dd></div>
+      </dl>
+    </div>
+    <div class="ballot" id="v-ballot">
+      <label class="field"><span>Your name (optional)</span><input id="v-name" maxlength="24" autocomplete="nickname" placeholder="Leave it blank to vote anonymously"></label>
+      <div class="picks" role="group" aria-label="Your pick">
+        <button type="button" class="pick yes" data-pick="yes" aria-pressed="false"><b>He makes it</b><span>60 before Christmas</span></button>
+        <button type="button" class="pick no" data-pick="no" aria-pressed="false"><b>No chance</b><span>Short on Christmas</span></button>
+      </div>
+      <p class="ballot-msg" id="v-msg" role="status" aria-live="polite"></p>
+    </div>
+    <p class="closed-note" id="v-closed" hidden></p>
+    <div class="sides">
+      <div class="side yes"><h3>He makes it</h3><ul id="v-yes"></ul></div>
+      <div class="side no"><h3>No chance</h3><ul id="v-no"></ul></div>
+    </div>
+    <p class="side-note">Earliest calls first. "at 9" means he was level 9 when they made the call. A vote saves your side, the name you typed (if any) and the time.</p>
   </section>
 
   <section class="wrap block" aria-labelledby="h-race">
@@ -790,6 +891,175 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
       cancelAnimationFrame(rz);
       rz = requestAnimationFrame(function () { if (chartEl.clientWidth !== lastW) { lastW = chartEl.clientWidth; drawChart(); } });
     });
+    return { level: cur, state: state, pill: pill, proj60: isFinite(proj60) ? fmtDay(proj60) : null };
+  }
+
+  // Vote: "Does he make it?"
+  // Votes live on a small Cloudflare Worker (votes-worker/ in this repo). Each browser keeps a random
+  // secret token; the server stores the vote under a hash of it and returns that hash as "you".
+  // The server also stamps the level, so a browser can't claim an early call.
+  var LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  var VOTE_API = LOCAL && /[?&]votes=local\b/.test(location.search) ? "http://localhost:8787" : "https://bonita-votes.votes-worker.workers.dev";
+  var TOKEN_KEY = "bbh-vote-token", ME_KEY = "bbh-vote-id", memToken = null;
+  function storeGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function storeSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function voterToken() {
+    var t = memToken || storeGet(TOKEN_KEY);
+    if (!t || !/^[0-9a-f]{64}$/.test(t)) {
+      var a = new Uint8Array(32); crypto.getRandomValues(a);
+      t = Array.prototype.map.call(a, function (b) { return (b < 16 ? "0" : "") + b.toString(16); }).join("");
+      storeSet(TOKEN_KEY, t);
+    }
+    memToken = t;
+    return t;
+  }
+  function apiCall(path, opts) {
+    return fetch(VOTE_API + path, opts).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (b) {
+        if (!r.ok) { var e = new Error(b.error || String(r.status)); e.code = b.error || "http_" + r.status; throw e; }
+        return b;
+      });
+    });
+  }
+  var VoteStore = {
+    list: function () { return apiCall("/votes", { cache: "no-store" }); },
+    cast: function (pick, name) {
+      return apiCall("/vote", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token: voterToken(), pick: pick, name: name }) });
+    }
+  };
+
+  function setupVote(R) {
+    if (!$("vote")) return;
+    var me = storeGet(ME_KEY), votes = [], freshId = null, busy = false, loaded = false;
+    var settled = !!R && (R.state === "made-it" || R.state === "won");
+    var nameEl = $("v-name"), msg = $("v-msg");
+    var SIDE = { yes: "He makes it", no: "No chance" };
+
+    function mine() { for (var i = 0; i < votes.length; i++) if (votes[i].id === me) return votes[i]; return null; }
+    function say(html, err) { msg.className = "ballot-msg" + (err ? " err" : ""); msg.innerHTML = html; }
+    function esc(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+    function tallySvg(n) {
+      // Hand-count marks: four uprights and a slash for each group of five.
+      var out = "", groups = Math.floor(n / 5), rest = n % 5;
+      function grp(k, slash) {
+        var w = slash ? 26 : k * 6, s ='<svg viewBox="0 0 ' + w + ' 18" width="' + w + '" height="18">';
+        for (var i = 0; i < k; i++) s += '<line x1="' + (3 + i * 6) + '" y1="2" x2="' + (3 + i * 6) + '" y2="16"></line>';
+        if (slash) s += '<line x1="0" y1="14" x2="' + w + '" y2="4"></line>';
+        return s + "</svg>";
+      }
+      for (var g = 0; g < Math.min(groups, 8); g++) out += grp(4, true);
+      if (rest) out += grp(rest, false);
+      return out;
+    }
+    function odds(yes, no) {
+      if (!yes && !no) return "No calls yet";
+      if (!yes) return "Nobody believes in him";
+      if (!no) return "Everyone believes in him";
+      function gcd(a, b) { return b ? gcd(b, a % b) : a; }
+      var g = gcd(yes, no);
+      if (yes === no) return "<b>Even</b> money";
+      return no > yes ? "<b>" + (no / g) + "/" + (yes / g) + "</b> against him" : "<b>" + (yes / g) + "/" + (no / g) + "</b> on him";
+    }
+    function mathCall() {
+      if (!R) return "Waiting for the Armory";
+      var p = "<b>" + esc(R.pill) + "</b>", d = R.proj60;
+      if (R.state === "behind") return p + " " + (d ? "60 around " + esc(d) : "no progress yet");
+      if (R.state === "on-pace") return p + " " + (d ? "60 around " + esc(d) : "");
+      return p;
+    }
+    function atLv(n) { return n != null ? "level " + n : "an unknown level"; }
+
+    function draw() {
+      var yes = votes.filter(function (v) { return v.pick === "yes"; }), no = votes.filter(function (v) { return v.pick === "no"; });
+      var total = yes.length + no.length;
+      $("v-yes-n").textContent = yes.length; $("v-no-n").textContent = no.length;
+      var yp = total ? Math.round(yes.length / total * 100) : 0;
+      $("v-yes-p").textContent = total ? yp + "%" : "";
+      $("v-no-p").textContent = total ? (100 - yp) + "%" : "";
+      $("v-yes-t").innerHTML = tallySvg(yes.length); $("v-no-t").innerHTML = tallySvg(no.length);
+      var bar = $("v-bar");
+      bar.classList.toggle("empty", !total);
+      $("v-bar-yes").style.flexGrow = total ? yes.length : 1;
+      $("v-bar-no").style.flexGrow = total ? no.length : 1;
+      bar.setAttribute("aria-label", total ? yes.length + " say he makes it, " + no.length + " say no chance" : "No votes yet");
+      $("v-crowd").innerHTML = odds(yes.length, no.length);
+      $("v-math").innerHTML = mathCall();
+
+      function list(el, arr) {
+        el.textContent = "";
+        if (!arr.length) { var e = document.createElement("li"); e.className = "none"; e.textContent = "Nobody yet."; el.appendChild(e); return; }
+        arr.slice().sort(function (a, b) { return a.t - b.t; }).forEach(function (v) {
+          var li = document.createElement("li"), nm = document.createElement("span"), at = document.createElement("span");
+          li.className = (v.id === me ? "me" : "") + (v.id === freshId ? " new" : "") + (v.name ? "" : " anon");
+          nm.className = "nm"; nm.textContent = v.name || "Anonymous";
+          at.className = "at"; at.textContent = v.switched ? "switched at " + v.switched : "at " + (v.level != null ? v.level : "?");
+          li.title = (v.name || "Someone") + (v.switched ? " switched sides when he was level " + v.switched : " called it when he was level " + v.level) + ", " + new Date(v.t).toLocaleString();
+          li.appendChild(nm); li.appendChild(at);
+          if (v.id === me) { var y = document.createElement("span"); y.className = "you"; y.textContent = "you"; li.appendChild(y); }
+          el.appendChild(li);
+        });
+      }
+      list($("v-yes"), yes); list($("v-no"), no);
+
+      var m = mine();
+      Array.prototype.forEach.call(document.querySelectorAll(".pick"), function (b) { b.setAttribute("aria-pressed", m && m.pick === b.getAttribute("data-pick") ? "true" : "false"); });
+      if (m && document.activeElement !== nameEl && !nameEl.value) nameEl.value = m.name;
+
+      if (settled) {
+        $("v-ballot").hidden = true;
+        var c = $("v-closed"); c.hidden = false;
+        c.textContent = R.state === "made-it" ? "He hit 60 in time. The \"He makes it\" side called it." : "Christmas won. The \"No chance\" side called it.";
+      }
+    }
+
+    function setBusy(on) {
+      busy = on;
+      Array.prototype.forEach.call(document.querySelectorAll(".pick"), function (b) { b.disabled = on; });
+    }
+    var FAIL = {
+      closed: "Voting is closed. The bet is settled.",
+      too_many: "Too many new votes from this network today. Try again tomorrow.",
+      full: "The board is full.",
+      unavailable: "Couldn't read his level just now, so the call wasn't saved. Try again in a minute."
+    };
+
+    function cast(pick) {
+      if (busy) return;
+      // The name is optional: a blank name votes anonymously.
+      var name = nameEl.value.replace(/\s+/g, " ").trim();
+      var before = mine();
+      if (before && before.pick === pick && before.name === name) { say("You're already on the <strong>" + SIDE[pick] + "</strong> side."); return; }
+      setBusy(true); say("Saving your call…");
+      VoteStore.cast(pick, name).then(function (res) {
+        me = res.you; storeSet(ME_KEY, me);
+        votes = res.votes || []; freshId = me; loaded = true; draw();
+        var v = mine() || { pick: pick, level: null, switched: 0 }, text;
+        if (!before) text = "You're on the <strong>" + SIDE[pick] + "</strong> side, called at " + atLv(v.level) + ". Tap the other side to switch.";
+        else if (before.pick !== pick) text = "Switched to <strong>" + SIDE[pick] + "</strong> at " + atLv(v.switched) + ". Everyone can see that.";
+        else text = (name ? "Name updated." : "Name removed, so your vote shows as Anonymous.") + " Still on the <strong>" + SIDE[pick] + "</strong> side, called at " + atLv(v.level) + ".";
+        say(text);
+      }).catch(function (e) {
+        say(FAIL[e.code] || "That didn't save. Check your connection and try again.", true);
+      }).then(function () { setBusy(false); });
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll(".pick"), function (b) {
+      b.addEventListener("click", function () { cast(b.getAttribute("data-pick")); });
+    });
+
+    function refresh(first) {
+      return VoteStore.list().then(function (res) {
+        var next = res.votes || [];
+        if (loaded && JSON.stringify(next) === JSON.stringify(votes)) return;
+        votes = next; loaded = true; if (!first) freshId = null; draw();
+        var m = mine();
+        if (first && m && !settled) say("You're on the <strong>" + SIDE[m.pick] + "</strong> side, called at " + atLv(m.level) + ".");
+      });
+    }
+    draw();
+    refresh(true).catch(function () { if (!loaded) say("Votes didn't load. Refresh the page to try again.", true); });
+    // Pick up other people's calls while the page is open.
+    setInterval(function () { if (!busy && !document.hidden) refresh(false).catch(function () {}); }, 60 * 1000);
   }
 
   // Load data, then check for fresh data every 10 minutes and reload when something new arrives.
@@ -797,7 +1067,8 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
   function loadLive() { return fetch(LIVE_URL + "?ts=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }); }
   Promise.all([load(), loadLive()]).then(function (res) {
     var D = res[0], Lv = res[1];
-    render(D, Lv);
+    var R = render(D, Lv);
+    try { setupVote(R); } catch (e) { console.error(e); }
     var sig = (D.snapshots || []).length + ":" + (D.looks || []).length, liveSig = Lv ? Lv.time : 0;
     setInterval(function () {
       load().then(function (N) { if ((N.snapshots || []).length + ":" + (N.looks || []).length !== sig) location.reload(); }).catch(function () {});
@@ -808,6 +1079,7 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
   }).catch(function () {
     $("load-error").hidden = false;
     $("verdict").hidden = true;
+    try { setupVote(null); } catch (e) { console.error(e); }
   });
 
   // Snow
