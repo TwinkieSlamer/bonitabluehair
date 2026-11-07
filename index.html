@@ -80,6 +80,14 @@ h1 { font-weight: 800; font-size: clamp(2.8rem, 7.4vw, 5.4rem); line-height: .92
 .level-read { display: flex; align-items: baseline; gap: 12px; margin-top: 4px; }
 .lvl { font: 800 clamp(5.5rem, 15vw, 9.5rem)/.78 var(--display); font-variant-numeric: tabular-nums; }
 .of { font: 500 1.3rem var(--mono); color: var(--mist); }
+.xpbar { display: grid; gap: 6px; max-width: 460px; }
+.xpbar .track { position: relative; height: 10px; border-radius: 3px; background: var(--seg); overflow: hidden; }
+.xpbar .fill { position: absolute; inset: 0 auto 0 0; background: var(--gold); border-radius: 3px; }
+.xpbar .cap { font: 400 .8rem var(--mono); color: var(--mist); }
+.xpbar .cap b { color: var(--moon); font-weight: 500; }
+.xpbar .chk { font: 500 .72rem var(--mono); letter-spacing: .06em; color: var(--mist); }
+.xpbar .chk.ok { color: var(--tide); }
+.xpbar .chk.bad { color: var(--holly); }
 .verdict { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
 .pill { font: 500 .78rem/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; padding: 8px 12px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
 .verdict[data-state="on-pace"] .pill { color: var(--gold); }
@@ -264,6 +272,11 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
       <div class="level-read" aria-label="Current level">
         <span class="lvl" id="lvl">—</span><span class="of">/ 60</span>
       </div>
+      <div class="xpbar" id="xpbar" hidden>
+        <div class="track" role="img" id="xp-track"><span class="fill" id="xp-fill"></span></div>
+        <span class="cap" id="xp-cap"></span>
+        <span class="chk" id="xp-chk"></span>
+      </div>
       <div class="verdict" id="verdict" data-state="loading">
         <span class="pill" id="verdict-pill">Loading</span>
         <span id="verdict-text">Checking the Armory data…</span>
@@ -391,8 +404,15 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
     while (L < 59 && TCUM[L + 1] <= e) L++;
     return L + (e - TCUM[L]) / (TCUM[L + 1] - TCUM[L]);
   }
+  // Play-time effort at a possibly fractional level (22.6 = 60% of the way through level 22).
+  function eff(L) {
+    if (L >= 60) return TOTAL_T;
+    var Li = Math.max(1, Math.floor(L));
+    return TCUM[Li] + (L - Li) * (TCUM[Li + 1] - TCUM[Li]);
+  }
+  var LIVE_URL = "https://raw.githubusercontent.com/TwinkieSlamer/bonitabluehair-live/main/live.json";
 
-  function render(D) {
+  function render(D, L) {
     var launch = Date.parse(D.launch), deadline = Date.parse(D.deadline), now = Date.now();
     var deadlineYear = new Date(deadline).getFullYear();
     function fmtDay(t) {
@@ -401,13 +421,33 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
       return d.toLocaleDateString(undefined, o);
     }
     function paceLevel(t) { return levelAtEffort(TOTAL_T * clamp01((t - launch) / (deadline - launch))); }
-    function needBy(L) { return launch + (TCUM[L] / TOTAL_T) * (deadline - launch); }
+    function needBy(L) { return launch + (eff(L) / TOTAL_T) * (deadline - launch); }
 
     var C = D.character || {};
-    var snaps = (D.snapshots || []).slice().sort(function (a, b) { return a.t - b.t; });
+    var armory = (D.snapshots || []).slice().sort(function (a, b) { return a.t - b.t; });
+    var snaps = armory.slice();
     var looks = (D.looks || []).slice().sort(function (a, b) { return a.t - b.t; });
+
+    // Live XP from his XPReport addon (optional). Its level-up times and latest reading join the
+    // Armory's logouts; the Armory stays the referee if the two ever disagree.
+    var live = (L && typeof L.level === "number" && L.time) ? { t: L.time * 1000, level: L.level, xp: L.xp || 0, xpMax: L.xpMax || 0 } : null;
+    var lastArmory = armory.length ? armory[armory.length - 1] : null;
+    var armoryAfter = live ? armory.filter(function (s) { return s.t >= live.t - 5 * 60 * 1000; }) : [];
+    var mismatch = !!live && armoryAfter.length > 0 && armoryAfter[0].level < live.level;
+    var useLive = !!live && !mismatch && (!lastArmory || live.t > lastArmory.t || live.level > lastArmory.level);
+    if (live && !mismatch) {
+      (L.dings || []).forEach(function (d) { if (d && d.level && d.time) snaps.push({ t: d.time * 1000, level: d.level }); });
+      if (useLive) {
+        var frac = live.level < 60 && live.xpMax > 0 ? Math.min(0.999, live.xp / live.xpMax) : 0;
+        snaps.push({ t: live.t, level: live.level + frac, live: true });
+      }
+      snaps.sort(function (a, b) { return a.t - b.t; });
+      var top = 0;
+      snaps = snaps.filter(function (s) { if (s.level < top) return false; top = s.level; return true; });
+    }
     var last = snaps.length ? snaps[snaps.length - 1] : { t: launch, level: 1 };
-    var cur = Math.min(60, Math.max(1, last.level | 0));
+    var curF = Math.min(60, Math.max(1, last.level));
+    var cur = Math.floor(curF);
 
     // Pace in play-time units per day: the most recent stretch of 2+ days with progress, else since launch.
     var ref = null;
@@ -416,14 +456,39 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
     }
     var rate, rateBasis;
     if (ref) {
-      rate = (TCUM[cur] - TCUM[ref.level]) / ((last.t - ref.t) / DAY);
+      rate = (eff(curF) - eff(ref.level)) / ((last.t - ref.t) / DAY);
       rateBasis = "At his pace since " + fmtDay(ref.t) + ".";
     } else {
-      rate = TCUM[cur] / Math.max((last.t - launch) / DAY, 0.25);
+      rate = eff(curF) / Math.max((last.t - launch) / DAY, 0.25);
       rateBasis = "At his pace since launch, assuming he started on day one.";
     }
-    function projAt(L) { return rate > 0 ? last.t + (TCUM[L] - TCUM[cur]) / rate * DAY : Infinity; }
-    function projLevel(t) { return levelAtEffort(TCUM[cur] + rate * Math.max(0, t - last.t) / DAY); }
+    function projAt(L) { return rate > 0 ? last.t + (eff(L) - eff(curF)) / rate * DAY : Infinity; }
+    function projLevel(t) { return levelAtEffort(eff(curF) + rate * Math.max(0, t - last.t) / DAY); }
+
+    // Live XP bar + Armory cross-check
+    if (useLive) {
+      var pctIn = live.xpMax > 0 ? live.xp / live.xpMax : 0;
+      $("xpbar").hidden = false;
+      $("xp-fill").style.width = (live.level >= 60 ? 100 : pctIn * 100) + "%";
+      $("xp-track").setAttribute("aria-label", Math.floor(pctIn * 100) + "% through level " + live.level);
+      var cap = $("xp-cap"); cap.textContent = "";
+      var cb = document.createElement("b");
+      cb.textContent = live.level >= 60 ? "Level 60" : Math.floor(pctIn * 100) + "% to level " + (live.level + 1);
+      cap.appendChild(cb);
+      cap.appendChild(document.createTextNode(" · " + nf.format(live.xp) + " / " + nf.format(live.xpMax) + " XP · live from his addon, " + fmtWhen(live.t)));
+    }
+    if (live) {
+      var chk = $("xp-chk");
+      if (mismatch) {
+        chk.className = "chk bad";
+        chk.textContent = "Doesn't match: his addon said level " + live.level + " at " + fmtWhen(live.t) + ", but the Armory showed level " + armoryAfter[0].level + " after that. Going with the Armory.";
+        $("xpbar").hidden = false; $("xp-track").hidden = true; $("xp-cap").hidden = true;
+      } else if (lastArmory && lastArmory.level >= live.level) {
+        chk.className = "chk ok"; chk.textContent = "Armory confirms level " + lastArmory.level;
+      } else if (useLive) {
+        chk.className = "chk"; chk.textContent = "Waiting for the Armory to confirm";
+      }
+    }
     var proj60 = cur >= 60 ? last.t : projAt(60);
     function firstHit(L) { for (var j = 0; j < snaps.length; j++) if (snaps[j].level >= L) return snaps[j].t; return null; }
 
@@ -473,7 +538,8 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
     tick(); setInterval(tick, 1000);
 
     // Ladder
-    var fracLevel = (cur - 1) / 59, fracXP = CUM[cur] / TOTAL_XP, fracT = TCUM[cur] / TOTAL_T;
+    var xpDone = cur >= 60 ? TOTAL_XP : CUM[cur] + (curF - cur) * XP_NEXT[cur];
+    var fracLevel = (curF - 1) / 59, fracXP = xpDone / TOTAL_XP, fracT = eff(curF) / TOTAL_T;
     $("h-far").textContent = cur >= 60 ? "Level 60. The climb is done." : "Level " + cur + " is not " + Math.round(fracLevel * 100) + "% of the way";
     $("far-lede").textContent = cur >= 60 ? "Every block is filled." :
       "Each block is one level, sized by what it costs. By level count he is " + pct(fracLevel, 0) + " done. By XP he has earned " + pct(fracXP) +
@@ -509,16 +575,16 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
     });
 
     // Stats
-    var daysLeft = (deadline - now) / DAY, xpLeft = TOTAL_XP - CUM[cur];
+    var daysLeft = (deadline - now) / DAY, xpLeft = Math.round(TOTAL_XP - xpDone);
     $("s-left").textContent = cur >= 60 ? "0" : nf.format(xpLeft);
-    $("s-left-n").textContent = cur >= 60 ? "Nothing left to earn." : "from the start of level " + cur + " to 60";
+    $("s-left-n").textContent = cur >= 60 ? "Nothing left to earn." : curF > cur ? "from his exact XP in level " + cur + " to 60" : "from the start of level " + cur + " to 60";
     if (cur >= 60 || daysLeft <= 0) {
       $("s-need").textContent = "—"; $("s-need-n").textContent = cur >= 60 ? "He's done." : "The deadline has passed.";
     } else {
       $("s-need").textContent = fmtK(xpLeft / daysLeft);
       $("s-need-n").textContent = "XP a day, every day, for the next " + plural(Math.ceil(daysLeft), "day");
     }
-    var target = paceLevel(Math.min(now, deadline)), diff = cur - target;
+    var target = paceLevel(Math.min(now, deadline)), diff = curF - target;
     $("s-target").textContent = "Level " + Math.floor(target);
     $("s-target-n").textContent = Math.abs(diff) < 0.5 ? "He's right on the line." :
       "He's " + Math.abs(diff).toFixed(1) + " levels " + (diff > 0 ? "ahead" : "behind") + " as of his last login.";
@@ -695,8 +761,8 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
           flat(snaps[r - 1].level, snaps[r - 1].t, snaps[r].t, "c-real");
           if (snaps[r].level !== snaps[r - 1].level) step(snaps[r].t, snaps[r - 1].level, snaps[r].level);
         }
-        if (cur < 60 && now > last.t) flat(cur, last.t, Math.min(now, deadline), "c-hold");
-        var behindNow = cur < 60 && cur < paceLevel(Math.min(now, deadline)) - 0.05, bn = behindNow ? " behind" : "";
+        if (cur < 60 && now > last.t) flat(curF, last.t, Math.min(now, deadline), "c-hold");
+        var behindNow = cur < 60 && curF < paceLevel(Math.min(now, deadline)) - 0.05, bn = behindNow ? " behind" : "";
         snaps.forEach(function (sn, idx) {
           if (idx < snaps.length - 1 && snaps[idx + 1].level === sn.level) return;
           var isLast = idx === snaps.length - 1, b = isLast ? bn : (sn.level < paceLevel(sn.t) - 0.05 ? " behind" : "");
@@ -728,12 +794,17 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
 
   // Load data, then check for fresh data every 10 minutes and reload when something new arrives.
   function load() { return fetch("data/history.json?ts=" + Date.now(), { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }); }
-  load().then(function (D) {
-    render(D);
-    var sig = (D.snapshots || []).length + ":" + (D.looks || []).length;
+  function loadLive() { return fetch(LIVE_URL + "?ts=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }); }
+  Promise.all([load(), loadLive()]).then(function (res) {
+    var D = res[0], Lv = res[1];
+    render(D, Lv);
+    var sig = (D.snapshots || []).length + ":" + (D.looks || []).length, liveSig = Lv ? Lv.time : 0;
     setInterval(function () {
       load().then(function (N) { if ((N.snapshots || []).length + ":" + (N.looks || []).length !== sig) location.reload(); }).catch(function () {});
     }, 10 * 60 * 1000);
+    setInterval(function () {
+      loadLive().then(function (N) { if (N && N.time !== liveSig) location.reload(); });
+    }, 2 * 60 * 1000);
   }).catch(function () {
     $("load-error").hidden = false;
     $("verdict").hidden = true;

@@ -1,0 +1,8 @@
+## Interface: 16001
+## Title: XPReport
+## Notes: Records your level and XP for the bonitabluehair.com tracker. XP only.
+## Author: bonitabluehair.com
+## Version: 1.0
+## SavedVariables: XPReportDB
+
+XPReport.lua
