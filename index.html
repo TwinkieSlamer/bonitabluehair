@@ -15,11 +15,11 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0f1e'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-weight='700' font-size='30' text-anchor='middle' fill='%235ad6c6'%3E60%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze:wght@600;800&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@800&family=Grenze:wght@800&family=IBM+Plex+Mono:wght@500&family=Instrument+Sans:ital,wght@0,400;0,600;1,400&display=swap">
 <style>
-/* Layout: a moonlit hero where Bonita stands in a halo under falling snow, then a ledger of the race:
-   countdown band, level-vs-XP-vs-time ladder, pace stats, animated race-line chart, milestones,
-   and a reel of saved character frames showing his gear evolve. */
+/* Layout: a bookie's advent ledger kept by moonlight. A moonlit hero where Bonita stands in a halo under falling snow,
+   the verdict as an ink stamp on a ledger card, the advent ledger of days, the effort bars and the wall, pace stats,
+   the vote board, the animated race-line chart, milestones, and a reel of saved character frames. */
 :root {
   color-scheme: dark;
   --night: #0a0f1e;
@@ -33,8 +33,8 @@
   --tide-soft: rgba(90, 214, 198, .16);
   --holly: #ec5f55;
   --gold: #f2c96b;
-  --halo-core: rgba(214, 228, 255, .30);
-  --halo-edge: rgba(90, 214, 198, .10);
+  --halo-core: rgba(238, 241, 248, .22);
+  --halo-edge: rgba(90, 214, 198, .09);
   --shadow: rgba(0, 0, 0, .55);
   --q-poor: #9d9d9d;
   --q-common: #eef1f8;
@@ -42,9 +42,13 @@
   --q-rare: #3d8ff0;
   --q-epic: #b45cf2;
   --q-legendary: #ff8a1f;
-  --display: "Grenze", "Palatino Linotype", Palatino, Georgia, serif;
-  --body: "Instrument Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, Consolas, "Courier New", monospace;
+  --display: "Grenze", Georgia, serif;
+  --numeral: "Grenze Gotisch", "Grenze", Georgia, serif;
+  --body: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  --ease-out: cubic-bezier(.2, .7, .2, 1);
+  --hatch: repeating-linear-gradient(135deg, #1b2742 0 3px, #3a4a70 3px 5px);
+  --hatch-wide: repeating-linear-gradient(135deg, #1b2742 0 6px, #3a4a70 6px 9px);
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
@@ -52,86 +56,192 @@ img { max-width: 100%; }
 [hidden] { display: none !important; }
 body { background: var(--night); color: var(--moon); font: 400 16px/1.55 var(--body); -webkit-font-smoothing: antialiased; }
 a { color: var(--tide); text-underline-offset: 3px; }
-a:focus-visible, summary:focus-visible, .reel:focus-visible { outline: 2px solid var(--tide); outline-offset: 3px; border-radius: 2px; }
-.wrap { max-width: 1080px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-.eyebrow { font: 500 .74rem/1.3 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--tide); margin: 0; }
-h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0; }
-h2 { font-weight: 800; font-size: clamp(1.7rem, 3.6vw, 2.4rem); line-height: 1.05; letter-spacing: .005em; }
+a:focus-visible, summary:focus-visible, .reel:focus-visible, button:focus-visible { outline: 2px solid var(--moon); outline-offset: 3px; border-radius: 2px; }
+.wrap { max-width: 1280px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.eyebrow { font: 500 11px/1.3 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--mist); margin: 0; }
+.mono-note { margin: 0; font: 500 11px/1.5 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
+h1, h2, h3 { font-family: var(--display); font-weight: 800; text-wrap: balance; margin: 0; }
+h2 { font-size: clamp(1.7rem, 3.6vw, 2.4rem); line-height: 1.05; }
 .lede { color: var(--mist); max-width: 62ch; margin: 0; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+/* Paper grain over a surface: the texture sits above the background and under the content. */
+.grain { position: relative; isolation: isolate; }
+.grain::before { content: ""; position: absolute; inset: 0; z-index: -1; background: url("assets/grain.svg") 0 0; opacity: .14; pointer-events: none; }
 
-/* Nav */
-.topnav { display: flex; gap: 22px; padding-block: 16px 0; font: 500 .74rem/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; position: relative; z-index: 1; }
-.topnav a { color: var(--mist); text-decoration: none; padding-block: 6px; border-bottom: 1px solid transparent; }
-.topnav a:hover { color: var(--moon); }
-.topnav a[aria-current="page"] { color: var(--moon); border-bottom-color: var(--tide); }
+/* Nav: two ledger tabs and the deadline status */
+.topnav { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; padding-top: 12px; }
+.tabs { display: flex; gap: 2px; }
+.tab { display: inline-flex; align-items: center; min-height: 44px; padding: 0 9px; border: 1px solid transparent; border-radius: 6px 6px 0 0; color: var(--mist); text-decoration: none; font: 500 12px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
+.tab:hover { color: var(--moon); }
+.tab[aria-current="page"] { border-color: var(--rule); border-bottom-color: transparent; background: rgba(16, 24, 44, .85); color: var(--moon); }
+.navstatus { --c: var(--holly); display: flex; align-items: center; gap: 7px; padding-bottom: 15px; font: 500 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--c); white-space: nowrap; }
+.navstatus::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.navstatus .long { display: none; }
 
-/* Hero */
-.hero { position: relative; overflow: hidden; background: radial-gradient(120% 90% at 28% 0%, var(--night-hi) 0%, var(--night) 62%); padding-top: env(safe-area-inset-top, 0px); }
+/* Hero: moonlight, snow, the character stage, the level and the ledger card */
+.hero { position: relative; overflow: hidden; background: linear-gradient(180deg, #17243f 0%, #111b33 46%, #0a0f1e 100%); padding-top: env(safe-area-inset-top, 0px); }
 #snow { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.hero-grid { position: relative; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(12px, 4vw, 56px); align-items: center; padding-block: clamp(28px, 6vw, 72px) clamp(28px, 5vw, 60px); }
-.portrait { margin: 0; position: relative; display: grid; place-items: center; min-height: 300px; }
-.halo { position: absolute; width: min(94%, 400px); aspect-ratio: 1; max-width: 100%; border-radius: 50%; top: 4%; background: radial-gradient(circle, var(--halo-core) 0%, var(--halo-edge) 52%, transparent 71%); }
-.portrait::after { content: ""; position: absolute; bottom: 1%; width: 46%; height: 22px; border-radius: 50%; background: radial-gradient(var(--shadow), transparent 70%); }
-.portrait img { position: relative; z-index: 1; height: clamp(300px, 44vw, 520px); width: auto; max-width: 100%; object-fit: contain; filter: drop-shadow(0 18px 24px var(--shadow)); }
-.hero-copy { display: grid; gap: 16px; min-width: 0; }
-h1 { font-weight: 800; font-size: clamp(2.8rem, 7.4vw, 5.4rem); line-height: .92; letter-spacing: -.005em; }
-.who { margin: 0; color: var(--mist); font-size: 1.05rem; }
-.bet-line { margin: 0; font-size: 1.18rem; max-width: 34ch; }
-.level-read { display: flex; align-items: baseline; gap: 12px; margin-top: 4px; }
-.lvl { font: 800 clamp(5.5rem, 15vw, 9.5rem)/.78 var(--display); font-variant-numeric: tabular-nums; }
-.of { font: 500 1.3rem var(--mono); color: var(--mist); }
-.xpbar { display: grid; gap: 6px; max-width: 460px; }
-.xpbar .track { position: relative; height: 10px; border-radius: 3px; background: var(--seg); overflow: hidden; }
-.xpbar .fill { position: absolute; inset: 0 auto 0 0; background: var(--gold); border-radius: 3px; }
-.xpbar .cap { font: 400 .8rem var(--mono); color: var(--mist); }
-.xpbar .cap b { color: var(--moon); font-weight: 500; }
-.xpbar .chk { font: 500 .72rem var(--mono); letter-spacing: .06em; color: var(--mist); }
-.xpbar .chk.ok { color: var(--tide); }
-.xpbar .chk.bad { color: var(--holly); }
-.verdict { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
-.pill { font: 500 .78rem/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; padding: 8px 12px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
-.verdict[data-state="on-pace"] .pill { color: var(--gold); }
-.verdict[data-state="behind"] .pill, .verdict[data-state="won"] .pill { color: var(--tide); }
-.verdict[data-state="made-it"] .pill { color: var(--holly); }
-.kit { display: flex; flex-wrap: wrap; gap: 10px 28px; margin: 6px 0 0; padding-top: 14px; border-top: 1px solid var(--rule); }
-.kit div { display: grid; gap: 2px; }
-.kit dt { font: 500 .68rem/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
-.kit dd { margin: 0; font-variant-numeric: tabular-nums; }
+.moon { position: absolute; top: 214px; right: 26px; width: 50px; height: 50px; border-radius: 50%; background: radial-gradient(circle at 38% 36%, #fff 0%, #eef1f8 46%, #c6cfe3 100%); box-shadow: 0 0 60px 16px rgba(238, 241, 248, .16), 0 0 180px 70px rgba(238, 241, 248, .06); pointer-events: none; }
+.hero-grid { position: relative; z-index: 1; display: grid; grid-template-columns: 48% minmax(0, 1fr); grid-template-areas: "id id" "stage level" "card card"; column-gap: 8px; row-gap: 18px; align-items: end; padding-block: 18px 28px; }
+.hero-info { display: contents; }
+.id { grid-area: id; display: flex; flex-direction: column; gap: 6px; }
+.id .eyebrow { font-size: 11px; }
+h1 { font-size: clamp(2.8rem, 7.4vw, 5.4rem); line-height: .95; }
+.who { margin: 0; font: 500 11px/1.4 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--mist); }
+
+.stage { grid-area: stage; position: relative; margin: 0; height: 318px; display: flex; align-items: flex-end; justify-content: center; }
+.stage .halo { position: absolute; left: -30%; right: -30%; top: -6px; height: 82%; border-radius: 50%; background: radial-gradient(ellipse at 50% 42%, var(--halo-core) 0%, var(--halo-edge) 38%, rgba(10, 15, 30, 0) 70%); animation: halo 4.8s ease-in-out infinite alternate; pointer-events: none; }
+.stage .ring { position: absolute; left: 50%; top: -4px; width: 112px; height: 112px; margin-left: -56px; border-radius: 50%; border: 1px solid rgba(238, 241, 248, .16); }
+.stage .disc { position: absolute; left: 50%; bottom: 34px; width: 96%; height: 30px; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(ellipse at 50% 50%, rgba(238, 241, 248, .26) 0%, rgba(238, 241, 248, .06) 46%, rgba(238, 241, 248, 0) 70%); }
+.stage .contact { position: absolute; left: 50%; bottom: 44px; width: 48%; height: 9px; transform: translateX(-50%); border-radius: 50%; background: rgba(0, 0, 0, .55); filter: blur(3px); }
+.stage .poster { position: relative; height: 250px; width: auto; max-width: 100%; margin-bottom: 38px; object-fit: contain; }
+.stage .chip3d { position: absolute; top: 6px; left: 0; z-index: 1; padding: 3px 6px; border: 1px solid rgba(151, 163, 194, .45); border-radius: 4px; background: rgba(10, 15, 30, .6); font: 500 10px/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); white-space: nowrap; }
+
+.level-row { grid-area: level; display: flex; flex-direction: column; gap: 12px; padding-bottom: 8px; min-width: 0; }
+.level-k { display: block; font: 500 11px/1.3 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--mist); }
+.level-n { display: flex; align-items: baseline; gap: 6px; }
+.lvl { font: 800 clamp(5.5rem, 15vw, 9.5rem)/.9 var(--numeral); font-variant-numeric: tabular-nums; color: var(--tide); text-shadow: 0 0 36px rgba(90, 214, 198, .28); }
+.lvl.goal { color: var(--gold); text-shadow: 0 0 36px rgba(242, 201, 107, .3); }
+.of { font: 500 12px var(--mono); letter-spacing: .12em; color: var(--gold); white-space: nowrap; }
+.xpbox { display: flex; flex-direction: column; gap: 7px; padding: 10px 11px; border: 1px dashed rgba(151, 163, 194, .4); border-radius: 6px; background: rgba(10, 15, 30, .45); font: 500 11px/1.35 var(--mono); letter-spacing: .1em; text-transform: uppercase; min-width: 0; }
+.xpbox .top, .xpbox .bot { display: flex; flex-direction: column; gap: 7px; }
+.xpbox .top { flex-direction: row; flex-wrap: wrap; justify-content: space-between; gap: 2px 10px; }
+.xpbox .pct { color: var(--moon); }
+.xpbox .src, .xpbox .nums { color: var(--mist); }
+.xpbox .nums { font-variant-numeric: tabular-nums; letter-spacing: .04em; }
+.xpbox .track { height: 4px; border-radius: 2px; background: var(--seg); overflow: hidden; }
+.xpbox .fill { display: block; height: 100%; width: 0; border-radius: 2px; background: var(--gold); }
+.xpbox .chk { display: flex; align-items: center; gap: 6px; color: var(--tide); }
+.xpbox .chk.wait { color: var(--mist); }
+.xpbox .chk.wait svg { display: none; }
+.xp-mismatch { margin: 0; color: var(--holly); font-size: .92rem; }
+
+.ledger { --c: var(--holly); grid-area: card; overflow: hidden; border: 1px solid var(--rule); border-radius: 4px; background-color: var(--surface); background-image: repeating-linear-gradient(180deg, rgba(36, 49, 79, 0) 0 27px, rgba(36, 49, 79, .55) 27px 28px); padding: 16px 16px 18px 34px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 18px 40px rgba(0, 0, 0, .35); }
+.ledger::after { content: ""; position: absolute; top: 0; bottom: 0; left: 18px; width: 3px; z-index: -1; border-left: 1px solid #2c3b5f; border-right: 1px solid #2c3b5f; }
+.ledger[data-state="on-pace"] { --c: var(--tide); }
+.ledger[data-state="made-it"] { --c: var(--gold); }
+.ledger-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; font: 500 11px/1.4 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
+.verdict-row { display: flex; flex-direction: column; gap: 14px; }
+.stamp-wrap { padding: 4px 0 2px 2px; }
+.stamp { position: relative; display: inline-flex; flex-direction: column; align-items: center; gap: 3px; padding: 9px 14px 8px; border: 3px solid var(--c); border-radius: 6px; box-shadow: inset 0 0 0 3px var(--surface), inset 0 0 0 4.5px var(--c); color: var(--c); transform: rotate(-4deg); transform-origin: 50% 60%; overflow: hidden; }
+.stamp::after { content: ""; position: absolute; inset: 0; background: url("assets/stamp-wear.svg") 0 0 / 100% 100% no-repeat; opacity: .9; pointer-events: none; }
+.stamp small { font: 500 10px/1.2 var(--mono); letter-spacing: .18em; text-transform: uppercase; }
+.stamp b { font: 800 34px/1 var(--display); letter-spacing: .03em; white-space: nowrap; }
+.stamp.landing { animation: land .25s ease-out; }
+.verdict-text { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.verdict-line { margin: 0; font-size: 18px; line-height: 1.4; }
+.verdict-line strong { font-weight: 600; color: var(--c); }
+.basis { display: flex; gap: 8px; align-items: baseline; font: 500 11px/1.45 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
+.basis svg { flex: none; }
+.kit { display: flex; flex-wrap: wrap; gap: 12px 18px; margin: 0; padding-top: 12px; border-top: 1px solid var(--rule); }
+.kit div { flex: 1 1 120px; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.kit div.wide { flex-basis: 100%; }
+.kit dt { font: 500 11px/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
+.kit dd { margin: 0; font-size: 15px; font-variant-numeric: tabular-nums; }
 .load-error { margin: 0; color: var(--holly); }
 
-/* Countdown band */
-.band { background: var(--surface); border-block: 1px solid var(--rule); }
-.band-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 32px; padding-block: 22px; }
-.band-label { display: grid; gap: 4px; }
-.band-label .eyebrow { color: var(--holly); }
-.band-label span:last-child { color: var(--mist); font-size: .92rem; }
-.clock { display: flex; gap: clamp(14px, 3vw, 30px); }
-.clock div { display: grid; justify-items: center; gap: 2px; min-width: 3ch; }
-.clock b { font: 800 clamp(2.2rem, 6vw, 3.2rem)/1 var(--display); font-variant-numeric: tabular-nums; }
-.clock span { font: 500 .66rem var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--mist); }
+/* The advent ledger: every day is a door */
+.advent { background: var(--surface); border-block: 1px solid var(--rule); overflow: hidden; }
+.advent-inner { display: flex; flex-direction: column; gap: 18px; padding-block: 28px 32px; }
+.adv-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 40px; }
+.adv-head > div { flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.adv-intro { margin: 0; max-width: 560px; color: var(--mist); }
+.adv-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 16px; font: 500 11px/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
+.adv-legend li { display: flex; align-items: center; gap: 7px; }
+.adv-legend .sw { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 20px; border-radius: 4px; letter-spacing: 0; }
+.sw.gain { border: 1px solid rgba(90, 214, 198, .4); background: rgba(90, 214, 198, .1); color: var(--tide); }
+.sw.need { border: 1px solid var(--rule); background: rgba(27, 39, 66, .6); color: var(--mist); }
+.sw.today { width: 18px; height: 18px; border: 2px solid var(--gold); }
+.sw.xmas { width: 18px; height: 18px; border: 1px solid var(--holly); background: rgba(236, 95, 85, .14); }
+.dow { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; font: 500 10px var(--mono); letter-spacing: .12em; text-align: center; color: var(--mist); }
+.weeks { display: flex; flex-direction: column; gap: 5px; }
+.week { display: flex; flex-direction: column; gap: 5px; }
+.week ol, .month ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.door { position: relative; min-width: 0; min-height: 46px; padding: 4px 5px 5px; border: 1px solid var(--rule); border-radius: 5px; background: rgba(27, 39, 66, .6); display: flex; flex-direction: column; justify-content: space-between; font-family: var(--mono); font-weight: 500; }
+.door .d { font-size: 10px; line-height: 1; color: var(--mist); }
+.door .v { font-size: 11px; line-height: 1; letter-spacing: .02em; white-space: nowrap; color: var(--mist); }
+.door.blank { border-color: transparent; background: transparent; }
+.door.past { border-color: rgba(90, 214, 198, .4); background: rgba(90, 214, 198, .1); }
+.door.past .v { color: var(--tide); }
+.door.today { border-color: var(--gold); background: var(--night); box-shadow: 0 0 0 1px var(--gold), 0 0 16px rgba(242, 201, 107, .3); }
+.door.today .d { color: var(--gold); }
+.door.today .v { color: var(--tide); }
+.door.future .v.goal { color: var(--gold); }
+.door.xmas { border-color: var(--holly); background: rgba(236, 95, 85, .12); }
+.door.xmas .d, .door.xmas .v { color: var(--holly); }
+.door.hit { border-color: var(--gold); background: rgba(242, 201, 107, .16); box-shadow: 0 0 0 1px var(--gold), 0 0 18px rgba(242, 201, 107, .35); }
+.door.hit .d, .door.hit .v { color: var(--gold); }
+.door.shut { border-color: var(--rule); background: transparent; }
+.door.final { border-color: var(--holly); background: rgba(236, 95, 85, .18); box-shadow: 0 0 0 1px var(--holly), 0 0 18px rgba(236, 95, 85, .3); }
+.door.final .d, .door.final .v { color: var(--holly); }
+.clockpanel { position: relative; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 12px; margin-top: 3px; padding: 10px 12px; border: 1px solid var(--gold); border-radius: 6px; background: var(--night); font-family: var(--mono); font-weight: 500; }
+.clockpanel::before { content: ""; position: absolute; top: -6px; left: var(--notch, 50%); width: 10px; height: 10px; margin-left: -5px; background: var(--night); border-left: 1px solid var(--gold); border-top: 1px solid var(--gold); transform: rotate(45deg); }
+.clockpanel .k { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); }
+.clockpanel .t { font-size: 20px; color: var(--moon); font-variant-numeric: tabular-nums; }
+.clockpanel .n { flex: 1 1 100%; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
+.months { display: none; flex-direction: column; gap: 6px; }
+.months.has-callout { padding-top: 46px; }
+.month { display: flex; gap: 4px; align-items: stretch; }
+.month > span { flex: 0 0 44px; display: flex; align-items: center; font: 500 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--mist); }
+.month ol { flex: 1 1 0; min-width: 0; gap: 4px; grid-template-columns: repeat(27, minmax(0, 1fr)); }
+.month .door { min-height: 54px; padding: 5px 4px 6px; }
+.month .door .v { letter-spacing: 0; }
+.callout { position: absolute; left: -1px; bottom: calc(100% + 10px); z-index: 2; display: flex; align-items: baseline; gap: 12px; white-space: nowrap; padding: 7px 12px; border: 1px solid var(--gold); border-radius: 5px; background: var(--night); font: 500 11px/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--gold); }
+.callout.right { left: auto; right: -1px; }
+.callout .t { font-size: 16px; letter-spacing: .02em; text-transform: none; color: var(--moon); font-variant-numeric: tabular-nums; }
+.callout .n { color: var(--mist); }
+.callout::after { content: ""; position: absolute; left: 14px; bottom: -6px; width: 10px; height: 10px; background: var(--night); border-right: 1px solid var(--gold); border-bottom: 1px solid var(--gold); transform: rotate(45deg); }
+.callout.right::after { left: auto; right: 14px; }
 
 /* Sections */
-.block { display: grid; gap: 22px; padding-block: clamp(36px, 6vw, 64px); }
+.block { display: grid; gap: 22px; padding-block: clamp(32px, 6vw, 56px); }
 .block + .block { border-top: 1px solid var(--rule); }
-.head { display: grid; gap: 10px; }
+.head { display: grid; gap: 6px; }
 
-/* Ladder */
-.ladder { display: grid; gap: 14px; }
-.lrow { display: grid; grid-template-columns: 116px minmax(0, 1fr) 64px; gap: 14px; align-items: center; }
-.lrow .k { font: 500 .72rem/1.25 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--mist); }
-.lrow .v { font: 500 .95rem var(--mono); text-align: right; font-variant-numeric: tabular-nums; }
-.bar { position: relative; height: 24px; border-radius: 3px; overflow: hidden; background: var(--seg); }
-.seg { position: absolute; top: 0; bottom: 0; background: var(--seg); box-shadow: inset -1px 0 0 var(--night); }
-.seg.done { background: var(--tide); }
-.seg.now { background: var(--gold); animation: pulse 2.4s ease-in-out infinite; }
-.axis { position: relative; height: 18px; margin-left: 130px; margin-right: 78px; }
-.axis span { position: absolute; transform: translateX(-50%); font: 400 .7rem var(--mono); color: var(--mist); white-space: nowrap; }
-.axis span:last-child { transform: translateX(-100%); }
-.split { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; }
-.split div { background: var(--night); padding: 12px 12px 14px; display: grid; gap: 4px; }
-.split .k { font: 500 .7rem var(--mono); letter-spacing: .1em; color: var(--mist); }
-.split .v { font: 800 1.7rem/1 var(--display); font-variant-numeric: tabular-nums; }
-.split div:last-child .v { color: var(--gold); }
+/* How far he really is: 59-segment bars sized by cost, the play time by decade, the wall */
+.ebars { display: flex; flex-direction: column; gap: 22px; }
+.ebar { display: flex; flex-direction: column; gap: 6px; }
+.ebar-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.ebar-k { font: 500 12px var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+.ebar-v { font: 800 30px/1 var(--display); font-variant-numeric: tabular-nums; color: var(--tide); }
+.wallmark { position: relative; height: 30px; }
+.wallmark i { position: absolute; bottom: 4px; right: 0; height: 9px; border: 1px solid var(--moon); border-bottom: 0; border-radius: 2px 2px 0 0; }
+.wallmark span { position: absolute; bottom: 16px; right: 0; white-space: nowrap; font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+.esegs { display: flex; height: 26px; border-radius: 3px; overflow: hidden; background: var(--seg); }
+.esegs span { flex: none; height: 100%; background: var(--seg); box-shadow: inset -1px 0 0 var(--night); }
+.esegs .done { background: var(--tide); }
+.esegs .now { background: var(--gold); }
+.esegs .wall { background: var(--hatch); }
+.ecaret { position: relative; height: 22px; font: 500 11px var(--mono); letter-spacing: .08em; color: var(--gold); }
+.ecaret .c { position: absolute; top: 0; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; white-space: nowrap; }
+.ecaret .end { position: absolute; top: 6px; right: 0; }
+.enote { margin: 0; font-size: 14px; line-height: 1.45; color: var(--mist); }
+.elegend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 18px; font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
+.elegend li { display: flex; align-items: center; gap: 7px; }
+.elegend i { width: 16px; height: 10px; border-radius: 2px; }
+.decade-row { display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: stretch; padding-top: 24px; border-top: 1px solid var(--rule); }
+.decade-box { flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+.decade-box h3 { font-size: 24px; line-height: 1.1; }
+.decade-box p { margin: 0; font-size: 14px; color: var(--mist); }
+.dcols { display: flex; align-items: flex-end; gap: 6px; height: 300px; padding-top: 28px; border-bottom: 1px solid var(--rule); }
+.dcol { flex: 1 1 0; min-width: 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; }
+.dcol .sh { text-align: center; font: 500 11px var(--mono); letter-spacing: .04em; color: var(--mist); }
+.dcol.wall .sh { color: var(--moon); }
+.dcol .b { height: calc(var(--r) * 248px); min-height: 6px; display: flex; flex-direction: column; justify-content: flex-end; border-radius: 3px 3px 0 0; overflow: hidden; background: var(--seg); box-shadow: inset 0 0 0 1px var(--rule); }
+.dcol.wall .b { background: var(--hatch-wide); box-shadow: inset 0 0 0 1px var(--moon); }
+.dcol .b .g { background: var(--gold); }
+.dcol .b .t { background: var(--tide); }
+.dlabels { display: flex; gap: 6px; margin-top: -6px; }
+.dlabels span { flex: 1 1 0; min-width: 0; text-align: center; font: 500 11px var(--mono); letter-spacing: .06em; color: var(--mist); }
+.wallcard { flex: 1 1 300px; min-width: 0; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; gap: 18px; padding: 20px 74px 20px 22px; border: 1px solid var(--rule); border-radius: 4px; background: var(--surface); }
+.wallcard::after { content: ""; position: absolute; top: 0; right: 0; bottom: 0; width: 44px; z-index: -1; background: repeating-linear-gradient(135deg, #1b2742 0 6px, #2a3a60 6px 9px); border-left: 1px solid var(--rule); }
+.wallcard .t { display: flex; flex-direction: column; gap: 4px; }
+.wallcard .t b { font: 800 30px/1.05 var(--display); }
+.wallcard .nums { display: flex; gap: 24px; flex-wrap: wrap; }
+.wallcard .nums div { display: flex; flex-direction: column; }
+.wallcard .nums b { font: 800 56px/1 var(--display); font-variant-numeric: tabular-nums; }
+.wallcard .nums span { font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
+.wallcard p { margin: 0; }
 
 /* Stats */
 .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px 28px; }
@@ -216,73 +326,77 @@ table.ms { width: 100%; border-collapse: collapse; min-width: 600px; }
 .frame.next p { margin: 0; max-width: 24ch; }
 .frame.latest { border-color: var(--tide); }
 
-/* Vote: "Does he make it?" Gold is the side that says he reaches 60, red the side that says Christmas wins. */
-.vote-board { display: grid; gap: 12px; }
-.tally-top { display: flex; justify-content: space-between; align-items: end; gap: 16px; }
-.side-n { display: grid; gap: 6px; min-width: 0; }
-.side-n.no { justify-items: end; text-align: right; }
-.side-n .k { display: flex; align-items: center; gap: 8px; font: 500 .72rem/1.25 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
-.side-n .k::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--c); }
-.side-n.no .k { flex-direction: row-reverse; }
-.side-n .v { display: flex; align-items: baseline; gap: 10px; font: 800 clamp(2.4rem, 6vw, 3.4rem)/.9 var(--display); font-variant-numeric: tabular-nums; }
-.side-n.no .v { flex-direction: row-reverse; }
-.side-n .v small { font: 500 .85rem var(--mono); color: var(--mist); }
-.tallies { display: flex; gap: 6px; height: 18px; }
-.side-n.no .tallies { flex-direction: row-reverse; }
-.tallies svg { height: 18px; width: auto; overflow: visible; }
-.tallies line { stroke: var(--c); stroke-width: 2; stroke-linecap: round; }
+/* Vote: "Does he make it?" as a framed bookie's board. Gold is the side that says he reaches 60, red the side that says Christmas wins. */
+.vblock { padding-block: 24px 32px; }
 .yes { --c: var(--gold); }
 .no { --c: var(--holly); }
-.split-bar { display: flex; gap: 2px; height: 14px; border-radius: 4px; overflow: hidden; }
-.split-bar span { flex: 1 1 0; min-width: 0; background: var(--c); transition: flex-grow .6s cubic-bezier(.2, .8, .2, 1); }
-.split-bar.empty span { background: var(--seg); }
-.split-bar span:first-child { border-radius: 4px 0 0 4px; }
-.split-bar span:last-child { border-radius: 0 4px 4px 0; }
-.vs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 28px; margin: 6px 0 0; }
-.vs div { display: grid; gap: 4px; border-top: 1px solid var(--rule); padding-top: 12px; }
-.vs dt { font: 500 .68rem/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
-.vs dd { margin: 0; font-size: 1.02rem; }
-.vs dd b { font: 800 1.5rem/1.1 var(--display); margin-right: 6px; }
-.ballot { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px 16px; align-items: end; padding: 18px; border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); }
-.field { display: grid; gap: 6px; min-width: 0; }
-.field span { font: 500 .7rem var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
-.field input { font: 500 1rem var(--body); color: var(--moon); background: var(--night); border: 1px solid var(--rule); border-radius: 4px; padding: 12px; min-width: 0; width: 100%; }
-.field input::placeholder { color: var(--mist); opacity: .7; }
+.board { overflow: hidden; display: flex; flex-direction: column; gap: 22px; padding: 22px 18px 24px; border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); box-shadow: inset 0 0 0 6px #0c1324, inset 0 0 0 7px var(--rule), 0 24px 60px rgba(0, 0, 0, .4); }
+.board-head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 18px 40px; }
+.bh-title { flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.bh-title .lede { max-width: 520px; }
+.bh-cards { flex: 1 1 380px; min-width: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.mini { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border: 1px solid var(--rule); border-radius: 4px; background: rgba(10, 15, 30, .45); min-width: 0; }
+.mini .k { font: 500 11px/1.35 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
+.mini .v { font: 800 24px/1.1 var(--display); }
+.mini .v.track { color: var(--c, var(--moon)); }
+.tally { display: flex; flex-direction: column; gap: 10px; }
+.halves { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.half { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 12px 14px 14px; border-top: 3px solid var(--c); border-radius: 0 0 4px 4px; background: rgba(10, 15, 30, .45); min-width: 0; }
+.half.no { align-items: flex-end; }
+.half .k { font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--c); }
+.half .n { font: 800 60px/.95 var(--display); font-variant-numeric: tabular-nums; color: var(--c); }
+.gates { display: flex; flex-wrap: wrap; gap: 4px 8px; min-height: 30px; }
+.half.no .gates { justify-content: flex-end; }
+.gates svg { width: 36px; height: 30px; fill: none; stroke: var(--c); stroke-width: 2.2; stroke-linecap: round; }
+.lost { --c: var(--mist); }
+.split-bar { display: flex; gap: 3px; height: 12px; border-radius: 3px; overflow: hidden; }
+.split-bar span { flex: 1 1 0; min-width: 0; background: var(--c); transition: flex-grow .6s var(--ease-out); }
+.split-bar.empty span, .split-bar span.lost { background: var(--seg); }
+.split-labels { display: flex; justify-content: space-between; gap: 12px; font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+.split-labels span:first-child { color: var(--gold); }
+.split-labels span:last-child { color: var(--holly); text-align: right; }
+.split-labels.empty span, .split-labels span.lost { color: var(--mist); }
+.vmsg { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 16px; min-height: 1.55em; }
+.vmsg i { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--dot, var(--mist)); }
+.vmsg.err { color: var(--holly); }
+.vmsg strong { font-weight: 600; }
+.result { --c: var(--holly); display: flex; flex-direction: column; gap: 4px; padding: 16px 18px; border: 1px solid var(--c); border-radius: 6px; background: color-mix(in srgb, var(--c) 8%, transparent); }
+.result.yes { --c: var(--gold); }
+.result .k { font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--c); }
+.result .rh { margin: 0; font: 800 28px/1.1 var(--display); }
+.result .rs { margin: 0; color: var(--mist); }
+.ballot { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 16px; }
+.field { flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.field label { font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
+.field input { width: 100%; min-height: 52px; padding: 0 14px; border: 1px solid var(--rule); border-radius: 6px; background: var(--night); color: var(--moon); font: 400 16px var(--body); }
 .field input:focus-visible { outline: 2px solid var(--tide); outline-offset: 1px; }
-.picks { display: flex; gap: 10px; }
-.pick { display: grid; gap: 3px; min-height: 48px; text-align: left; font: inherit; color: var(--moon); background: transparent; border: 1px solid var(--rule); border-left: 4px solid var(--c); border-radius: 4px; padding: 9px 16px; cursor: pointer; transition: background-color .2s, border-color .2s; }
-.pick b { font: 600 1rem/1.2 var(--body); }
-.pick span { font: 400 .74rem var(--mono); color: var(--mist); }
-.pick:hover { border-color: var(--c); }
-.pick:focus-visible { outline: 2px solid var(--moon); outline-offset: 2px; }
-.pick[aria-pressed="true"] { border-color: var(--c); background: color-mix(in srgb, var(--c) 15%, transparent); }
-.pick[aria-pressed="true"] b::after { content: " \2713"; }
-.ballot-msg { grid-column: 1 / -1; margin: 0; min-height: 1.5em; color: var(--mist); font-size: .94rem; }
-.ballot-msg strong { color: var(--moon); font-weight: 600; }
-.ballot-msg.err { color: var(--holly); }
-.sides { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 28px; }
-.side h3 { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; font: 500 .72rem/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
-.side h3::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--c); }
-.side ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
-.side li { display: inline-flex; align-items: baseline; gap: 8px; padding: 7px 12px; border: 1px solid var(--rule); border-radius: 999px; background: var(--surface); font-size: .92rem; max-width: 100%; }
-.side li .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.side li .at { font: 400 .74rem var(--mono); color: var(--mist); white-space: nowrap; }
-.side li.me { border-color: var(--c); }
-.side li.me .you { font: 500 .66rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--c); }
-.side li.new { animation: pop .35s ease-out both; }
-.side li.none { border: 0; background: none; padding: 0; color: var(--mist); }
-.side li.anon .nm { color: var(--mist); font-style: italic; }
-.vs dd b { margin-right: 2px; }
-.side-note { margin: 0; color: var(--mist); font-size: .86rem; }
-.closed-note { margin: 0; padding: 14px 18px; border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); }
+.field .help { font-size: 14px; color: var(--mist); }
+.picks { flex: 2 1 420px; min-width: 0; display: flex; gap: 10px; }
+.pick { flex: 1 1 0; min-width: 0; min-height: 76px; padding: 10px 12px; border: 2px solid var(--c); border-radius: 6px; background: color-mix(in srgb, var(--c) 6%, transparent); color: var(--c); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font: 800 23px/1.05 var(--display); transition: background-color .2s; }
+.pick small { font: 500 10px var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+.pick:hover { background: color-mix(in srgb, var(--c) 16%, transparent); }
+.pick[aria-pressed="true"] { background: var(--c); color: var(--night); }
 .pick:disabled { opacity: .6; cursor: progress; }
-@keyframes pop { from { transform: scale(.9); opacity: 0; } to { transform: none; opacity: 1; } }
-@media (max-width: 640px) {
-  .ballot { grid-template-columns: minmax(0, 1fr); padding: 14px; }
-  .picks .pick { flex: 1 1 0; padding-inline: 12px; }
-  .sides, .vs { grid-template-columns: minmax(0, 1fr); }
-  .vs div + div { margin-top: 12px; }
-}
+.cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.col { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.col .ch { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+.col .ch > span:first-child { color: var(--c); }
+.col .tag { color: var(--mist); text-align: right; }
+.col .tag.win { color: var(--c); }
+.col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.vchip { min-height: 44px; display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: 7px 9px; border: 1px solid var(--rule); border-radius: 4px; background: rgba(10, 15, 30, .35); min-width: 0; }
+.vchip .row { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.vchip .nm { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; }
+.vchip.anon .nm, .col.lost .vchip .nm { color: var(--mist); }
+.vchip.anon .nm { font-style: italic; }
+.vchip .you { flex: none; padding: 1px 5px; border-radius: 3px; background: var(--moon); color: var(--night); font: 500 10px/1.4 var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+.vchip .lv { flex: none; padding: 1px 5px 0; border: 1.5px solid var(--c); border-radius: 3px; color: var(--c); transform: rotate(-4deg); font: 500 11px/1.35 var(--mono); letter-spacing: .06em; }
+.vchip .sw { font: 500 10px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
+.vchip.me { border-color: var(--c); background: color-mix(in srgb, var(--c) 10%, transparent); }
+.vchip.win { border-color: color-mix(in srgb, var(--c) 45%, transparent); background: color-mix(in srgb, var(--c) 8%, transparent); }
+.vchip.new { animation: pop .35s ease-out both; }
+.vchip.none { flex-direction: row; align-items: center; justify-content: flex-start; border-style: dashed; background: none; font-size: 14px; color: var(--mist); }
+.vote-note { margin: 0; color: var(--mist); font-size: .86rem; }
 
 /* Footer */
 footer { border-top: 1px solid var(--rule); background: var(--surface); }
@@ -290,32 +404,90 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
 .foot p { margin: 0; max-width: 62ch; }
 .foot strong { color: var(--moon); font-weight: 600; }
 
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
 @keyframes march { to { stroke-dashoffset: -14; } }
 @keyframes march-slow { to { stroke-dashoffset: -22; } }
 @keyframes ping { from { transform: scale(1); opacity: .85; } to { transform: scale(3.4); opacity: 0; } }
 @keyframes glow { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+@keyframes halo { from { opacity: .78; transform: scale(1); } to { opacity: 1; transform: scale(1.03); } }
+@keyframes land { 0% { transform: rotate(-4deg) scale(1.8); opacity: 0; } 70% { transform: rotate(-6deg) scale(.96); opacity: 1; } 100% { transform: rotate(-4deg) scale(1); opacity: 1; } }
+@keyframes pop { from { transform: scale(.9); opacity: 0; } to { transform: none; opacity: 1; } }
 
+@media (min-width: 768px) {
+  .wrap { padding-left: max(40px, env(safe-area-inset-left, 0px)); padding-right: max(40px, env(safe-area-inset-right, 0px)); }
+  .topnav { padding-top: 16px; }
+  .tab { padding: 0 14px; letter-spacing: .12em; }
+  .moon { right: 48px; width: 60px; height: 60px; }
+  .navstatus .long { display: inline; }
+  .navstatus .short { display: none; }
+  .advent-inner { padding-block: 36px 40px; }
+  .vblock { padding-block: 48px 56px; }
+  .board { gap: 28px; padding: 36px 40px 40px; }
+  .half .n { font-size: 96px; }
+  .ebars { gap: 26px; }
+  .ebar-v { font-size: 40px; }
+  .esegs { height: 34px; }
+  .dcols { gap: 14px; height: 340px; }
+  .dlabels { gap: 14px; }
+  .dcol .sh { font-size: 12px; }
+  .dcol .b { height: calc(var(--r) * 288px); }
+  .dlabels span::before { content: "L"; }
+}
+@media (min-width: 960px) {
+  /* Between 960 and 1240 px the name runs into the moon's corner, so the moon shrinks and the name scales down. */
+  .moon { top: 58px; right: 40px; width: 80px; height: 80px; }
+  h1 { font-size: clamp(2.8rem, 5vw, 5.4rem); }
+  .hero-grid { grid-template-columns: 400px minmax(0, 1fr); grid-template-areas: "stage info"; column-gap: 44px; padding-block: 6px 48px; }
+  .hero-info { display: flex; grid-area: info; flex-direction: column; gap: 22px; padding-bottom: 8px; min-width: 0; }
+  .id { gap: 8px; }
+  .id .eyebrow, .who { font-size: 12px; }
+  .stage { height: 650px; }
+  .stage .halo { left: -22%; right: -22%; top: -10px; height: 84%; background: radial-gradient(ellipse at 50% 40%, var(--halo-core) 0%, var(--halo-edge) 38%, rgba(10, 15, 30, 0) 70%); }
+  .stage .ring { top: 2px; width: 220px; height: 220px; margin-left: -110px; }
+  .stage .disc { bottom: 46px; width: 92%; height: 52px; }
+  .stage .contact { bottom: 64px; width: 46%; height: 14px; filter: blur(4px); }
+  .stage .poster { height: 540px; margin-bottom: 52px; }
+  .stage .chip3d { top: 10px; padding: 4px 8px; font-size: 11px; }
+  .level-row { flex-direction: row; flex-wrap: wrap; align-items: flex-end; gap: 20px 36px; padding-bottom: 0; }
+  .level-k { font-size: 12px; }
+  .level-n { gap: 10px; }
+  .lvl { line-height: .88; text-shadow: 0 0 48px rgba(90, 214, 198, .28); }
+  .lvl.goal { text-shadow: 0 0 48px rgba(242, 201, 107, .3); }
+  .of { font-size: 14px; }
+  .xpbox { flex: 0 1 300px; margin-bottom: 14px; gap: 8px; padding: 12px 14px; }
+  .xpbox .bot { flex-direction: row; flex-wrap: wrap; justify-content: space-between; gap: 2px 10px; }
+  .ledger { background-image: repeating-linear-gradient(180deg, rgba(36, 49, 79, 0) 0 31px, rgba(36, 49, 79, .55) 31px 32px); padding: 20px 26px 22px 50px; gap: 18px; box-shadow: 0 24px 60px rgba(0, 0, 0, .4); }
+  .ledger::after { left: 26px; }
+  .verdict-row { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 18px 30px; }
+  .stamp-wrap { padding: 0; flex: none; }
+  .stamp { gap: 4px; padding: 12px 20px 10px; border-radius: 7px; }
+  .stamp small { font-size: 11px; }
+  .stamp b { font-size: 50px; }
+  .verdict-text { flex: 1 1 260px; }
+  .verdict-line { font-size: 21px; line-height: 1.35; }
+  .kit { gap: 12px 28px; padding-top: 14px; }
+  .kit div { flex-basis: 140px; }
+  .kit div.wide { flex-basis: 260px; }
+  .kit dd { font-size: 16px; }
+}
+@media (min-width: 1024px) {
+  .weeks { display: none; }
+  .months { display: flex; }
+}
+@media (min-width: 1240px) {
+  .moon { right: 70px; width: 104px; height: 104px; }
+  h1 { font-size: clamp(2.8rem, 7.4vw, 5.4rem); }
+}
 @media (max-width: 860px) {
   .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .foot { grid-template-columns: minmax(0, 1fr); }
 }
-@media (max-width: 720px) {
-  .hero-grid { grid-template-columns: minmax(0, 1fr); }
-  .portrait { order: 2; }
-  .portrait img { height: 300px; }
-  .split { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .split div:last-child { grid-column: 1 / -1; }
-}
 @media (max-width: 520px) {
-  .lrow { grid-template-columns: 74px minmax(0, 1fr) 52px; gap: 10px; }
-  .axis { margin-left: 84px; margin-right: 62px; }
   .stats { grid-template-columns: minmax(0, 1fr); }
-  .band-inner { justify-content: flex-start; }
 }
 @media (prefers-reduced-motion: reduce) {
-  /* The chart's ping and moving lines stay on by request; the snow and ladder pulse still calm down. */
-  .seg.now { animation: none; }
+  /* The race chart keeps moving at the owner's request. Everything else holds still. */
+  .stage .halo, .stamp.landing, .vchip.new { animation: none; }
+  .split-bar span { transition: none; }
 }
 </style>
 </head>
@@ -323,67 +495,116 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
 
 <header class="hero">
   <canvas id="snow" aria-hidden="true"></canvas>
+  <div class="moon" aria-hidden="true"></div>
   <nav class="wrap topnav" aria-label="Pages">
-    <a href="./" aria-current="page">The race</a>
-    <a href="stats.html">The record</a>
+    <div class="tabs">
+      <a class="tab" href="./" aria-current="page">The race</a>
+      <a class="tab" href="stats.html">The record</a>
+    </div>
+    <span class="navstatus" id="navstatus"><span class="long">Deadline · Dec 25 · 12:00 AM ET</span><span class="short">Dec 25 deadline</span></span>
   </nav>
   <div class="wrap hero-grid">
-    <figure class="portrait">
+    <figure class="stage" id="stage">
       <div class="halo" aria-hidden="true"></div>
-      <img id="hero-img" src="renders/latest.png" width="421" height="680" alt="Bonita Bluehair, a teal-haired Night Elf druid">
+      <div class="ring" aria-hidden="true"></div>
+      <div class="disc" aria-hidden="true"></div>
+      <div class="contact" aria-hidden="true"></div>
+      <img class="poster" id="hero-img" src="renders/latest.png" width="421" height="680" alt="Bonita Bluehair, a Night Elf druid, standing in the moonlight.">
+      <span class="chip3d">Armory render</span>
     </figure>
-    <div class="hero-copy">
-      <p class="eyebrow" id="eyebrow">The Christmas bet · WoW Forever · Normal · US</p>
-      <h1 id="name">Bonita Bluehair</h1>
-      <p class="who" id="who">Night Elf Druid</p>
-      <p class="bet-line">We bet he can't reach level 60 before Christmas. This page keeps score.</p>
-      <div class="level-read" aria-label="Current level">
-        <span class="lvl" id="lvl">—</span><span class="of">/ 60</span>
+    <div class="hero-info">
+      <div class="id">
+        <p class="eyebrow">We bet against</p>
+        <h1 id="name">Bonita Bluehair</h1>
+        <p class="who" id="who">Night Elf · Druid · WoW: Forever</p>
       </div>
-      <div class="xpbar" id="xpbar" hidden>
-        <div class="track" role="img" id="xp-track"><span class="fill" id="xp-fill"></span></div>
-        <span class="cap" id="xp-cap"></span>
-        <span class="chk" id="xp-chk"></span>
+      <div class="level-row">
+        <div>
+          <span class="level-k">Level</span>
+          <div class="level-n"><span class="lvl" id="lvl">—</span><span class="of">/ 60</span></div>
+        </div>
+        <div class="xpbox" id="xpbox" hidden>
+          <div class="top"><span class="pct" id="xp-pct"></span><span class="src" id="xp-src">Live · his addon</span></div>
+          <div class="track" role="img" id="xp-track"><span class="fill" id="xp-fill"></span></div>
+          <div class="bot">
+            <span class="nums" id="xp-nums"></span>
+            <span class="chk" id="xp-chk"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5 L6.2 11.5 L13 4.5"></path></svg><span id="xp-chk-t"></span></span>
+          </div>
+        </div>
+        <p class="xp-mismatch" id="xp-mismatch" hidden></p>
       </div>
-      <div class="verdict" id="verdict" data-state="loading">
-        <span class="pill" id="verdict-pill">Loading</span>
-        <span id="verdict-text">Checking the Armory data…</span>
+      <div class="ledger grain" id="ledger" data-state="behind">
+        <div class="ledger-head"><span id="entry">Entry</span><span id="armory-read"></span></div>
+        <div class="verdict-row">
+          <div class="stamp-wrap"><div class="stamp" id="stamp"><small id="stamp-date">Official call</small><b id="stamp-text">Checking</b></div></div>
+          <div class="verdict-text">
+            <p class="verdict-line"><span id="v1">Reading the Armory…</span> <strong id="v2"></strong></p>
+            <span class="basis"><svg aria-hidden="true" width="18" height="6" viewBox="0 0 18 6"><path d="M1 3 H17" stroke="#97a3c2" stroke-width="1.5" stroke-dasharray="2 3" stroke-linecap="round"></path></svg><span id="basis"></span></span>
+          </div>
+        </div>
+        <p class="load-error" id="load-error" hidden>The level data didn't load. Refresh the page to try again.</p>
+        <dl class="kit" id="kit"></dl>
       </div>
-      <p class="load-error" id="load-error" hidden>The level data didn't load. Refresh the page to try again.</p>
-      <dl class="kit" id="kit"></dl>
     </div>
   </div>
 </header>
 
-<section class="band" aria-label="Countdown to the deadline">
-  <div class="wrap band-inner">
-    <div class="band-label">
-      <span class="eyebrow" id="cd-label">Until Christmas</span>
-      <span>Deadline: Dec 25, 12:00 AM Eastern</span>
-    </div>
-    <div class="clock" role="timer" aria-live="off">
-      <div><b id="cd-d">00</b><span>days</span></div>
-      <div><b id="cd-h">00</b><span>hours</span></div>
-      <div><b id="cd-m">00</b><span>min</span></div>
-      <div><b id="cd-s">00</b><span>sec</span></div>
-    </div>
-  </div>
-</section>
-
 <main>
+  <section class="advent grain" aria-labelledby="h-advent">
+    <div class="wrap advent-inner">
+      <div class="adv-head">
+        <div>
+          <p class="eyebrow">The advent ledger · Nov 4 – Dec 24</p>
+          <h2 id="h-advent">Every day is a door</h2>
+          <p class="adv-intro" id="adv-intro">Opened doors show the levels he gained that day. Closed doors show the level he needs by that night.</p>
+        </div>
+        <ul class="adv-legend">
+          <li><span class="sw gain" aria-hidden="true">+N</span>Levels gained</li>
+          <li><span class="sw need" aria-hidden="true">LN</span>Needed by that night</li>
+          <li><span class="sw today" aria-hidden="true"></span>Today</li>
+          <li><span class="sw xmas" aria-hidden="true"></span>Deadline</li>
+        </ul>
+      </div>
+      <div class="weeks" id="adv-weeks">
+        <div class="dow" aria-hidden="true"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+      </div>
+      <div class="months" id="adv-months"></div>
+      <p class="mono-note" id="adv-basis"></p>
+    </div>
+  </section>
+
   <section class="wrap block" aria-labelledby="h-far">
     <div class="head">
-      <p class="eyebrow">How far along</p>
+      <p class="eyebrow">The real distance</p>
       <h2 id="h-far">How far he really is</h2>
       <p class="lede" id="far-lede"></p>
     </div>
-    <div class="ladder">
-      <div class="lrow"><span class="k">By level</span><div class="bar" id="bar-level" role="img"></div><span class="v" id="pct-level"></span></div>
-      <div class="lrow"><span class="k">By XP</span><div class="bar" id="bar-xp" role="img"></div><span class="v" id="pct-xp"></span></div>
-      <div class="lrow"><span class="k">By play time</span><div class="bar" id="bar-time" role="img"></div><span class="v" id="pct-time"></span></div>
-      <div class="axis" id="axis-time" aria-hidden="true"></div>
+    <div class="ebars" id="ebars"></div>
+    <ul class="elegend">
+      <li><i aria-hidden="true" style="background: var(--tide)"></i>Finished</li>
+      <li><i aria-hidden="true" style="background: var(--gold)"></i><span id="leg-now">In progress</span></li>
+      <li><i aria-hidden="true" style="background: var(--seg); box-shadow: inset 0 0 0 1px var(--rule)"></i>Still to go</li>
+      <li><i aria-hidden="true" style="background: var(--hatch)"></i>The wall, 50–59</li>
+    </ul>
+    <div class="decade-row">
+      <div class="decade-box">
+        <div class="head">
+          <h3>Play time by decade</h3>
+          <p>Drawn to scale. The last ten levels take a third of all the playing.</p>
+        </div>
+        <div class="dcols" id="dcols" role="img"></div>
+        <div class="dlabels" id="dlabels" aria-hidden="true"></div>
+      </div>
+      <div class="wallcard grain">
+        <div class="t"><span class="eyebrow">Levels 50 to 59</span><b>The wall</b></div>
+        <div class="nums">
+          <div><b id="wall-xp">44%</b><span>of all the XP</span></div>
+          <div><b id="wall-time">34%</b><span>of the play time</span></div>
+        </div>
+        <p id="wall-line"></p>
+      </div>
     </div>
-    <div class="split" id="split" aria-label="Share of total play time by level range"></div>
+    <p class="mono-note" id="effort-foot"></p>
   </section>
 
   <section class="wrap block" aria-labelledby="h-pace">
@@ -399,37 +620,46 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
     </div>
   </section>
 
-  <section class="wrap block" id="vote" aria-labelledby="h-vote">
-    <div class="head">
-      <p class="eyebrow">Pick a side</p>
-      <h2 id="h-vote">Does he make it?</h2>
-      <p class="lede">Pick a side, and add your name if you want the credit. Every call is stamped with the level he was at when you made it, so an early call is worth more bragging rights than a late one.</p>
-    </div>
-    <div class="vote-board">
-      <div class="tally-top">
-        <div class="side-n yes"><span class="k">He makes it</span><span class="v"><span id="v-yes-n">0</span><small id="v-yes-p"></small></span><span class="tallies" id="v-yes-t" aria-hidden="true"></span></div>
-        <div class="side-n no"><span class="k">No chance</span><span class="v"><span id="v-no-n">0</span><small id="v-no-p"></small></span><span class="tallies" id="v-no-t" aria-hidden="true"></span></div>
+  <section class="wrap vblock" id="vote" aria-labelledby="h-vote">
+    <div class="board grain">
+      <div class="board-head">
+        <div class="bh-title">
+          <p class="eyebrow">Pick a side</p>
+          <h2 id="h-vote">Does he make it?</h2>
+          <p class="lede">Tap a side to make your call. It's stamped with his level right now, so an early call is worth more bragging.</p>
+        </div>
+        <div class="bh-cards">
+          <div class="mini"><span class="k">Crowd's odds</span><span class="v" id="v-odds">No odds yet</span><span class="k" id="v-odds-sub">Nobody has called it</span></div>
+          <div class="mini" id="v-track-card"><span class="k">Tracker's call</span><span class="v track" id="v-track">—</span><span class="k" id="v-track-sub"></span></div>
+        </div>
       </div>
-      <div class="split-bar" id="v-bar" role="img"><span class="yes" id="v-bar-yes"></span><span class="no" id="v-bar-no"></span></div>
-      <dl class="vs">
-        <div><dt>The crowd's odds</dt><dd id="v-crowd">—</dd></div>
-        <div><dt>The tracker's call</dt><dd id="v-math">—</dd></div>
-      </dl>
-    </div>
-    <div class="ballot" id="v-ballot">
-      <label class="field"><span>Your name (optional)</span><input id="v-name" maxlength="24" autocomplete="nickname" placeholder="Leave it blank to vote anonymously"></label>
-      <div class="picks" role="group" aria-label="Your pick">
-        <button type="button" class="pick yes" data-pick="yes" aria-pressed="false"><b>He makes it</b><span>60 before Christmas</span></button>
-        <button type="button" class="pick no" data-pick="no" aria-pressed="false"><b>No chance</b><span>Short on Christmas</span></button>
+      <div class="tally" id="v-tally">
+        <div class="halves">
+          <div class="half yes" id="v-half-yes"><span class="k">He makes it</span><span class="n" id="v-yes-n">0</span><span class="gates" id="v-yes-t" aria-hidden="true"></span></div>
+          <div class="half no" id="v-half-no"><span class="k">No chance</span><span class="n" id="v-no-n">0</span><span class="gates" id="v-no-t" aria-hidden="true"></span></div>
+        </div>
+        <div class="split-bar empty" id="v-bar" role="img" aria-label="No votes yet"><span class="yes" id="v-bar-yes"></span><span class="no" id="v-bar-no"></span></div>
+        <div class="split-labels empty" id="v-split-labels"><span id="v-yes-p">Even</span><span id="v-no-p">No calls</span></div>
       </div>
-      <p class="ballot-msg" id="v-msg" role="status" aria-live="polite"></p>
+      <p class="vmsg" id="v-msg" role="status" aria-live="polite"><i aria-hidden="true"></i><span id="v-msg-t"></span></p>
+      <div class="result" id="v-result" hidden><span class="k" id="v-result-k"></span><p class="rh" id="v-result-h"></p><p class="rs" id="v-result-s"></p></div>
+      <div class="ballot" id="v-ballot">
+        <div class="field">
+          <label for="v-name">Your name · optional</label>
+          <input id="v-name" type="text" maxlength="24" autocomplete="nickname" aria-describedby="v-name-help">
+          <span class="help" id="v-name-help">Leave it blank and you're Anonymous. Up to 24 letters.</span>
+        </div>
+        <div class="picks" role="group" aria-label="Your call">
+          <button type="button" class="pick yes" data-pick="yes" aria-pressed="false"><span>He makes it</span><small>Tap to call it</small></button>
+          <button type="button" class="pick no" data-pick="no" aria-pressed="false"><span>No chance</span><small>Tap to call it</small></button>
+        </div>
+      </div>
+      <div class="cols">
+        <div class="col yes" id="v-col-yes"><div class="ch"><span id="v-yes-h">He makes it · 0</span><span class="tag" id="v-yes-tag">Earliest first</span></div><ul id="v-yes"></ul></div>
+        <div class="col no" id="v-col-no"><div class="ch"><span id="v-no-h">No chance · 0</span><span class="tag" id="v-no-tag">Earliest first</span></div><ul id="v-no"></ul></div>
+      </div>
+      <p class="vote-note">A vote saves your side, the name you typed (if any), his level and the time.</p>
     </div>
-    <p class="closed-note" id="v-closed" hidden></p>
-    <div class="sides">
-      <div class="side yes"><h3>He makes it</h3><ul id="v-yes"></ul></div>
-      <div class="side no"><h3>No chance</h3><ul id="v-no"></ul></div>
-    </div>
-    <p class="side-note">Earliest calls first. "at 9" means he was level 9 when they made the call. A vote saves your side, the name you typed (if any) and the time.</p>
   </section>
 
   <section class="wrap block" aria-labelledby="h-race">
@@ -566,32 +796,41 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
     function projAt(L) { return rate > 0 ? last.t + (eff(L) - eff(curF)) / rate * DAY : Infinity; }
     function projLevel(t) { return levelAtEffort(eff(curF) + rate * Math.max(0, t - last.t) / DAY); }
 
-    // Live XP bar + Armory cross-check
-    if (useLive) {
-      var pctIn = live.xpMax > 0 ? live.xp / live.xpMax : 0;
-      $("xpbar").hidden = false;
-      $("xp-fill").style.width = (live.level >= 60 ? 100 : pctIn * 100) + "%";
-      $("xp-track").setAttribute("aria-label", Math.floor(pctIn * 100) + "% through level " + live.level);
-      var cap = $("xp-cap"); cap.textContent = "";
-      var cb = document.createElement("b");
-      cb.textContent = live.level >= 60 ? "Level 60" : Math.floor(pctIn * 100) + "% to level " + (live.level + 1);
-      cap.appendChild(cb);
-      cap.appendChild(document.createTextNode(" · " + nf.format(live.xp) + " / " + nf.format(live.xpMax) + " XP · live from his addon, " + fmtWhen(live.t)));
-    }
-    if (live) {
-      var chk = $("xp-chk");
-      if (mismatch) {
-        chk.className = "chk bad";
-        chk.textContent = "Doesn't match: his addon said level " + live.level + " at " + fmtWhen(live.t) + ", but the Armory showed level " + armoryAfter[0].level + " after that. Going with the Armory.";
-        $("xpbar").hidden = false; $("xp-track").hidden = true; $("xp-cap").hidden = true;
-      } else if (lastArmory && lastArmory.level >= live.level) {
-        chk.className = "chk ok"; chk.textContent = "Armory confirms level " + lastArmory.level;
-      } else if (useLive) {
-        chk.className = "chk"; chk.textContent = "Waiting for the Armory to confirm";
-      }
-    }
     var proj60 = cur >= 60 ? last.t : projAt(60);
     function firstHit(L) { for (var j = 0; j < snaps.length; j++) if (snaps[j].level >= L) return snaps[j].t; return null; }
+    function levelAt(t) { var lv = 1; for (var j = 0; j < snaps.length; j++) if (snaps[j].t <= t) lv = Math.max(lv, Math.floor(snaps[j].level)); return lv; }
+    function fmtDow(t) { return new Date(t).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }).replace(/,/g, ""); }
+    var projBasis = ref ? "Projection · from his play pace since " + fmtDay(ref.t) : "Projection · from his play pace since launch";
+
+    // Verdict. Colors follow the subject: behind pace and "we won" are red, on pace teal, 60 gold.
+    var reached = firstHit(60), state, stampText, pill, line1, line2 = "", basis, settleT = null, finalLevel = cur;
+    if (reached != null && reached <= deadline) {
+      state = "made-it"; stampText = "HE HIT 60"; pill = "He hit 60"; settleT = reached;
+      line1 = "Level 60 on " + fmtDay(reached) + "."; line2 = "We owe him.";
+      basis = "Armory reading · " + fmtWhen(reached);
+    } else if (reached != null || now >= deadline) {
+      state = "won"; stampText = "WE WON"; pill = "We won"; settleT = deadline; finalLevel = levelAt(deadline);
+      line1 = reached != null ? "He hit 60 on " + fmtDay(reached) + ", after Christmas." : "Christmas came and he was level " + finalLevel + ".";
+      var lastBefore = null; armory.forEach(function (s) { if (s.t <= deadline) lastBefore = s; });
+      basis = lastBefore ? "Final Armory reading · " + fmtWhen(lastBefore.t) : "Final Armory reading";
+    } else if (proj60 <= deadline) {
+      state = "on-pace"; stampText = "ON PACE"; pill = "On pace";
+      line1 = "At his current pace he hits 60 around " + fmtDay(proj60) + "."; line2 = "Start worrying."; basis = projBasis;
+    } else {
+      state = "behind"; stampText = "BEHIND PACE"; pill = "Behind pace"; basis = projBasis;
+      if (isFinite(proj60)) { line1 = "At his current pace he hits 60 around " + fmtDay(proj60) + "."; line2 = "Christmas looks safe."; }
+      else { line1 = "No progress recorded yet."; basis = "Projection · waiting for his first level"; }
+    }
+    var settled = state === "made-it" || state === "won";
+    var dayOfEntry = settled ? settleT : now;
+
+    // Nav status
+    if (settled) {
+      var ns = $("navstatus");
+      ns.style.setProperty("--c", state === "made-it" ? "var(--gold)" : "var(--holly)");
+      ns.querySelector(".long").textContent = "Bet settled · " + fmtDay(settleT);
+      ns.querySelector(".short").textContent = "Bet settled";
+    }
 
     // Hero
     if (looks.length) {
@@ -599,81 +838,227 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
       hi.src = lk.img; if (lk.w) { hi.width = lk.w; hi.height = lk.h; }
     }
     $("name").textContent = C.name || "Bonita Bluehair";
-    $("who").textContent = [C.race, C.spec, C.className].filter(Boolean).join(" ") || "Night Elf Druid";
-    $("eyebrow").textContent = "The Christmas bet · WoW Forever · " + (C.ruleset || "Normal") + " · " + String(C.region || "us").toUpperCase();
-    $("lvl").textContent = cur;
-    var reached = firstHit(60), state, pill, text;
-    if (reached != null) {
-      if (reached <= deadline) { state = "made-it"; pill = "He hit 60"; text = "Level 60 on " + fmtDay(reached) + ". We owe him."; }
-      else { state = "won"; pill = "We won"; text = "He hit 60 on " + fmtDay(reached) + ", after Christmas."; }
-    } else if (now >= deadline) {
-      state = "won"; pill = "We won"; text = "Christmas came and he was level " + cur + ".";
-    } else if (proj60 <= deadline) {
-      state = "on-pace"; pill = "On pace"; text = "At his current pace he hits 60 around " + fmtDay(proj60) + ". Start worrying.";
-    } else {
-      state = "behind"; pill = "Behind pace";
-      text = isFinite(proj60) ? "At his current pace he hits 60 around " + fmtDay(proj60) + ". Christmas looks safe." : "No progress recorded yet.";
-    }
-    $("verdict").setAttribute("data-state", state);
-    $("verdict-pill").textContent = pill;
-    $("verdict-text").textContent = text;
+    $("who").textContent = [C.race || "Night Elf", C.className || "Druid", "WoW: Forever"].join(" · ");
+    var lvlEl = $("lvl");
+    lvlEl.textContent = state === "won" ? finalLevel : cur;
+    lvlEl.classList.toggle("goal", cur >= 60 && state === "made-it");
+    var led = $("ledger");
+    led.setAttribute("data-state", state);
+    $("entry").textContent = "Entry · " + fmtDow(dayOfEntry);
+    $("armory-read").textContent = D.checkedAt ? "Armory read " + fmtWhen(Date.parse(D.checkedAt)) : "";
+    $("stamp-date").textContent = "Official call · " + fmtDay(dayOfEntry);
+    $("stamp-text").textContent = stampText;
+    var stampEl = $("stamp");
+    stampEl.classList.remove("landing"); void stampEl.offsetWidth; stampEl.classList.add("landing");
+    $("v1").textContent = line1;
+    $("v2").textContent = line2;
+    $("basis").textContent = basis;
 
-    var kit = [["Last seen", C.lastLoginTs ? fmtWhen(C.lastLoginTs) : "—"], ["Item level", C.itemLevel != null ? C.itemLevel : "—"]];
-    (C.professions || []).filter(function (p) { return p.primary; }).forEach(function (p) { kit.push([p.name, p.skill + " / " + p.max]); });
+    var profs = (C.professions || []).filter(function (p) { return p.primary; }).map(function (p) { return p.name + " " + p.skill; });
+    var kit = [["Last seen", C.lastLoginTs ? fmtWhen(C.lastLoginTs) : "—", ""], ["Item level", C.itemLevel != null ? C.itemLevel : "—", ""]];
+    if (profs.length) kit.push(["Professions", profs.join(" · "), "wide"]);
     var kitEl = $("kit");
     kit.forEach(function (kv) {
       var d = document.createElement("div"), dt = document.createElement("dt"), dd = document.createElement("dd");
+      if (kv[2]) d.className = kv[2];
       dt.textContent = kv[0]; dd.textContent = kv[1]; d.appendChild(dt); d.appendChild(dd); kitEl.appendChild(d);
     });
 
-    // Countdown
-    function pad(n) { return (n < 10 ? "0" : "") + n; }
+    // Live XP box (only when his addon has reported) and the Armory cross-check
+    if (useLive && !settled) {
+      var pctIn = live.xpMax > 0 ? live.xp / live.xpMax : 0;
+      $("xpbox").hidden = false;
+      $("xp-pct").textContent = live.level >= 60 ? "Level 60" : Math.floor(pctIn * 100) + "% to level " + (live.level + 1);
+      $("xp-fill").style.width = (live.level >= 60 ? 100 : pctIn * 100) + "%";
+      $("xp-track").setAttribute("aria-label", Math.floor(pctIn * 100) + "% through level " + live.level);
+      $("xp-src").title = "Reported " + fmtWhen(live.t);
+      $("xp-nums").textContent = nf.format(live.xp) + " / " + nf.format(live.xpMax) + " XP";
+      var confirmed = lastArmory && lastArmory.level >= live.level;
+      $("xp-chk").className = "chk" + (confirmed ? "" : " wait");
+      $("xp-chk-t").textContent = confirmed ? "Armory confirms L" + lastArmory.level : "Waiting for the Armory to confirm";
+    }
+    if (mismatch) {
+      var mm = $("xp-mismatch"); mm.hidden = false;
+      mm.textContent = "His addon said level " + live.level + " at " + fmtWhen(live.t) + ", but the Armory showed level " + armoryAfter[0].level + " after that. Going with the Armory.";
+    }
+
+    // Advent ledger: one door per night from launch to Christmas Eve, in Eastern time (UTC-5 all season),
+    // then Christmas. Past doors show levels gained that day; future doors show the pace line's level for that night.
+    var ET = 5 * 36e5;
+    function etMidnight(t) { var d = new Date(t - ET); return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) + ET; }
+    function etParts(t) { var d = new Date(t - ET); return { y: d.getUTCFullYear(), m: d.getUTCMonth(), day: d.getUTCDate(), dow: d.getUTCDay() }; }
+    var firstDay = etMidnight(launch), doors = [], hitIndex = -1, firstReadT = snaps.length ? snaps[0].t : null;
+    for (var ds = firstDay; ds <= deadline; ds += DAY) {
+      var de = ds + DAY, p = etParts(ds), door = { t: ds, day: p.day, month: p.m, dow: p.dow, kind: "", val: "", sr: "" };
+      var label = new Date(ds - ET).toLocaleDateString(undefined, { month: "short", day: "numeric", timeZone: "UTC" });
+      if (ds >= deadline) {
+        if (state === "won") { door.kind = "final"; door.val = "L" + finalLevel; door.sr = "Christmas: level " + finalLevel + " at the deadline"; }
+        else { door.kind = "xmas"; door.val = "XMAS"; door.sr = "Christmas, the deadline"; }
+      } else if (state === "made-it" && reached >= ds && reached < de) {
+        door.kind = "hit"; door.val = "L60"; door.sr = label + ": he hit level 60"; hitIndex = doors.length;
+      } else if (state === "made-it" && ds > reached) {
+        door.kind = "shut"; door.val = "—"; door.sr = label + ": shut";
+      } else if ((de <= now || settled) && firstReadT != null && de <= firstReadT) {
+        // No reading yet that day: we don't know what he gained, so the door says so.
+        door.kind = "past"; door.val = "?"; door.sr = label + ": no Armory reading yet";
+      } else if (de <= now || settled) {
+        var gained = levelAt(Math.min(de, now)) - levelAt(ds), firstDoor = firstReadT != null && ds > firstDay && etMidnight(firstReadT) === ds;
+        door.kind = "past"; door.val = "+" + gained;
+        door.sr = label + ": gained " + plural(gained, "level") + (firstDoor ? ", counting everything since launch" : "");
+      } else if (ds <= now) {
+        door.kind = "today"; door.val = "L" + cur; door.sr = "Today, " + label + ": level " + cur;
+      } else {
+        var need = de >= deadline ? 60 : Math.max(1, Math.floor(paceLevel(de)));
+        door.kind = "future"; door.val = "L" + need; door.goal = need >= 60; door.sr = label + ": needs level " + need + " by that night";
+      }
+      doors.push(door);
+    }
+    function doorEl(d) {
+      var li = document.createElement("li");
+      if (!d) { li.className = "door blank"; li.setAttribute("aria-hidden", "true"); return li; }
+      li.className = "door " + d.kind;
+      var a = document.createElement("span"), b = document.createElement("span"), s = document.createElement("span");
+      a.className = "d"; a.textContent = d.day; a.setAttribute("aria-hidden", "true");
+      b.className = "v" + (d.goal ? " goal" : ""); b.textContent = d.val; b.setAttribute("aria-hidden", "true");
+      s.className = "sr"; s.textContent = d.sr;
+      li.appendChild(a); li.appendChild(b); li.appendChild(s);
+      return li;
+    }
+    var liveClock = !settled && now < deadline, todayLabel = "Today's door · " + fmtDow(now);
+    function clockNodes(cls) {
+      var box = document.createElement("div"); box.className = cls;
+      var k = document.createElement("span"), t = document.createElement("span"), n = document.createElement("span");
+      k.className = "k"; k.textContent = todayLabel;
+      t.className = "t js-clock"; t.setAttribute("role", "timer");
+      n.className = "n"; n.textContent = cls === "callout" ? "left until Dec 25, 12:00 AM ET" : "Left until Dec 25, 12:00 AM ET";
+      box.appendChild(k); box.appendChild(t); box.appendChild(n);
+      return box;
+    }
+    // Phone and tablet: weeks starting Sunday, with the clock panel under today's week.
+    var weeksEl = $("adv-weeks"), lead = doors.length ? doors[0].dow : 0, flat = [];
+    for (var b0 = 0; b0 < lead; b0++) flat.push(null);
+    flat = flat.concat(doors);
+    while (flat.length % 7) flat.push(null);
+    for (var w = 0; w < flat.length; w += 7) {
+      var wk = document.createElement("div"); wk.className = "week";
+      var ol = document.createElement("ol"), todayCol = -1;
+      flat.slice(w, w + 7).forEach(function (d, ci) { ol.appendChild(doorEl(d)); if (d && d.kind === "today") todayCol = ci; });
+      wk.appendChild(ol);
+      if (liveClock && todayCol >= 0) {
+        var cp = clockNodes("clockpanel"); cp.style.setProperty("--notch", ((todayCol + .5) / 7 * 100).toFixed(2) + "%"); wk.appendChild(cp);
+      }
+      weeksEl.appendChild(wk);
+    }
+    // Desktop: a row per month, 27 columns, with the clock in a callout above today's door.
+    var monthsEl = $("adv-months");
+    [10, 11].forEach(function (mo) {
+      var row = document.createElement("div"); row.className = "month";
+      var lab = document.createElement("span"); lab.textContent = mo === 10 ? "Nov" : "Dec"; row.appendChild(lab);
+      var ol = document.createElement("ol"), list = doors.filter(function (d) { return d.month === mo; });
+      list.forEach(function (d, ci) {
+        var li = doorEl(d);
+        if (liveClock && d.kind === "today") {
+          var co = clockNodes("callout"); if (ci > 13) co.className += " right"; li.appendChild(co);
+          monthsEl.classList.add("has-callout");
+        }
+        ol.appendChild(li);
+      });
+      for (var f2 = list.length; f2 < 27; f2++) ol.appendChild(doorEl(null));
+      row.appendChild(ol); monthsEl.appendChild(row);
+    });
+    if (state === "made-it") {
+      var nth = hitIndex + 1, sfx = nth % 10 === 1 && nth % 100 !== 11 ? "st" : nth % 10 === 2 && nth % 100 !== 12 ? "nd" : nth % 10 === 3 && nth % 100 !== 13 ? "rd" : "th";
+      $("adv-intro").textContent = "He opened the " + nth + sfx + " door at level 60. The rest stay shut.";
+    } else if (state === "won") {
+      $("adv-intro").textContent = "Every door opened. Level " + finalLevel + " behind the last one.";
+    }
+    var earlyNote = firstReadT != null && etMidnight(firstReadT) > firstDay ? " The Armory first saw him " + fmtDay(firstReadT) + ", so that door counts everything since launch." : "";
+    $("adv-basis").textContent = (settled ? "Daily gains come from his Armory readings." :
+      "Needed levels follow the pace line: an even share of the total play time each day, from launch to Dec 25, 12:00 AM ET.") + earlyNote;
+    function pad2(n) { return (n < 10 ? "0" : "") + n; }
     function tick() {
       var ms = Math.max(0, deadline - Date.now());
-      $("cd-d").textContent = pad(Math.floor(ms / DAY));
-      $("cd-h").textContent = pad(Math.floor(ms / 36e5) % 24);
-      $("cd-m").textContent = pad(Math.floor(ms / 6e4) % 60);
-      $("cd-s").textContent = pad(Math.floor(ms / 1e3) % 60);
-      if (ms === 0) $("cd-label").textContent = "Christmas is here";
+      var txt = Math.floor(ms / DAY) + "d " + pad2(Math.floor(ms / 36e5) % 24) + "h " + pad2(Math.floor(ms / 6e4) % 60) + "m " + pad2(Math.floor(ms / 1e3) % 60) + "s";
+      Array.prototype.forEach.call(document.querySelectorAll(".js-clock"), function (el) { el.textContent = txt; });
     }
-    tick(); setInterval(tick, 1000);
+    if (liveClock) { tick(); setInterval(tick, 1000); }
 
-    // Ladder
+    // How far he really is: three 59-segment bars, each segment sized by what that level costs.
     var xpDone = cur >= 60 ? TOTAL_XP : CUM[cur] + (curF - cur) * XP_NEXT[cur];
-    var fracLevel = (curF - 1) / 59, fracXP = xpDone / TOTAL_XP, fracT = eff(curF) / TOTAL_T;
-    $("h-far").textContent = cur >= 60 ? "Level 60. The climb is done." : "Level " + cur + " is not " + Math.round(fracLevel * 100) + "% of the way";
-    $("far-lede").textContent = cur >= 60 ? "Every block is filled." :
-      "Each block is one level, sized by what it costs. By level count he is " + pct(fracLevel, 0) + " done. By XP he has earned " + pct(fracXP) +
-      " of what it takes, and by estimated play time he is " + pct(fracT) + " through. The 50s alone are " + pct((TCUM[60] - TCUM[50]) / TOTAL_T, 0) + " of the whole climb.";
-    function fillBar(el, sizeOf, startOf, total, label) {
-      var frag = document.createDocumentFragment();
-      for (var L = 1; L < 60; L++) {
-        var s = document.createElement("span");
-        s.className = "seg" + (L < cur ? " done" : L === cur && cur < 60 ? " now" : "");
-        s.style.left = (startOf(L) / total * 100) + "%";
-        s.style.width = (sizeOf(L) / total * 100) + "%";
-        frag.appendChild(s);
+    var fracCur = cur < 60 ? curF - cur : 0, fracLevel = (curF - 1) / 59, fracXP = xpDone / TOTAL_XP, fracT = eff(curF) / TOTAL_T;
+    var wallXP = (CUM[60] - CUM[50]) / TOTAL_XP, wallT = (TCUM[60] - TCUM[50]) / TOTAL_T;
+    $("far-lede").textContent = cur >= 60 ? "Level 60. Every segment is filled, the wall included." :
+      "Level " + cur + " sounds like " + Math.round(fracLevel * 100) + "% of the way. Weighed by the work, it's a lot less. Each bar below has 59 segments, one per level, sized by what that level costs.";
+    $("leg-now").textContent = cur >= 60 ? "In progress" : "In progress (" + cur + ")";
+    var BARS = [
+      { k: "By level", w: function () { return 1; }, frac: fracLevel, v: Math.round(fracLevel * 100) + "%", wall: Math.round(10 / 59 * 100) + "%",
+        note: cur >= 60 ? "All 59 levels finished." : (cur - 1) + " of 59 levels finished" + (fracCur ? ", plus " + Math.floor(fracCur * 100) + "% of level " + cur : "") + ". This is how the number over his head counts it." },
+      { k: "By XP", w: function (L) { return XP_NEXT[L]; }, frac: fracXP, v: Math.round(fracXP * 100) + "%", wall: Math.round(wallXP * 100) + "%",
+        note: nf.format(Math.round(xpDone)) + " of " + nf.format(TOTAL_XP) + " XP. Every level costs more than the one before." },
+      { k: "By play time", w: function (L) { return TCUM[L + 1] - TCUM[L]; }, frac: fracT, v: "≈" + Math.round(fracT * 100) + "%", wall: Math.round(wallT * 100) + "%",
+        note: "Weighted by how long each level takes to play. This is the honest one." }
+    ];
+    var ebars = $("ebars");
+    BARS.forEach(function (B) {
+      var total = 0, before50 = 0, L2;
+      for (L2 = 1; L2 < 60; L2++) { total += B.w(L2); if (L2 < 50) before50 += B.w(L2); }
+      var el = document.createElement("div"); el.className = "ebar";
+      var top = document.createElement("div"); top.className = "ebar-top";
+      var k = document.createElement("span"); k.className = "ebar-k"; k.textContent = B.k;
+      var v = document.createElement("span"); v.className = "ebar-v"; v.textContent = B.v;
+      top.appendChild(k); top.appendChild(v); el.appendChild(top);
+      var wm = document.createElement("div"); wm.className = "wallmark"; wm.setAttribute("aria-hidden", "true");
+      var wi = document.createElement("i"); wi.style.left = (before50 / total * 100).toFixed(2) + "%";
+      var ws = document.createElement("span"); ws.textContent = "The wall · " + B.wall;
+      wm.appendChild(wi); wm.appendChild(ws); el.appendChild(wm);
+      var segs = document.createElement("div"); segs.className = "esegs"; segs.setAttribute("role", "img");
+      segs.setAttribute("aria-label", B.k + ": " + B.v + " done. Levels 50 to 59 are " + B.wall + " of the bar.");
+      for (L2 = 1; L2 < 60; L2++) {
+        var sg = document.createElement("span");
+        sg.className = L2 < cur ? "done" : L2 === cur ? "now" : L2 >= 50 ? "wall" : "";
+        sg.style.width = (B.w(L2) / total * 100).toFixed(4) + "%";
+        segs.appendChild(sg);
       }
-      el.appendChild(frag);
-      el.setAttribute("aria-label", label);
-    }
-    fillBar($("bar-level"), function () { return 1; }, function (L) { return L - 1; }, 59, "By level: " + pct(fracLevel, 0));
-    fillBar($("bar-xp"), function (L) { return XP_NEXT[L]; }, function (L) { return CUM[L]; }, TOTAL_XP, "By XP: " + pct(fracXP));
-    fillBar($("bar-time"), function (L) { return TCUM[L + 1] - TCUM[L]; }, function (L) { return TCUM[L]; }, TOTAL_T, "By play time: " + pct(fracT));
-    $("pct-level").textContent = pct(fracLevel, 0);
-    $("pct-xp").textContent = pct(fracXP);
-    $("pct-time").textContent = pct(fracT);
-    [20, 30, 40, 50, 60].forEach(function (L) {
-      var s = document.createElement("span");
-      s.style.left = (TCUM[L] / TOTAL_T * 100) + "%"; s.textContent = L; $("axis-time").appendChild(s);
+      el.appendChild(segs);
+      var ca = document.createElement("div"); ca.className = "ecaret"; ca.setAttribute("aria-hidden", "true");
+      if (cur < 60) {
+        var c = document.createElement("span"); c.className = "c";
+        c.innerHTML = '<svg width="10" height="6" viewBox="0 0 10 6"><path d="M5 0 L10 6 H0 Z" fill="#f2c96b"></path></svg>';
+        c.appendChild(document.createTextNode("L" + cur));
+        c.style.left = Math.min(96, Math.max(2, B.frac * 100)).toFixed(2) + "%";
+        ca.appendChild(c);
+      }
+      var end = document.createElement("span"); end.className = "end"; end.textContent = "60"; ca.appendChild(end);
+      el.appendChild(ca);
+      var nt = document.createElement("p"); nt.className = "enote"; nt.textContent = B.note; el.appendChild(nt);
+      ebars.appendChild(el);
     });
-    [[1, 20], [20, 30], [30, 40], [40, 50], [50, 60]].forEach(function (r) {
-      var d = document.createElement("div"), k = document.createElement("span"), v = document.createElement("span");
-      k.className = "k"; v.className = "v";
-      k.textContent = "Levels " + r[0] + "–" + r[1];
-      v.textContent = pct((TCUM[r[1]] - TCUM[r[0]]) / TOTAL_T, 0);
-      d.appendChild(k); d.appendChild(v); $("split").appendChild(d);
+    // Play time by decade, drawn to scale and filled from the bottom with finished (teal) and in progress (gold).
+    var DEC = [[1, 9], [10, 19], [20, 29], [30, 39], [40, 49], [50, 59]], maxShare = 0;
+    DEC.forEach(function (r) { maxShare = Math.max(maxShare, (TCUM[r[1] + 1] - TCUM[r[0]]) / TOTAL_T); });
+    var dcols = $("dcols"), dlabels = $("dlabels"), descr = [];
+    DEC.forEach(function (r, di) {
+      var span = TCUM[r[1] + 1] - TCUM[r[0]], share = span / TOTAL_T, doneT = 0, nowT = 0;
+      for (var L3 = r[0]; L3 <= r[1]; L3++) {
+        var t3 = TCUM[L3 + 1] - TCUM[L3];
+        if (L3 < cur) doneT += t3; else if (L3 === cur) nowT += t3;
+      }
+      var col = document.createElement("div"); col.className = "dcol" + (di === 5 ? " wall" : "");
+      var sh = document.createElement("span"); sh.className = "sh"; sh.textContent = Math.round(share * 100) + "%";
+      var bx = document.createElement("div"); bx.className = "b"; bx.style.setProperty("--r", (share / maxShare).toFixed(4));
+      var g = document.createElement("div"); g.className = "g"; g.style.height = (nowT / span * 100).toFixed(1) + "%";
+      var tt = document.createElement("div"); tt.className = "t"; tt.style.height = (doneT / span * 100).toFixed(1) + "%";
+      bx.appendChild(g); bx.appendChild(tt); col.appendChild(sh); col.appendChild(bx); dcols.appendChild(col);
+      var lb = document.createElement("span"); lb.textContent = r[0] + "–" + r[1]; dlabels.appendChild(lb);
+      descr.push("levels " + r[0] + " to " + r[1] + ": " + Math.round(share * 100) + "%");
     });
+    dcols.setAttribute("aria-label", "Share of the total play time by decade: " + descr.join(", ") + ".");
+    $("wall-xp").textContent = Math.round(wallXP * 100) + "%";
+    $("wall-time").textContent = Math.round(wallT * 100) + "%";
+    $("wall-line").textContent = cur >= 60 ? "He climbed it." : cur >= 50 ? "He's " + plural(cur - 50, "level") + " into the wall, with " + plural(60 - cur, "level") + " to go." :
+      "Ten levels, and he hasn't touched one. We like our chances.";
+    $("effort-foot").textContent = "XP from the level 1–60 XP table. Play time per level estimated as XP ÷ (45 + 5 × level). Progress counts finished levels" +
+      (fracCur ? ", plus his live XP inside level " + cur : "") + ".";
 
     // Stats
     var daysLeft = (deadline - now) / DAY, xpLeft = Math.round(TOTAL_XP - xpDone);
@@ -891,7 +1276,7 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
       cancelAnimationFrame(rz);
       rz = requestAnimationFrame(function () { if (chartEl.clientWidth !== lastW) { lastW = chartEl.clientWidth; drawChart(); } });
     });
-    return { level: cur, state: state, pill: pill, proj60: isFinite(proj60) ? fmtDay(proj60) : null };
+    return { level: cur, state: state, pill: pill, proj60: isFinite(proj60) ? fmtDay(proj60) : null, finalLevel: finalLevel, settleDay: settleT ? fmtDay(settleT) : null };
   }
 
   // Vote: "Does he make it?"
@@ -932,83 +1317,124 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
     if (!$("vote")) return;
     var me = storeGet(ME_KEY), votes = [], freshId = null, busy = false, loaded = false;
     var settled = !!R && (R.state === "made-it" || R.state === "won");
-    var nameEl = $("v-name"), msg = $("v-msg");
+    var winSide = settled ? (R.state === "made-it" ? "yes" : "no") : null;
+    var nameEl = $("v-name");
     var SIDE = { yes: "He makes it", no: "No chance" };
 
     function mine() { for (var i = 0; i < votes.length; i++) if (votes[i].id === me) return votes[i]; return null; }
-    function say(html, err) { msg.className = "ballot-msg" + (err ? " err" : ""); msg.innerHTML = html; }
+    function say(html, opts) {
+      opts = opts || {};
+      var m = $("v-msg");
+      m.className = "vmsg" + (opts.err ? " err" : "");
+      m.style.setProperty("--dot", opts.err ? "var(--holly)" : opts.side === "yes" ? "var(--gold)" : opts.side === "no" ? "var(--holly)" : "var(--mist)");
+      $("v-msg-t").innerHTML = html;
+      m.hidden = !html;
+    }
     function esc(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
-    function tallySvg(n) {
-      // Hand-count marks: four uprights and a slash for each group of five.
-      var out = "", groups = Math.floor(n / 5), rest = n % 5;
-      function grp(k, slash) {
-        var w = slash ? 26 : k * 6, s ='<svg viewBox="0 0 ' + w + ' 18" width="' + w + '" height="18">';
-        for (var i = 0; i < k; i++) s += '<line x1="' + (3 + i * 6) + '" y1="2" x2="' + (3 + i * 6) + '" y2="16"></line>';
-        if (slash) s += '<line x1="0" y1="14" x2="' + w + '" y2="4"></line>';
-        return s + "</svg>";
+    function atLv(n) { return n != null ? "level " + n : "an unknown level"; }
+    // Hand-drawn tally gates: four uprights and a diagonal for each five, with a little seeded jitter.
+    function gates(n, seed) {
+      var s = seed, out = "";
+      function j() { s = (s * 16807) % 2147483647; return s / 2147483647 - .5; }
+      for (var gi = 0; gi * 5 < n && gi < 12; gi++) {
+        var k = Math.min(5, n - gi * 5), d = "";
+        for (var i = 0; i < Math.min(4, k); i++) {
+          var x = 6 + i * 6.5;
+          d += "M" + (x + j() * 1.6).toFixed(1) + " 3.5 Q" + (x + j() * 2.6).toFixed(1) + " 15 " + (x + j() * 1.6).toFixed(1) + " 26.5 ";
+        }
+        if (k === 5) d += "M1.5 " + (22 + j() * 2).toFixed(1) + " Q17 " + (15 + j() * 2).toFixed(1) + " 33 " + (7 + j() * 2).toFixed(1);
+        out += '<svg viewBox="0 0 36 30"><path d="' + d + '"></path></svg>';
       }
-      for (var g = 0; g < Math.min(groups, 8); g++) out += grp(4, true);
-      if (rest) out += grp(rest, false);
       return out;
     }
-    function odds(yes, no) {
-      if (!yes && !no) return "No calls yet";
-      if (!yes) return "Nobody believes in him";
-      if (!no) return "Everyone believes in him";
+    function odds(y, n) {
+      if (!y && !n) return "No odds yet";
+      if (y === n) return "Even";
+      if (!y) return "Nobody believes";
+      if (!n) return "Nobody doubts";
       function gcd(a, b) { return b ? gcd(b, a % b) : a; }
-      var g = gcd(yes, no);
-      if (yes === no) return "<b>Even</b> money";
-      return no > yes ? "<b>" + (no / g) + "/" + (yes / g) + "</b> against him" : "<b>" + (yes / g) + "/" + (no / g) + "</b> on him";
+      var big = Math.max(y, n), small = Math.min(y, n), g = gcd(big, small);
+      return (big / g) + "/" + (small / g) + (n > y ? " against" : " on");
     }
-    function mathCall() {
-      if (!R) return "Waiting for the Armory";
-      var p = "<b>" + esc(R.pill) + "</b>", d = R.proj60;
-      if (R.state === "behind") return p + " " + (d ? "60 around " + esc(d) : "no progress yet");
-      if (R.state === "on-pace") return p + " " + (d ? "60 around " + esc(d) : "");
-      return p;
-    }
-    function atLv(n) { return n != null ? "level " + n : "an unknown level"; }
 
     function draw() {
       var yes = votes.filter(function (v) { return v.pick === "yes"; }), no = votes.filter(function (v) { return v.pick === "no"; });
-      var total = yes.length + no.length;
-      $("v-yes-n").textContent = yes.length; $("v-no-n").textContent = no.length;
-      var yp = total ? Math.round(yes.length / total * 100) : 0;
-      $("v-yes-p").textContent = total ? yp + "%" : "";
-      $("v-no-p").textContent = total ? (100 - yp) + "%" : "";
-      $("v-yes-t").innerHTML = tallySvg(yes.length); $("v-no-t").innerHTML = tallySvg(no.length);
-      var bar = $("v-bar");
-      bar.classList.toggle("empty", !total);
+      var total = yes.length + no.length, yp = total ? Math.round(yes.length / total * 100) : 50;
+
+      // Odds and the tracker's call
+      var o = odds(yes.length, no.length);
+      $("v-odds").textContent = settled ? (/\//.test(o) ? "Closed at " + o : total ? "Closed · " + o : "Closed") : o;
+      $("v-odds-sub").textContent = settled ? "Final book" : total ? total + (total === 1 ? " call" : " calls") + " on the board" : "Nobody has called it";
+      var tc = $("v-track-card"), tv = $("v-track"), ts = $("v-track-sub");
+      tc.style.setProperty("--c", !R ? "var(--moon)" : R.state === "on-pace" ? "var(--tide)" : R.state === "made-it" ? "var(--gold)" : "var(--holly)");
+      if (!R) { tv.textContent = "Waiting"; ts.textContent = "for the Armory"; }
+      else if (R.state === "won") { tv.textContent = "Level " + R.finalLevel + " at Christmas"; ts.textContent = "Final Armory reading"; }
+      else if (R.state === "made-it") { tv.textContent = "Hit 60 on " + R.settleDay; ts.textContent = "Armory reading"; }
+      else { tv.textContent = R.pill; ts.textContent = R.proj60 ? "60 around " + R.proj60 + " · projection" : "No pace yet"; }
+
+      // The tally, the split bar and its labels
+      ["yes", "no"].forEach(function (side) {
+        var lost = settled && side !== winSide, n = side === "yes" ? yes.length : no.length;
+        $("v-half-" + side).classList.toggle("lost", lost);
+        $("v-" + side + "-n").textContent = n;
+        $("v-" + side + "-t").innerHTML = gates(n, side === "yes" ? 7 : 11);
+        $("v-bar-" + side).classList.toggle("lost", lost);
+        $("v-" + side + "-p").classList.toggle("lost", lost);
+      });
+      var bar = $("v-bar"), labels = $("v-split-labels");
+      bar.classList.toggle("empty", !total); labels.classList.toggle("empty", !total);
       $("v-bar-yes").style.flexGrow = total ? yes.length : 1;
       $("v-bar-no").style.flexGrow = total ? no.length : 1;
       bar.setAttribute("aria-label", total ? yes.length + " say he makes it, " + no.length + " say no chance" : "No votes yet");
-      $("v-crowd").innerHTML = odds(yes.length, no.length);
-      $("v-math").innerHTML = mathCall();
+      $("v-yes-p").textContent = total ? "He makes it " + yp + "%" : "Even";
+      $("v-no-p").textContent = total ? (100 - yp) + "% No chance" : "No calls";
 
-      function list(el, arr) {
-        el.textContent = "";
-        if (!arr.length) { var e = document.createElement("li"); e.className = "none"; e.textContent = "Nobody yet."; el.appendChild(e); return; }
+      // The names, earliest call first
+      function list(side, arr) {
+        var col = $("v-col-" + side), ul = $("v-" + side), lost = settled && side !== winSide, win = settled && side === winSide;
+        col.classList.toggle("lost", lost);
+        $("v-" + side + "-h").textContent = SIDE[side] + " · " + arr.length;
+        var tag = $("v-" + side + "-tag");
+        tag.textContent = win ? "Winners" : lost ? "Lost" : "Earliest first";
+        tag.className = "tag" + (win ? " win" : "");
+        ul.textContent = "";
+        if (!arr.length) { var e = document.createElement("li"); e.className = "vchip none"; e.textContent = "No calls on this side"; ul.appendChild(e); return; }
         arr.slice().sort(function (a, b) { return a.t - b.t; }).forEach(function (v) {
-          var li = document.createElement("li"), nm = document.createElement("span"), at = document.createElement("span");
-          li.className = (v.id === me ? "me" : "") + (v.id === freshId ? " new" : "") + (v.name ? "" : " anon");
+          var li = document.createElement("li"), row = document.createElement("div"), nm = document.createElement("span"), lv = document.createElement("span");
+          li.className = "vchip" + (v.id === me ? " me" : "") + (v.id === freshId ? " new" : "") + (v.name ? "" : " anon") + (win ? " win" : "");
+          row.className = "row";
           nm.className = "nm"; nm.textContent = v.name || "Anonymous";
-          at.className = "at"; at.textContent = v.switched ? "switched at " + v.switched : "at " + (v.level != null ? v.level : "?");
-          li.title = (v.name || "Someone") + (v.switched ? " switched sides when he was level " + v.switched : " called it when he was level " + v.level) + ", " + new Date(v.t).toLocaleString();
-          li.appendChild(nm); li.appendChild(at);
-          if (v.id === me) { var y = document.createElement("span"); y.className = "you"; y.textContent = "you"; li.appendChild(y); }
-          el.appendChild(li);
+          lv.className = "lv"; lv.textContent = "L" + (v.level != null ? v.level : "?");
+          lv.title = "Called at level " + v.level;
+          row.appendChild(nm);
+          if (v.id === me) { var y = document.createElement("span"); y.className = "you"; y.textContent = "You"; row.appendChild(y); }
+          row.appendChild(lv); li.appendChild(row);
+          if (v.switched) { var sw = document.createElement("span"); sw.className = "sw"; sw.textContent = "Switched at L" + v.switched; li.appendChild(sw); }
+          li.title = (v.name || "Someone") + " called it when he was level " + v.level + (v.switched ? " and switched sides at level " + v.switched : "") + ", " + new Date(v.t).toLocaleString();
+          ul.appendChild(li);
         });
       }
-      list($("v-yes"), yes); list($("v-no"), no);
+      list("yes", yes); list("no", no);
 
+      // The ballot, or the closed book
       var m = mine();
-      Array.prototype.forEach.call(document.querySelectorAll(".pick"), function (b) { b.setAttribute("aria-pressed", m && m.pick === b.getAttribute("data-pick") ? "true" : "false"); });
+      Array.prototype.forEach.call(document.querySelectorAll(".pick"), function (b) {
+        var on = !!m && m.pick === b.getAttribute("data-pick");
+        b.setAttribute("aria-pressed", on ? "true" : "false");
+        b.querySelector("small").textContent = on ? "Your call" : "Tap to call it";
+      });
       if (m && document.activeElement !== nameEl && !nameEl.value) nameEl.value = m.name;
-
       if (settled) {
         $("v-ballot").hidden = true;
-        var c = $("v-closed"); c.hidden = false;
-        c.textContent = R.state === "made-it" ? "He hit 60 in time. The \"He makes it\" side called it." : "Christmas won. The \"No chance\" side called it.";
+        var res = $("v-result"); res.hidden = false; res.className = "result " + winSide;
+        $("v-result-k").textContent = "Book closed · " + R.settleDay + " · level " + (R.state === "won" ? R.finalLevel : 60);
+        var winners = winSide === "yes" ? yes : no, named = winners.filter(function (v) { return v.name; }).map(function (v) { return v.name; }), anon = winners.length - named.length;
+        var parts = named.slice(); if (anon) parts.push(anon === 1 ? "one Anonymous" : anon + " Anonymous");
+        $("v-result-h").textContent = !parts.length ? "Nobody called it." : (parts.length === 1 ? parts[0] : parts.slice(0, -1).join(", ") + " and " + parts[parts.length - 1]) + " called it.";
+        $("v-result-s").textContent = winSide === "no" ? "No chance takes it. Settle up by New Year's." : "The believers take it. Settle up by New Year's.";
+        if (!total) say("");
+      } else if (loaded && !total) {
+        say("No calls yet. Be the first.");
       }
     }
 
@@ -1028,18 +1454,18 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
       // The name is optional: a blank name votes anonymously.
       var name = nameEl.value.replace(/\s+/g, " ").trim();
       var before = mine();
-      if (before && before.pick === pick && before.name === name) { say("You're already on the <strong>" + SIDE[pick] + "</strong> side."); return; }
+      if (before && before.pick === pick && before.name === name) { say("You're already on <strong>" + SIDE[pick] + "</strong>.", { side: pick }); return; }
       setBusy(true); say("Saving your call…");
       VoteStore.cast(pick, name).then(function (res) {
         me = res.you; storeSet(ME_KEY, me);
         votes = res.votes || []; freshId = me; loaded = true; draw();
         var v = mine() || { pick: pick, level: null, switched: 0 }, text;
-        if (!before) text = "You're on the <strong>" + SIDE[pick] + "</strong> side, called at " + atLv(v.level) + ". Tap the other side to switch.";
-        else if (before.pick !== pick) text = "Switched to <strong>" + SIDE[pick] + "</strong> at " + atLv(v.switched) + ". Everyone can see that.";
-        else text = (name ? "Name updated." : "Name removed, so your vote shows as Anonymous.") + " Still on the <strong>" + SIDE[pick] + "</strong> side, called at " + atLv(v.level) + ".";
-        say(text);
+        if (!before) text = "You're on <strong>" + SIDE[pick] + "</strong>, called at " + atLv(v.level) + ".";
+        else if (before.pick !== pick) text = "You switched to <strong>" + SIDE[pick] + "</strong> at " + atLv(v.switched) + ". Everyone can see that.";
+        else text = (name ? "Name updated." : "Name removed, so you show as Anonymous.") + " Still on <strong>" + SIDE[pick] + "</strong>, called at " + atLv(v.level) + ".";
+        say(text, { side: pick });
       }).catch(function (e) {
-        say(FAIL[e.code] || "That didn't save. Check your connection and try again.", true);
+        say(FAIL[e.code] || "That didn't save. Check your connection and try again.", { err: true });
       }).then(function () { setBusy(false); });
     }
 
@@ -1053,11 +1479,16 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
         if (loaded && JSON.stringify(next) === JSON.stringify(votes)) return;
         votes = next; loaded = true; if (!first) freshId = null; draw();
         var m = mine();
-        if (first && m && !settled) say("You're on the <strong>" + SIDE[m.pick] + "</strong> side, called at " + atLv(m.level) + ".");
+        if (first && m && !settled) say("You're on <strong>" + SIDE[m.pick] + "</strong>, called at " + atLv(m.level) + ".", { side: m.pick });
       });
     }
+    say("");
     draw();
-    refresh(true).catch(function () { if (!loaded) say("Votes didn't load. Refresh the page to try again.", true); });
+    refresh(true).catch(function () {
+      if (loaded) return;
+      $("v-tally").hidden = true;
+      say("Votes didn't load. Refresh the page to try again.", { err: true });
+    });
     // Pick up other people's calls while the page is open.
     setInterval(function () { if (!busy && !document.hidden) refresh(false).catch(function () {}); }, 60 * 1000);
   }
@@ -1078,7 +1509,7 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
     }, 2 * 60 * 1000);
   }).catch(function () {
     $("load-error").hidden = false;
-    $("verdict").hidden = true;
+    $("ledger").querySelector(".verdict-row").hidden = true;
     try { setupVote(null); } catch (e) { console.error(e); }
   });
 
