@@ -1,0 +1,140 @@
+{
+ "launch": "2026-11-04T23:00:00Z",
+ "deadline": "2026-12-25T05:00:00Z",
+ "snapshots": [
+  {
+   "t": 1794008897000,
+   "level": 22
+  }
+ ],
+ "looks": [
+  {
+   "t": 1794008897000,
+   "level": 22,
+   "itemLevel": 13,
+   "img": "renders/20261106-2348-l22.webp",
+   "w": 421,
+   "h": 680,
+   "hash": "30cc90ad858d8abc21423e3d43b62e1e4465a46ac6286611d7e9e1e41de206c6",
+   "gear": [
+    {
+     "slot": "Neck",
+     "name": "Tarnished Locket",
+     "quality": "uncommon",
+     "ilvl": 24
+    },
+    {
+     "slot": "Back",
+     "name": "Catacomb Cloak",
+     "quality": "uncommon",
+     "ilvl": 17
+    },
+    {
+     "slot": "Chest",
+     "name": "Footman Tunic",
+     "quality": "uncommon",
+     "ilvl": 13
+    },
+    {
+     "slot": "Shirt",
+     "name": "Red Linen Shirt",
+     "quality": "common",
+     "ilvl": 10
+    },
+    {
+     "slot": "Wrist",
+     "name": "Bravo's Armbands",
+     "quality": "uncommon",
+     "ilvl": 22
+    },
+    {
+     "slot": "Hands",
+     "name": "Bard's Gloves of Magic",
+     "quality": "uncommon",
+     "ilvl": 17
+    },
+    {
+     "slot": "Waist",
+     "name": "Aquarius Belt",
+     "quality": "uncommon",
+     "ilvl": 16
+    },
+    {
+     "slot": "Legs",
+     "name": "Duty Bound Leggings",
+     "quality": "uncommon",
+     "ilvl": 24
+    },
+    {
+     "slot": "Feet",
+     "name": "Blackened Defias Boots",
+     "quality": "rare",
+     "ilvl": 20
+    },
+    {
+     "slot": "Finger",
+     "name": "Slain Baron's Signet",
+     "quality": "uncommon",
+     "ilvl": 23
+    },
+    {
+     "slot": "Two-Hand",
+     "name": "Segmented Spider Leg",
+     "quality": "rare",
+     "ilvl": 20
+    },
+    {
+     "slot": "Relic",
+     "name": "Idol of Shifting Tides",
+     "quality": "uncommon",
+     "ilvl": 16
+    }
+   ]
+  }
+ ],
+ "character": {
+  "name": "Bonita Bluehair",
+  "region": "us",
+  "ruleset": "Normal",
+  "race": "Night Elf",
+  "className": "Druid",
+  "spec": "Restoration",
+  "faction": "Alliance",
+  "itemLevel": 13,
+  "lastLoginTs": 1794008897000,
+  "professions": [
+   {
+    "name": "Alchemy",
+    "skill": 99,
+    "max": 150,
+    "primary": true
+   },
+   {
+    "name": "Herbalism",
+    "skill": 82,
+    "max": 150,
+    "primary": true
+   },
+   {
+    "name": "First Aid",
+    "skill": 106,
+    "max": 150,
+    "primary": false
+   },
+   {
+    "name": "Cooking",
+    "skill": 87,
+    "max": 150,
+    "primary": false
+   },
+   {
+    "name": "Fishing",
+    "skill": 1,
+    "max": 75,
+    "primary": false
+   }
+  ]
+ },
+ "armoryUrl": "https://classicarmory.gg/character/us/forever/bonita-bluehair",
+ "checkedAt": "2026-11-07T03:48:01Z"
+}
