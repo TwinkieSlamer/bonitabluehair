@@ -43,15 +43,19 @@ for (const n of root.listNodes()) for (const c of n.listChildren()) parentOf.set
 for (const node of root.listNodes()) {
   const a = ATTACH[node.getName()];
   if (!a) continue;
-  const joint = joints[a.bone];
-  const inv = ibm.getElement(a.bone, new Array(16));
+  let bi = a.bone;
+  // Shoulder pads go on the collarbones: on the upper-arm attachment bones they swing down with the arm and stand
+  // up like shields beside it once the idle lowers the arms from the T-pose.
+  if (/Shoulder/.test(node.getName())) bi = joints.findIndex((j) => j.getName() === (/\(R\)/.test(node.getName()) ? "bone_ShoulderR" : "bone_ShoulderL"));
+  const joint = joints[bi];
+  const inv = ibm.getElement(bi, new Array(16));
   const p = [a.pos[0], a.pos[2], -a.pos[1]];
   const local = mul(inv, [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, p[0], p[1], p[2], 1]);
   const d = decompose(local);
   parentOf.get(node)?.removeChild(node);
   joint.addChild(node);
   node.setTranslation(d.t).setRotation(d.q).setScale(d.s);
-  console.log(`${node.getName()} -> joint ${a.bone} (${joint.getName()}) t=${d.t.map((x) => x.toFixed(3))} s=${d.s.map((x) => x.toFixed(3))}`);
+  console.log(`${node.getName()} -> joint ${bi} (${joint.getName()}) t=${d.t.map((x) => x.toFixed(3))} s=${d.s.map((x) => x.toFixed(3))}`);
 }
 // Game models face +X; the viewer looks down -Z. Turn the whole model -90 degrees about Y so he faces the camera.
 const top = root.listScenes()[0].listChildren()[0];

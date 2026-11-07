@@ -79,9 +79,21 @@ h2 { font-size: clamp(1.7rem, 3.6vw, 2.4rem); line-height: 1.05; }
 .navstatus .long { display: none; }
 
 /* Hero: moonlight, snow, the character stage, the level and the ledger card */
-.hero { position: relative; overflow: hidden; background: linear-gradient(180deg, #17243f 0%, #111b33 46%, #0a0f1e 100%); padding-top: env(safe-area-inset-top, 0px); }
+/* The hero sky follows the viewer's local time of day (script: "Sky"). These defaults are the night sky. */
+.hero { --sky-top: #17243f; --sky-mid: #111b33; --sky-low: #0a0f1e; --sky-glow: rgba(240, 140, 90, 0); --hero-ink2: var(--mist); --hero-holly: var(--holly); --hero-shadow: 0;
+  position: relative; overflow: hidden; padding-top: env(safe-area-inset-top, 0px);
+  background: radial-gradient(130% 55% at 50% 100%, var(--sky-glow) 0%, rgba(240, 140, 90, 0) 70%), linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 46%, var(--sky-low) 100%); }
+.hero .id .eyebrow, .hero .who, .hero .level-k, .hero .tab:not([aria-current="page"]) { color: var(--hero-ink2); }
+.hero h1, .hero .id .eyebrow, .hero .who, .hero .level-k, .hero .lvl, .hero .of, .hero .tab, .hero .navstatus { text-shadow: 0 1px 3px rgba(5, 10, 25, var(--hero-shadow)); }
+.hero .navstatus { --c: var(--hero-holly); }
 #snow { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.moon { position: absolute; top: 214px; right: 26px; width: 50px; height: 50px; border-radius: 50%; background: radial-gradient(circle at 38% 36%, #fff 0%, #eef1f8 46%, #c6cfe3 100%); box-shadow: 0 0 60px 16px rgba(238, 241, 248, .16), 0 0 180px 70px rgba(238, 241, 248, .06); pointer-events: none; }
+.celestial { position: absolute; top: 214px; right: 26px; width: 50px; height: 50px; pointer-events: none; }
+.celestial .moon, .celestial .sun { position: absolute; inset: 0; border-radius: 50%; }
+.celestial .moon { background: radial-gradient(circle at 38% 36%, #fff 0%, #eef1f8 46%, #c6cfe3 100%); box-shadow: 0 0 60px 16px rgba(238, 241, 248, .16), 0 0 180px 70px rgba(238, 241, 248, .06);
+  opacity: var(--moon-o, 1); transform: translateY(calc(var(--moon-set, 0) * var(--set-dist, 50px))); }
+.celestial .sun { background: radial-gradient(circle at 50% 50%, #fffbef 0%, #fff0c2 42%, var(--sun-edge, #ffd27a) 100%);
+  box-shadow: 0 0 50px 18px color-mix(in srgb, var(--sun-edge, #ffd27a) 45%, transparent), 0 0 160px 80px color-mix(in srgb, var(--sun-edge, #ffd27a) 18%, transparent);
+  opacity: var(--sun-o, 0); transform: translateY(calc(var(--sun-rise, 1) * var(--rise-dist, 70px))); }
 .hero-grid { position: relative; z-index: 1; display: grid; grid-template-columns: 48% minmax(0, 1fr); grid-template-areas: "id id" "stage level" "card card"; column-gap: 8px; row-gap: 18px; align-items: end; padding-block: 18px 28px; }
 .hero-info { display: contents; }
 .id { grid-area: id; display: flex; flex-direction: column; gap: 6px; }
@@ -435,7 +447,7 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
   .wrap { padding-left: max(40px, env(safe-area-inset-left, 0px)); padding-right: max(40px, env(safe-area-inset-right, 0px)); }
   .topnav { padding-top: 16px; }
   .tab { padding: 0 14px; letter-spacing: .12em; }
-  .moon { right: 48px; width: 60px; height: 60px; }
+  .celestial { right: 48px; width: 60px; height: 60px; }
   .navstatus .long { display: inline; }
   .navstatus .short { display: none; }
   .advent-inner { padding-block: 36px 40px; }
@@ -453,7 +465,7 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
 }
 @media (min-width: 960px) {
   /* Between 960 and 1240 px the name runs into the moon's corner, so the moon shrinks and the name scales down. */
-  .moon { top: 58px; right: 40px; width: 80px; height: 80px; }
+  .celestial { top: 58px; right: 40px; width: 80px; height: 80px; }
   h1 { font-size: clamp(2.8rem, 5vw, 5.4rem); }
   .hero-grid { grid-template-columns: 400px minmax(0, 1fr); grid-template-areas: "stage info"; column-gap: 44px; padding-block: 6px 48px; }
   .hero-info { display: flex; grid-area: info; flex-direction: column; gap: 22px; padding-bottom: 8px; min-width: 0; }
@@ -500,7 +512,7 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
   .months { display: flex; }
 }
 @media (min-width: 1240px) {
-  .moon { right: 70px; width: 104px; height: 104px; }
+  .celestial { right: 70px; width: 104px; height: 104px; }
   h1 { font-size: clamp(2.8rem, 7.4vw, 5.4rem); }
 }
 @media (max-width: 860px) {
@@ -520,9 +532,9 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
 </head>
 <body>
 
-<header class="hero">
+<header class="hero" data-sky-host>
   <canvas id="snow" aria-hidden="true"></canvas>
-  <div class="moon" aria-hidden="true"></div>
+  <div class="celestial" aria-hidden="true"><div class="sun"></div><div class="moon"></div></div>
   <nav class="wrap topnav" aria-label="Pages">
     <div class="tabs">
       <a class="tab" href="./" aria-current="page">The race</a>
@@ -1591,6 +1603,67 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
   }
 })();
 </script>
+<script>
+// Sky: the header follows the viewer's local time of day. The sun's height comes from the date and the clock
+// (latitude 40°N, solar noon at 12:00 local), and the sky blends between night, blue hour, dawn/dusk,
+// golden hour and day. The moon sets and the sun rises in the same corner, so neither crosses the text;
+// how far they travel is set per page in CSS (--rise-dist, --set-dist). On localhost, ?sky=HH:MM previews a time.
+(function () {
+  "use strict";
+  var host = document.querySelector("[data-sky-host]");
+  if (!host) return;
+  var SKY = [ // [sun altitude in degrees, top, middle, horizon, horizon glow (r,g,b,a)]
+    [-18, "#17243f", "#111b33", "#0a0f1e", [240, 140, 90, 0]],
+    [-9, "#1a2550", "#262c5e", "#352f62", [170, 100, 150, .22]],
+    [-3, "#22306a", "#4a3f7c", "#a56a80", [240, 140, 100, .45]],
+    [3, "#2a4581", "#5f5f94", "#e09068", [255, 170, 100, .5]],
+    [14, "#163d6e", "#22508c", "#4f86bf", [255, 225, 180, .16]],
+    [40, "#13386a", "#1f4c87", "#4a80bb", [255, 225, 180, 0]]
+  ];
+  function rgb(hx) { return [parseInt(hx.slice(1, 3), 16), parseInt(hx.slice(3, 5), 16), parseInt(hx.slice(5, 7), 16)]; }
+  function mix(a, b, t) { return a.map(function (v, i) { return Math.round(v + (b[i] - v) * t); }); }
+  function css(c) { return "rgb(" + c[0] + "," + c[1] + "," + c[2] + ")"; }
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+  var override = null;
+  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) {
+    var m = /[?&]sky=(\d{1,2}):(\d{2})/.exec(location.search);
+    if (m) override = [+m[1], +m[2]];
+  }
+  function sunAltitude(d) {
+    var lat = 40 * Math.PI / 180, n = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 864e5);
+    var decl = -23.44 * Math.PI / 180 * Math.cos(2 * Math.PI / 365 * (n + 10));
+    var ha = (d.getHours() + d.getMinutes() / 60 + d.getSeconds() / 3600 - 12) * 15 * Math.PI / 180;
+    return Math.asin(Math.sin(lat) * Math.sin(decl) + Math.cos(lat) * Math.cos(decl) * Math.cos(ha)) * 180 / Math.PI;
+  }
+  function paint() {
+    var d = new Date();
+    if (override) d.setHours(override[0], override[1], 0, 0);
+    var alt = sunAltitude(d), i = 0;
+    while (i < SKY.length - 2 && alt > SKY[i + 1][0]) i++;
+    var a = SKY[i], b = SKY[i + 1], t = clamp((alt - a[0]) / (b[0] - a[0]), 0, 1), s = host.style;
+    s.setProperty("--sky-top", css(mix(rgb(a[1]), rgb(b[1]), t)));
+    s.setProperty("--sky-mid", css(mix(rgb(a[2]), rgb(b[2]), t)));
+    s.setProperty("--sky-low", css(mix(rgb(a[3]), rgb(b[3]), t)));
+    var g = a[4].map(function (v, k) { return v + (b[4][k] - v) * t; });
+    s.setProperty("--sky-glow", "rgba(" + Math.round(g[0]) + "," + Math.round(g[1]) + "," + Math.round(g[2]) + "," + g[3].toFixed(3) + ")");
+    // Lighter labels and a soft shadow once the sky brightens, so the text keeps its contrast.
+    var light = clamp((alt + 8) / 16, 0, 1);
+    s.setProperty("--hero-ink2", css(mix(rgb("#97a3c2"), rgb("#d6deef"), light)));
+    s.setProperty("--hero-holly", css(mix(rgb("#ec5f55"), rgb("#ff9a92"), light)));
+    s.setProperty("--hero-shadow", (0.55 * light).toFixed(2));
+    // The moon sinks and fades into the dawn; the sun climbs out of the horizon, warm while it's low.
+    s.setProperty("--moon-o", clamp((2 - alt) / 10, 0, 1).toFixed(3));
+    s.setProperty("--moon-set", clamp((alt + 12) / 14, 0, 1).toFixed(3));
+    s.setProperty("--sun-o", clamp((alt + 3) / 6, 0, 1).toFixed(3));
+    s.setProperty("--sun-rise", (1 - clamp((alt + 2) / 22, 0, 1)).toFixed(3));
+    s.setProperty("--sun-edge", css(mix(rgb("#ff9d5c"), rgb("#ffe7a6"), clamp(alt / 20, 0, 1))));
+    host.setAttribute("data-sky", alt < -9 ? "night" : alt < 3 ? "twilight" : "day");
+  }
+  paint();
+  setInterval(paint, 30000);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) paint(); });
+})();
+</script>
 <script type="module">
 // The 3D character stage. The Armory render paints first and is the fallback for everything.
 // models/manifest.json says which .glb to show; while its "model" is null the stage stays on the render
@@ -1626,7 +1699,7 @@ function paint() {
   const is3d = ui.state === "idle", g = gearDay();
   stage.dataset.state = ui.state;
   stage.dataset.focus = String(is3d && ui.focused);
-  if (is3d) setChip(reducedMQ.matches ? "3D · idle paused" : "3D · gear as of " + g, reducedMQ.matches ? "3D · idle paused" : "3D · " + g + " gear");
+  if (is3d) setChip("3D · gear as of " + g, "3D · " + g + " gear");
   else if (ui.state === "stale") setChip("Armory render · current", "Render · current");
   else setChip("Armory render");
   chip.classList.toggle("is-3d", is3d);
@@ -1745,7 +1818,7 @@ async function load3D() {
     "shadow-intensity": "0",
     "animation-name": manifest.idleClip || "Idle"
   };
-  if (!reducedMQ.matches) attrs.autoplay = "";
+  attrs.autoplay = "";
   for (const [k, v] of Object.entries(attrs)) mv.setAttribute(k, v);
   mv.addEventListener("progress", (e) => { ui.progress = Math.round((e.detail.totalProgress || 0) * 100); paint(); });
   mv.addEventListener("load", onLoad, { once: true });
@@ -1770,10 +1843,10 @@ function onLoad() {
   paint();
   say("3D model ready. Use the left and right arrow keys to turn him.");
 }
-// Pause the idle loop off screen, in a hidden tab, or with reduced motion. Turning still works.
+// The idle loop always plays, like the race chart (the owner's call), and only pauses off screen or in a hidden tab.
 function applyMotion() {
   if (mv && ui.state === "idle") {
-    if (reducedMQ.matches || document.hidden || !onScreen) mv.pause(); else mv.play();
+    if (document.hidden || !onScreen) mv.pause(); else mv.play();
   }
   paint();
 }

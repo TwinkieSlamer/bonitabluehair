@@ -1,6 +1,6 @@
 {
   "model": "models/bonita-2026-11-07.glb",
-  "bytes": 399864,
+  "bytes": 399832,
   "exportedAt": "2026-11-07T12:34:00-05:00",
   "gearAsOf": "2026-11-07",
   "idleClip": "Idle",
@@ -25,5 +25,5 @@
     "Segmented Spider Leg",
     "Idol of Shifting Tides"
   ],
-  "source": "wow.export 0.2.21 from the local WoW: Forever 1.60.1.70862 install. Night Elf female, appearance matched to the Armory render (Loose Tail hair, teal 863, Crane markings), gear from the Armory item IDs. Idle clip only; staff and shoulders re-attached to their bones; meshopt + WebP 1024. Extracted game art: see README."
+  "source": "wow.export 0.2.21 from the local WoW: Forever 1.60.1.70862 install. Night Elf female, appearance matched to the Armory render (Loose Tail hair, teal 863, Crane markings), gear from the Armory item IDs. Idle clip only; staff on its hand bone, shoulder pads on the collarbone bones so they sit on top of the shoulders; meshopt + WebP 1024. Extracted game art: see README."
 }
