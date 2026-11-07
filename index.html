@@ -227,8 +227,8 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
   .band-inner { justify-content: flex-start; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .seg.now, .c-pace, .c-proj, .c-finish { animation: none; }
-  .c-ping { display: none; }
+  /* The chart's ping and moving lines stay on by request; the snow and ladder pulse still calm down. */
+  .seg.now { animation: none; }
 }
 </style>
 </head>
