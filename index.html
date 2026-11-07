@@ -877,6 +877,7 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
       hi.src = lk.img; if (lk.w) { hi.width = lk.w; hi.height = lk.h; }
     }
     // Tell the 3D stage when his look last changed, so it can say if the model's gear is out of date.
+    $("stage").dataset.latestLookGear = JSON.stringify(looks.length ? (looks[looks.length - 1].gear || []).map(function (g) { return g.name; }).sort() : []);
     $("stage").dataset.latestLook = String(looks.length ? looks[looks.length - 1].t : 0);
     document.dispatchEvent(new Event("bbh:looks"));
     $("name").textContent = C.name || "Bonita Bluehair";
@@ -1653,9 +1654,23 @@ function isSlow() {
   const c = navigator.connection;
   return !!(c && (c.saveData || /2g|3g/.test(c.effectiveType || "")));
 }
+// Start after the page has loaded, when the browser is idle and the tab is visible: a hidden tab
+// pauses rendering, so loading there would just run into the timeout.
 function whenIdleAfterLoad(fn) {
-  const go = () => ("requestIdleCallback" in window ? requestIdleCallback(fn, { timeout: 2500 }) : setTimeout(fn, 600));
+  const go = () => {
+    if (document.hidden) return document.addEventListener("visibilitychange", go, { once: true });
+    "requestIdleCallback" in window ? requestIdleCallback(fn, { timeout: 2500 }) : setTimeout(fn, 600);
+  };
   if (document.readyState === "complete") go(); else addEventListener("load", go, { once: true });
+}
+// The load timeout only counts time the tab is visible.
+function armTimeout() {
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    if (ui.state !== "loading") return;
+    if (document.hidden) return document.addEventListener("visibilitychange", armTimeout, { once: true });
+    fail("timeout");
+  }, CONFIG.loadTimeoutMs);
 }
 // The newest gear-reel frame, which the race page's own script reports once it has read the data.
 function latestLook() {
@@ -1679,7 +1694,13 @@ async function start() {
   if (!hasWebGL()) return fail("no WebGL");
   const lookT = params.get("look") ? Date.parse(params.get("look") + "T23:00:00") : await latestLook();
   const exportT = manifest.exportedAt ? Date.parse(manifest.exportedAt) : manifest.gearAsOf ? Date.parse(manifest.gearAsOf + "T23:59:59") : 0;
-  if (lookT && exportT && lookT > exportT) {
+  // Stale only when the gear reel has a newer frame than the export, and (when the manifest lists the model's
+  // gear) that frame's gear is actually different. The Armory render lags, so a newer frame can show the same gear.
+  let lookGear = [];
+  try { lookGear = JSON.parse(stage.dataset.latestLookGear || "[]"); } catch (e) {}
+  const sameGear = Array.isArray(manifest.gear) && manifest.gear.length && lookGear.length
+    ? manifest.gear.slice().sort().join("|") === lookGear.join("|") : false;
+  if (lookT && exportT && lookT > exportT && !sameGear) {
     ui.state = "stale";
     ui.offer = { notice: "The 3D model still has his " + gearDay() + " gear.", label: "Show 3D anyway" };
     return paint();
@@ -1734,7 +1755,7 @@ async function load3D() {
   mv.addEventListener("blur", () => { ui.focused = false; paint(); });
   mv.addEventListener("keydown", (e) => { if (e.key === "Home") { e.preventDefault(); faceFront(); } });
   slot.append(mv);
-  timer = setTimeout(() => { if (ui.state === "loading") fail("timeout"); }, CONFIG.loadTimeoutMs);
+  armTimeout();
 }
 
 function onLoad() {
@@ -1743,7 +1764,10 @@ function onLoad() {
   const clips = mv.availableAnimations || [];
   if (clips.length && !clips.includes(mv.animationName)) mv.animationName = clips[0];
   ui.state = "idle";
-  applyMotion();
+  // Play a couple of frames so he takes his idle pose (a paused model shows its T-pose), then pause if needed.
+  mv.play();
+  requestAnimationFrame(() => requestAnimationFrame(applyMotion));
+  paint();
   say("3D model ready. Use the left and right arrow keys to turn him.");
 }
 // Pause the idle loop off screen, in a hidden tab, or with reduced motion. Turning still works.

@@ -1,13 +1,29 @@
 {
-  "model": null,
-  "bytes": 0,
-  "exportedAt": null,
-  "gearAsOf": null,
+  "model": "models/bonita-2026-11-07.glb",
+  "bytes": 399864,
+  "exportedAt": "2026-11-07T12:34:00-05:00",
+  "gearAsOf": "2026-11-07",
   "idleClip": "Idle",
   "orientation": "0deg 0deg 0deg",
-  "cameraOrbit": "0deg 84deg auto",
-  "cameraTarget": "auto auto auto",
-  "fieldOfView": "auto",
+  "cameraOrbit": "0deg 84deg 4.25m",
+  "cameraTarget": "0m 1.0m 0m",
+  "fieldOfView": "24deg",
   "autoload": true,
-  "source": "No model yet. The race page shows the Armory render until \"model\" points at a .glb in this folder. See README.md, \"The 3D stage\"."
+  "gear": [
+    "Tarnished Locket",
+    "Bashing Pauldrons",
+    "Red Linen Shirt",
+    "Prospector's Chestpiece",
+    "Belt of the Fang",
+    "Leggings of the Fang",
+    "Blackened Defias Boots",
+    "Bravo's Armbands",
+    "Bard's Gloves of Magic",
+    "Slain Baron's Signet",
+    "Minor Channeling Ring",
+    "Catacomb Cloak",
+    "Segmented Spider Leg",
+    "Idol of Shifting Tides"
+  ],
+  "source": "wow.export 0.2.21 from the local WoW: Forever 1.60.1.70862 install. Night Elf female, appearance matched to the Armory render (Loose Tail hair, teal 863, Crane markings), gear from the Armory item IDs. Idle clip only; staff and shoulders re-attached to their bones; meshopt + WebP 1024. Extracted game art: see README."
 }
