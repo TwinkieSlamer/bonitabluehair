@@ -1,0 +1,595 @@
+{
+ "snaps": [
+  {
+   "t": 1794008897000,
+   "level": 22,
+   "ilvl": 13,
+   "s": {
+    "932": 5,
+    "63570": 1,
+    "63571": 1,
+    "63573": 1,
+    "15027": 1,
+    "1197": 1324,
+    "1198": 1218,
+    "107": 1313,
+    "1337": 7,
+    "1336": 685,
+    "108": 10,
+    "588": 1,
+    "381": 1,
+    "1458": 1,
+    "1487": 646,
+    "1488": 572,
+    "1489": 298,
+    "60": 15,
+    "796": 1,
+    "800": 1,
+    "112": 1,
+    "114": 1,
+    "321": 6,
+    "918": 6,
+    "98": 195,
+    "95": 0,
+    "94": 34,
+    "1199": 2,
+    "1201": 2,
+    "1200": 3,
+    "1202": 3,
+    "1524": 80,
+    "1745": 38,
+    "281": 204,
+    "1748": 18,
+    "1519": 1,
+    "1527": 98,
+    "1729": 30,
+    "1538": 82,
+    "349": 37,
+    "353": 14,
+    "64222": 13,
+    "339": 2,
+    "1043": 47,
+    "1044": 13,
+    "345": 5,
+    "922": 5,
+    "923": 5,
+    "346": 9,
+    "347": 30,
+    "529": 1,
+    "1466": 4,
+    "931": 7,
+    "1501": 1,
+    "318": 1
+   },
+   "prof": {
+    "Alchemy": 99,
+    "Herbalism": 82,
+    "First Aid": 106,
+    "Cooking": 87,
+    "Fishing": 1
+   },
+   "rep": {
+    "Darnassus": 10760,
+    "Stormwind": 7485,
+    "Ironforge": 5697,
+    "Gnomeregan Exiles": 5447,
+    "Cenarion Circle": 2960,
+    "Gadgetzan": 600
+   }
+  }
+ ],
+ "record": {
+  "categories": [
+   {
+    "id": 14807,
+    "name": "Dungeons & Raids",
+    "stats": [
+     {
+      "id": 932,
+      "name": "Total 5-player dungeons entered",
+      "value": 5
+     }
+    ],
+    "sub": [
+     {
+      "id": 14821,
+      "name": "Boss Kills",
+      "stats": [
+       {
+        "id": 63570,
+        "name": "Edwin VanCleef Kills (Deadmines)",
+        "value": 1
+       },
+       {
+        "id": 63571,
+        "name": "Rath'mael Kills (Ruins of Lordaeron)",
+        "value": 1
+       },
+       {
+        "id": 63573,
+        "name": "Durgen Dirgehammer Kills (Hall of Thanes)",
+        "value": 1
+       },
+       {
+        "id": 15027,
+        "name": "Bazzalan kills (Ragefire Chasm)",
+        "value": 1
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": 128,
+    "name": "Kills",
+    "stats": [
+     {
+      "id": 1197,
+      "name": "Total kills",
+      "value": 1324
+     },
+     {
+      "id": 1198,
+      "name": "Total kills that grant experience or honor",
+      "value": 1218
+     }
+    ],
+    "sub": [
+     {
+      "id": 135,
+      "name": "Creatures",
+      "stats": [
+       {
+        "id": 107,
+        "name": "Creatures killed",
+        "value": 1313
+       },
+       {
+        "id": 1337,
+        "name": "Different creature types killed",
+        "value": 7
+       },
+       {
+        "id": 1336,
+        "name": "Creature type killed the most",
+        "value": 685,
+        "detail": "Humanoid"
+       },
+       {
+        "id": 108,
+        "name": "Critters killed",
+        "value": 10
+       }
+      ]
+     },
+     {
+      "id": 136,
+      "name": "Honorable Kills",
+      "stats": [
+       {
+        "id": 588,
+        "name": "Total Honorable Kills",
+        "value": 1
+       },
+       {
+        "id": 381,
+        "name": "World Honorable Kills",
+        "value": 1
+       },
+       {
+        "id": 1458,
+        "name": "Continent with the most Honorable Kills",
+        "value": 1,
+        "detail": "Eastern Kingdoms"
+       }
+      ]
+     },
+     {
+      "id": 137,
+      "name": "Killing Blows",
+      "stats": [
+       {
+        "id": 1487,
+        "name": "Total Killing Blows",
+        "value": 646
+       },
+       {
+        "id": 1488,
+        "name": "World Killing Blows",
+        "value": 572
+       },
+       {
+        "id": 1489,
+        "name": "Continent with the most Killing Blows",
+        "value": 298,
+        "detail": "Kalimdor"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": 122,
+    "name": "Deaths",
+    "stats": [
+     {
+      "id": 60,
+      "name": "Total deaths",
+      "value": 15
+     }
+    ],
+    "sub": [
+     {
+      "id": 127,
+      "name": "Resurrection",
+      "stats": [
+       {
+        "id": 796,
+        "name": "Resurrected by priests",
+        "value": 1
+       },
+       {
+        "id": 800,
+        "name": "Redeemed by paladins",
+        "value": 1
+       }
+      ]
+     },
+     {
+      "id": 126,
+      "name": "World",
+      "stats": [
+       {
+        "id": 112,
+        "name": "Deaths from drowning",
+        "value": 1
+       },
+       {
+        "id": 114,
+        "name": "Deaths from falling",
+        "value": 1
+       }
+      ]
+     },
+     {
+      "id": 125,
+      "name": "Dungeons and Raids",
+      "stats": [
+       {
+        "id": 321,
+        "name": "Total raid and dungeon deaths",
+        "value": 6
+       },
+       {
+        "id": 918,
+        "name": "Total deaths in 5-player dungeons",
+        "value": 6
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": 133,
+    "name": "Quests",
+    "stats": [
+     {
+      "id": 98,
+      "name": "Quests completed",
+      "value": 195
+     },
+     {
+      "id": 95,
+      "name": "Average quests completed per day",
+      "value": 0
+     },
+     {
+      "id": 94,
+      "name": "Quests abandoned",
+      "value": 34
+     }
+    ],
+    "sub": []
+   },
+   {
+    "id": 132,
+    "name": "Skills",
+    "stats": [
+     {
+      "id": 1199,
+      "name": "Professions learned",
+      "value": 2
+     },
+     {
+      "id": 1201,
+      "name": "Professions at maximum skill",
+      "value": 2
+     },
+     {
+      "id": 1200,
+      "name": "Secondary skills at maximum skill",
+      "value": 3
+     },
+     {
+      "id": 1202,
+      "name": "Weapon skills at maximum skill",
+      "value": 3
+     }
+    ],
+    "sub": [
+     {
+      "id": 178,
+      "name": "Secondary Skills",
+      "stats": [
+       {
+        "id": 1524,
+        "name": "Cooking skill",
+        "value": 80
+       },
+       {
+        "id": 1745,
+        "name": "Cooking Recipes known",
+        "value": 38
+       },
+       {
+        "id": 281,
+        "name": "First Aid skill",
+        "value": 204
+       },
+       {
+        "id": 1748,
+        "name": "First Aid Manuals learned",
+        "value": 18
+       },
+       {
+        "id": 1519,
+        "name": "Fishing skill",
+        "value": 1
+       }
+      ]
+     },
+     {
+      "id": 173,
+      "name": "Professions",
+      "stats": [
+       {
+        "id": 1527,
+        "name": "Highest Alchemy skill",
+        "value": 98
+       },
+       {
+        "id": 1729,
+        "name": "Alchemy Recipes learned",
+        "value": 30
+       },
+       {
+        "id": 1538,
+        "name": "Highest Herbalism skill",
+        "value": 82
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": 134,
+    "name": "Travel",
+    "stats": [
+     {
+      "id": 349,
+      "name": "Flight paths taken",
+      "value": 37
+     },
+     {
+      "id": 353,
+      "name": "Number of times hearthed",
+      "value": 14
+     }
+    ],
+    "sub": []
+   },
+   {
+    "id": 130,
+    "name": "Character",
+    "stats": [
+     {
+      "id": 64222,
+      "name": "Times camped",
+      "value": 13
+     }
+    ],
+    "sub": [
+     {
+      "id": 191,
+      "name": "Gear",
+      "stats": [
+       {
+        "id": 339,
+        "name": "Mounts owned",
+        "value": 2
+       },
+       {
+        "id": 1043,
+        "name": "Greed rolls made on loot",
+        "value": 47
+       },
+       {
+        "id": 1044,
+        "name": "Need rolls made on loot",
+        "value": 13
+       }
+      ]
+     },
+     {
+      "id": 145,
+      "name": "Consumables",
+      "stats": [
+       {
+        "id": 345,
+        "name": "Health potions consumed",
+        "value": 5
+       },
+       {
+        "id": 922,
+        "name": "Mana potions consumed",
+        "value": 5
+       },
+       {
+        "id": 923,
+        "name": "Elixirs consumed",
+        "value": 5
+       },
+       {
+        "id": 346,
+        "name": "Beverages consumed",
+        "value": 9
+       },
+       {
+        "id": 347,
+        "name": "Food eaten",
+        "value": 30
+       }
+      ]
+     },
+     {
+      "id": 147,
+      "name": "Reputation",
+      "stats": [
+       {
+        "id": 529,
+        "name": "Most factions at Honored or higher",
+        "value": 1
+       },
+       {
+        "id": 1466,
+        "name": "Most Alliance factions at Exalted",
+        "value": 4
+       },
+       {
+        "id": 931,
+        "name": "Total factions encountered",
+        "value": 7
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": 21,
+    "name": "Player vs. Player",
+    "stats": [
+     {
+      "id": 1501,
+      "name": "Total deaths from other players",
+      "value": 1
+     },
+     {
+      "id": 318,
+      "name": "Total deaths from opposite faction",
+      "value": 1
+     }
+    ],
+    "sub": []
+   }
+  ]
+ },
+ "professions": [
+  {
+   "id": 171,
+   "name": "Alchemy",
+   "primary": true,
+   "skill": 99,
+   "max": 150,
+   "recipes": 14,
+   "icon": "136240"
+  },
+  {
+   "id": 182,
+   "name": "Herbalism",
+   "primary": true,
+   "skill": 82,
+   "max": 150,
+   "recipes": 3,
+   "icon": "136246"
+  },
+  {
+   "id": 129,
+   "name": "First Aid",
+   "primary": false,
+   "skill": 106,
+   "max": 150,
+   "recipes": 8,
+   "icon": "135966"
+  },
+  {
+   "id": 185,
+   "name": "Cooking",
+   "primary": false,
+   "skill": 87,
+   "max": 150,
+   "recipes": 18,
+   "icon": "133971"
+  },
+  {
+   "id": 356,
+   "name": "Fishing",
+   "primary": false,
+   "skill": 1,
+   "max": 75,
+   "recipes": 1,
+   "icon": "136245"
+  }
+ ],
+ "reputations": [
+  {
+   "id": 69,
+   "name": "Darnassus",
+   "standing": "Honored",
+   "tier": 5,
+   "value": 1760,
+   "max": 12000
+  },
+  {
+   "id": 72,
+   "name": "Stormwind",
+   "standing": "Friendly",
+   "tier": 4,
+   "value": 4485,
+   "max": 6000
+  },
+  {
+   "id": 47,
+   "name": "Ironforge",
+   "standing": "Friendly",
+   "tier": 4,
+   "value": 2697,
+   "max": 6000
+  },
+  {
+   "id": 54,
+   "name": "Gnomeregan Exiles",
+   "standing": "Friendly",
+   "tier": 4,
+   "value": 2447,
+   "max": 6000
+  },
+  {
+   "id": 609,
+   "name": "Cenarion Circle",
+   "standing": "Neutral",
+   "tier": 3,
+   "value": 2960,
+   "max": 3000
+  },
+  {
+   "id": 369,
+   "name": "Gadgetzan",
+   "standing": "Neutral",
+   "tier": 3,
+   "value": 600,
+   "max": 3000
+  }
+ ],
+ "honorableKills": 1,
+ "checkedAt": "2026-11-07T04:05:57Z"
+}

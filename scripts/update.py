@@ -134,11 +134,67 @@ def main():
     data["checkedAt"] = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     DATA.write_text(json.dumps(data, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
 
+    new_stats = update_stats(api, ts, level, data["checkedAt"])
+
     seen = dt.datetime.fromtimestamp(ts / 1000, dt.timezone.utc)
     print(f"Level {level}, last seen {seen:%Y-%m-%d %H:%M} UTC."
           f" {'New level snapshot.' if new_snap else 'No new logout.'}"
-          f" {'New character frame saved.' if new_look else 'Look unchanged.'}")
+          f" {'New character frame saved.' if new_look else 'Look unchanged.'}"
+          f" {new_stats}")
     return 0
+
+
+# Reputation standings as cumulative points from the start of Neutral, so a trend line can cross standings.
+REP_OFFSET = {0: -42000, 1: -6000, 2: -3000, 3: 0, 4: 3000, 5: 9000, 6: 21000, 7: 42000}
+
+
+def flat_stats(record):
+    out = {}
+
+    def walk(cat):
+        for s in cat.get("stats") or []:
+            if isinstance(s.get("value"), (int, float)):
+                out[str(s["id"])] = s["value"]
+        for sub in cat.get("sub") or []:
+            walk(sub)
+
+    for c in record.get("categories") or []:
+        walk(c)
+    return out
+
+
+def update_stats(api, ts, level, checked_at):
+    """Save the Armory record (kills, quests, deaths, ...) plus professions and reputation to data/stats.json."""
+    path = ROOT / "data" / "stats.json"
+    stats = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {"snaps": []}
+    try:
+        record = json.loads(get(API.replace("?ns=", "/record?ns="), "application/json"))
+    except (urllib.error.URLError, TimeoutError, ValueError) as exc:
+        return f"Record not available ({exc})."
+    if not record.get("categories"):
+        return "Record came back empty."
+
+    stats["record"] = record
+    stats["professions"] = api.get("professions") or []
+    stats["reputations"] = api.get("reputations") or []
+    stats["honorableKills"] = api.get("honorableKills")
+    stats["checkedAt"] = checked_at
+    snaps = stats.setdefault("snaps", [])
+    added = False
+    if not any(s["t"] == ts for s in snaps):
+        snaps.append({
+            "t": ts,
+            "level": level,
+            "ilvl": api.get("itemLevel"),
+            "s": flat_stats(record),
+            "prof": {p["name"]: p.get("skill") for p in stats["professions"] if p.get("name")},
+            "rep": {r["name"]: REP_OFFSET.get(r.get("tier"), 0) + (r.get("value") or 0)
+                    for r in stats["reputations"] if r.get("name")},
+        })
+        snaps.sort(key=lambda s: s["t"])
+        added = True
+    path.write_text(json.dumps(stats, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    return "New stats snapshot." if added else "Stats unchanged."
 
 
 if __name__ == "__main__":

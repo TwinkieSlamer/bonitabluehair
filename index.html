@@ -59,6 +59,12 @@ h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0; }
 h2 { font-weight: 800; font-size: clamp(1.7rem, 3.6vw, 2.4rem); line-height: 1.05; letter-spacing: .005em; }
 .lede { color: var(--mist); max-width: 62ch; margin: 0; }
 
+/* Nav */
+.topnav { display: flex; gap: 22px; padding-block: 16px 0; font: 500 .74rem/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; position: relative; z-index: 1; }
+.topnav a { color: var(--mist); text-decoration: none; padding-block: 6px; border-bottom: 1px solid transparent; }
+.topnav a:hover { color: var(--moon); }
+.topnav a[aria-current="page"] { color: var(--moon); border-bottom-color: var(--tide); }
+
 /* Hero */
 .hero { position: relative; overflow: hidden; background: radial-gradient(120% 90% at 28% 0%, var(--night-hi) 0%, var(--night) 62%); padding-top: env(safe-area-inset-top, 0px); }
 #snow { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
@@ -236,6 +242,10 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
 
 <header class="hero">
   <canvas id="snow" aria-hidden="true"></canvas>
+  <nav class="wrap topnav" aria-label="Pages">
+    <a href="./" aria-current="page">The race</a>
+    <a href="stats.html">The record</a>
+  </nav>
   <div class="wrap hero-grid">
     <figure class="portrait">
       <div class="halo" aria-hidden="true"></div>
