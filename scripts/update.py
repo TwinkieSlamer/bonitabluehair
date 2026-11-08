@@ -54,7 +54,7 @@ def retry_wait(exc, attempt):
                 seconds = (email.utils.parsedate_to_datetime(header) - dt.datetime.now(dt.timezone.utc)).total_seconds()
             except (TypeError, ValueError):
                 return RETRY_DELAYS[attempt]
-        return min(max(seconds, 1), MAX_RETRY_AFTER)
+        return min(max(seconds, RETRY_DELAYS[attempt]), MAX_RETRY_AFTER)  # Retry-After is a minimum, not a target
     return RETRY_DELAYS[attempt]
 
 
