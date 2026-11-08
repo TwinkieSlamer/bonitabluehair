@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Bonita's Christmas Bet</title>
-<meta name="description" content="Can Bonita Bluehair hit level 60 in WoW: Forever before Christmas? Live tracker, updated every two hours.">
+<meta name="description" content="Can Bonita Bluehair hit level 60 in WoW: Forever before Christmas? Live tracker, updated hourly.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Can Bonita Bluehair hit 60 by Christmas?">
-<meta property="og:description" content="Live level tracker for the WoW: Forever Christmas bet. Updated every two hours.">
+<meta property="og:description" content="Live level tracker for the WoW: Forever Christmas bet. Updated hourly.">
 <meta property="og:url" content="https://bonitabluehair.com/">
 <meta property="og:image" content="https://bonitabluehair.com/renders/og.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -754,7 +754,7 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
 
 <footer>
   <div class="wrap foot">
-    <p id="source"><strong>Where the data comes from.</strong> Blizzard's WoW Forever Armory, read through Classic Armory every two hours.</p>
+    <p id="source"><strong>Where the data comes from.</strong> Blizzard's WoW Forever Armory, read through Classic Armory about once an hour.</p>
     <p><strong>How the math works.</strong> XP per level comes from the Classic XP table: 4,084,700 XP from level 1 to 60. Play time per level is estimated from that XP divided by how fast XP comes in at that level, which rises with level the way mob XP does (45 + 5 × level per kill). The projection assumes he keeps the same daily play time as his recent pace. The Armory doesn't show XP inside a level, so every count starts at the beginning of his current level.</p>
   </div>
 </footer>
@@ -1214,7 +1214,7 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
     });
     var next = document.createElement("li"); next.className = "frame next";
     var np = document.createElement("p");
-    np.textContent = cur >= 60 ? "That's the final look." : "The next frame saves itself when his gear changes. Checked every two hours.";
+    np.textContent = cur >= 60 ? "That's the final look." : "The next frame saves itself when his gear changes. Checked about once an hour.";
     next.appendChild(np); reel.appendChild(next);
     requestAnimationFrame(function () { reel.scrollLeft = reel.scrollWidth; });
 
@@ -1222,7 +1222,7 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
     var src = $("source");
     src.textContent = "";
     var sb = document.createElement("strong"); sb.textContent = "Where the data comes from. "; src.appendChild(sb);
-    src.appendChild(document.createTextNode("Blizzard's WoW Forever Armory, read through Classic Armory every two hours. The Armory updates when he logs out, so the level here can trail the game. Last seen in game: " +
+    src.appendChild(document.createTextNode("Blizzard's WoW Forever Armory, read through Classic Armory about once an hour. The Armory updates when he logs out, so the level here can trail the game. Last seen in game: " +
       (C.lastLoginTs ? fmtWhen(C.lastLoginTs) : "unknown") + ". Last checked: " + (D.checkedAt ? fmtWhen(Date.parse(D.checkedAt)) : "unknown") + ". "));
     if (D.armoryUrl) {
       var a = document.createElement("a"); a.href = D.armoryUrl; a.target = "_blank"; a.rel = "noopener";

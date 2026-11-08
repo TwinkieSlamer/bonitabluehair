@@ -2,7 +2,7 @@ name: Update tracker and deploy
 
 on:
   schedule:
-    - cron: "17 */2 * * *"   # every two hours (UTC); GitHub may start it a few minutes late
+    - cron: "17 * * * *"     # every hour (UTC); GitHub can still start a run late or skip one
   workflow_dispatch:          # "Run workflow" button in the Actions tab
   push:
     branches: [main]

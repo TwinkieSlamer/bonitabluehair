@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Check Bonita Bluehair on the WoW Forever Armory and update the site's data.
 
-Run by GitHub Actions every two hours (see .github/workflows/update.yml), or by hand:
+Run by GitHub Actions every hour (see .github/workflows/update.yml), or by hand:
 
     pip install pillow
     python scripts/update.py
@@ -14,11 +14,14 @@ What it does:
   * writes everything to data/history.json, which index.html reads
 """
 import datetime as dt
+import email.utils
 import hashlib
+import http.client
 import io
 import json
 import pathlib
 import sys
+import time
 import urllib.error
 import urllib.request
 
@@ -35,10 +38,45 @@ SLOT_ORDER = ["head", "neck", "shoulder", "back", "chest", "shirt", "tabard", "w
               "legs", "feet", "finger1", "finger2", "trinket1", "trinket2", "mainhand", "offhand", "ranged"]
 
 
+RETRY_DELAYS = (15, 45, 120)  # seconds to wait before each retry
+RETRYABLE_STATUS = {429, 500, 502, 503, 504}
+MAX_RETRY_AFTER = 180  # never sit longer than this on one wait, whatever the server asks for
+
+
+def retry_wait(exc, attempt):
+    """Seconds to wait before the next try: the server's Retry-After if it sent one, else the backoff."""
+    header = exc.headers.get("Retry-After") if isinstance(exc, urllib.error.HTTPError) else None
+    if header:
+        try:
+            seconds = float(header)
+        except ValueError:
+            try:
+                seconds = (email.utils.parsedate_to_datetime(header) - dt.datetime.now(dt.timezone.utc)).total_seconds()
+            except (TypeError, ValueError):
+                return RETRY_DELAYS[attempt]
+        return min(max(seconds, 1), MAX_RETRY_AFTER)
+    return RETRY_DELAYS[attempt]
+
+
 def get(url, accept="*/*"):
+    """Fetch a URL, waiting and trying again through rate limits, server errors and dropped connections."""
     req = urllib.request.Request(url, headers={**UA, "Accept": accept})
-    with urllib.request.urlopen(req, timeout=30) as resp:
-        return resp.read()
+    retries = len(RETRY_DELAYS)
+    for attempt in range(retries + 1):
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                return resp.read()
+        except urllib.error.HTTPError as exc:
+            if exc.code not in RETRYABLE_STATUS or attempt == retries:
+                raise
+            problem, wait = f"HTTP {exc.code}", retry_wait(exc, attempt)
+            exc.close()
+        except (urllib.error.URLError, TimeoutError, ConnectionError, http.client.HTTPException) as exc:
+            if attempt == retries:
+                raise urllib.error.URLError(exc) from exc
+            problem, wait = str(exc) or type(exc).__name__, retry_wait(exc, attempt)
+        print(f"{url}: {problem}. Waiting {wait:.0f}s before retry {attempt + 1} of {retries}.", flush=True)
+        time.sleep(wait)
 
 
 def gear_list(equipment):

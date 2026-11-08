@@ -7,7 +7,7 @@
 <meta name="description" content="Kills, quests, deaths, dungeons, professions and reputation for Bonita Bluehair in WoW: Forever, tracked over time.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Bonita Bluehair: the record">
-<meta property="og:description" content="Kills, quests, deaths, dungeons and more, tracked every two hours on the road to 60.">
+<meta property="og:description" content="Kills, quests, deaths, dungeons and more, tracked hourly on the road to 60.">
 <meta property="og:url" content="https://bonitabluehair.com/stats.html">
 <meta property="og:image" content="https://bonitabluehair.com/renders/og.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -370,7 +370,7 @@ footer { border-top: 1px solid var(--rule); }
 
 <footer>
   <div class="wrap foot">
-    <p id="source">Blizzard's WoW Forever Armory statistics, read through Classic Armory every two hours. The Armory refreshes when he logs out.</p>
+    <p id="source">Blizzard's WoW Forever Armory statistics, read through Classic Armory about once an hour. The Armory refreshes when he logs out.</p>
     <p>"Per level" divides by the levels he has gained since level 1. Reputation standings run from Hated to Exalted; the cell that's lit is where he stands now.</p>
   </div>
 </footer>
@@ -774,7 +774,7 @@ footer { border-top: 1px solid var(--rule); }
     });
     $("full-sum").textContent = "Show all " + count + " stats";
 
-    $("source").textContent = "Blizzard's WoW Forever Armory statistics, read through Classic Armory every two hours. The Armory refreshes when he logs out. Last checked: " + (S.checkedAt ? fmtWhen(Date.parse(S.checkedAt)) : "unknown") + ".";
+    $("source").textContent = "Blizzard's WoW Forever Armory statistics, read through Classic Armory about once an hour. The Armory refreshes when he logs out. Last checked: " + (S.checkedAt ? fmtWhen(Date.parse(S.checkedAt)) : "unknown") + ".";
   }).catch(function (err) {
     if (window.console) console.warn("Record failed to load:", err);
     $("load-error").hidden = false;
