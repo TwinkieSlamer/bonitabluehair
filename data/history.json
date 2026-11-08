@@ -110,39 +110,8 @@
   "faction": "Alliance",
   "itemLevel": 18,
   "lastLoginTs": 1794112162000,
-  "professions": [
-   {
-    "name": "Alchemy",
-    "skill": 101,
-    "max": 150,
-    "primary": true
-   },
-   {
-    "name": "Herbalism",
-    "skill": 95,
-    "max": 150,
-    "primary": true
-   },
-   {
-    "name": "First Aid",
-    "skill": 106,
-    "max": 150,
-    "primary": false
-   },
-   {
-    "name": "Cooking",
-    "skill": 87,
-    "max": 150,
-    "primary": false
-   },
-   {
-    "name": "Fishing",
-    "skill": 1,
-    "max": 75,
-    "primary": false
-   }
-  ]
+  "professions": []
  },
  "armoryUrl": "https://classicarmory.gg/character/us/forever/bonita-bluehair",
- "checkedAt": "2026-11-08T07:19:14Z"
+ "checkedAt": "2026-11-08T14:23:23Z"
 }
