@@ -9,6 +9,10 @@
   {
    "t": 1794030203000,
    "level": 23
+  },
+  {
+   "t": 1794112162000,
+   "level": 25
   }
  ],
  "looks": [
@@ -104,8 +108,8 @@
   "className": "Druid",
   "spec": "Restoration",
   "faction": "Alliance",
-  "itemLevel": 15,
-  "lastLoginTs": 1794030203000,
+  "itemLevel": 18,
+  "lastLoginTs": 1794112162000,
   "professions": [
    {
     "name": "Alchemy",
@@ -115,7 +119,7 @@
    },
    {
     "name": "Herbalism",
-    "skill": 88,
+    "skill": 95,
     "max": 150,
     "primary": true
    },
@@ -140,5 +144,5 @@
   ]
  },
  "armoryUrl": "https://classicarmory.gg/character/us/forever/bonita-bluehair",
- "checkedAt": "2026-11-08T01:26:43Z"
+ "checkedAt": "2026-11-08T06:31:50Z"
 }
