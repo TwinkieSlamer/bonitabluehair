@@ -2,17 +2,19 @@
 // wow.export draws an attachment at boneMatrix x translate(position), with the position converted from the game's
 // Z-up space as (x, z, -y). In glTF the joint's world matrix W satisfies boneMatrix = W x inverseBind, so the
 // attachment becomes a child of the joint with local matrix inverseBind x translate(position).
-//   node fix-attach.mjs in.glb out.glb
+//   node fix-attach.mjs in.glb out.glb [cape.png]
+import fs from "node:fs";
 import { NodeIO } from "@gltf-transform/core";
 import { ALL_EXTENSIONS } from "@gltf-transform/extensions";
 import { MeshoptDecoder, MeshoptEncoder } from "meshoptimizer";
 
-// From the Night Elf female HD model (file 921844): attachment id -> bone index and position (game space).
-const ATTACH = {
-  "Main-hand_Item271203_0": { bone: 225, pos: [0, 0, 0] },
-  "Shoulder (R)_Item5319_0": { bone: 204, pos: [-0.09428267925977707, -0.1509692221879959, 1.9462634325027466] },
-  "Shoulder (L)_Item5319_0": { bone: 205, pos: [-0.09427326172590256, 0.1509847193956375, 1.94625985622406] }
-};
+// From the Night Elf female HD model (file 921844): attachment bone index and position (game space) per slot.
+// wow.export names each loose piece "<slot>_Item<item id>_<n>", so these match by slot, whatever the item.
+const ATTACH = [
+  [/^Main-hand_Item/, { bone: 225, pos: [0, 0, 0] }],
+  [/^Shoulder \(R\)_Item/, { bone: 204, pos: [-0.09428267925977707, -0.1509692221879959, 1.9462634325027466] }],
+  [/^Shoulder \(L\)_Item/, { bone: 205, pos: [-0.09427326172590256, 0.1509847193956375, 1.94625985622406] }]
+];
 
 await MeshoptDecoder.ready; await MeshoptEncoder.ready;
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS)
@@ -41,8 +43,13 @@ function decompose(m) {
 const parentOf = new Map();
 for (const n of root.listNodes()) for (const c of n.listChildren()) parentOf.set(c, n);
 for (const node of root.listNodes()) {
-  const a = ATTACH[node.getName()];
-  if (!a) continue;
+  const hit = ATTACH.find(([re]) => re.test(node.getName()));
+  if (!hit) {
+    // A loose piece this script doesn't know (off-hand, helm, ...) would be left lying at his feet: say so.
+    if (node.getMesh() && !node.getSkin() && /_Item\d+_/.test(node.getName())) console.warn(`WARNING: no attachment rule for "${node.getName()}"; it stays at the origin.`);
+    continue;
+  }
+  const a = hit[1];
   let bi = a.bone;
   // Shoulder pads go on the collarbones: on the upper-arm attachment bones they swing down with the arm and stand
   // up like shields beside it once the idle lowers the arms from the T-pose.
@@ -56,6 +63,21 @@ for (const node of root.listNodes()) {
   joint.addChild(node);
   node.setTranslation(d.t).setRotation(d.q).setScale(d.s);
   console.log(`${node.getName()} -> joint ${bi} (${joint.getName()}) t=${d.t.map((x) => x.toFixed(3))} s=${d.s.map((x) => x.toFixed(3))}`);
+}
+// The cape. wow.export 0.2.21 doesn't load cape textures for this client, so the cloak mesh comes out wearing
+// the body's texture. Pass the cape's own texture (PNG) as the third argument to give it its own material.
+const capePng = process.argv[4];
+const cloaks = root.listNodes().filter((n) => /_Cloak\d+$/.test(n.getName()) && n.getMesh());
+if (capePng) {
+  const tex = doc.createTexture("cape").setImage(fs.readFileSync(capePng)).setMimeType("image/png");
+  let mat = null;
+  for (const node of cloaks) for (const prim of node.getMesh().listPrimitives()) {
+    mat = mat || prim.getMaterial().clone().setName("cape").setBaseColorTexture(tex).setDoubleSided(true);
+    prim.setMaterial(mat);
+  }
+  console.log(`cape texture ${capePng} -> ${cloaks.map((n) => n.getName()).join(", ") || "no cloak mesh found"}`);
+} else if (cloaks.length) {
+  console.warn(`WARNING: ${cloaks.map((n) => n.getName()).join(", ")} has no cape texture; it will show the body texture.`);
 }
 // Game models face +X; the viewer looks down -Z. Turn the whole model -90 degrees about Y so he faces the camera.
 const top = root.listScenes()[0].listChildren()[0];

@@ -1,8 +1,8 @@
 {
-  "model": "models/bonita-2026-11-07.glb",
-  "bytes": 399832,
-  "exportedAt": "2026-11-07T12:34:00-05:00",
-  "gearAsOf": "2026-11-07",
+  "model": "models/bonita-2026-11-09.glb",
+  "bytes": 418456,
+  "exportedAt": "2026-11-09T17:01:00-05:00",
+  "gearAsOf": "2026-11-09",
   "idleClip": "Idle",
   "orientation": "0deg 0deg 0deg",
   "cameraOrbit": "0deg 84deg 4.25m",
@@ -10,20 +10,20 @@
   "fieldOfView": "24deg",
   "autoload": true,
   "gear": [
-    "Tarnished Locket",
-    "Bashing Pauldrons",
-    "Red Linen Shirt",
+    "Ephemeral Choker",
+    "Unstable Crystalline Shoulderpads",
+    "Durable Cape of the Bandit",
     "Prospector's Chestpiece",
-    "Belt of the Fang",
+    "Red Linen Shirt",
+    "Bridgebreaker Bindings",
+    "Runebound Gloves",
+    "Belt of Vindication",
     "Leggings of the Fang",
     "Blackened Defias Boots",
-    "Bravo's Armbands",
-    "Bard's Gloves of Magic",
-    "Slain Baron's Signet",
-    "Minor Channeling Ring",
-    "Catacomb Cloak",
+    "Malignant Root",
+    "Seal of Wrynn",
     "Segmented Spider Leg",
     "Idol of Shifting Tides"
   ],
-  "source": "wow.export 0.2.21 from the local WoW: Forever 1.60.1.70862 install. Night Elf female, appearance matched to the Armory render (Loose Tail hair, teal 863, Crane markings), gear from the Armory item IDs. Idle clip only; staff on its hand bone, shoulder pads on the collarbone bones so they sit on top of the shoulders; meshopt + WebP 1024. Extracted game art: see README."
+  "source": "wow.export 0.2.21 from the local WoW: Forever 1.60.1.70862 install. Night Elf female, appearance matched to the Armory render (Loose Tail hair, teal 863, Crane markings), gear from the Armory item IDs at level 32. Idle clip only; staff on its hand bone, shoulder pads on the collarbone bones; cape texture (cape_cloth_b_02orange, file 137285) added by hand because wow.export doesn't load cape textures; meshopt + WebP 1024. Extracted game art: see README."
 }
