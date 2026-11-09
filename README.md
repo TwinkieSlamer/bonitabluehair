@@ -2,6 +2,15 @@
 
 Can Bonita Bluehair hit level 60 in WoW: Forever before Christmas? This site keeps score.
 
+## Open items (as of Nov 9, 2026)
+
+Delete each one once it's done.
+
+- **The hourly clock isn't switched on yet.** The Worker's cron trigger is merged (PR #1), but the `GITHUB_DISPATCH_TOKEN` secret hasn't been saved and the Worker hasn't been redeployed. Until then, checks only happen when GitHub's schedule gets around to it (often hours late) or when someone presses Run workflow. Steps: "The hourly clock" below.
+- **The 3D model still has his Nov 7 gear.** The gear reel's level 30 frame (Nov 9) has newer gear: Ephemeral Choker, Unstable Crystalline Shoulderpads, Bridgebreaker Bindings, Runebound Gloves, Belt of Vindication, Malignant Root and more. The page says "The 3D model still has his Nov 7 gear." To fix it, re-export with wow.export (steps under "The 3D stage") and update `models/manifest.json`: `model`, `bytes`, `exportedAt`, `gearAsOf` and `gear`.
+- **Professions and reputation may be out of date.** Every Armory reply since Nov 8 14:23 UTC has had empty professions and reputations. The site shows the last known values, from the Nov 8 07:19 UTC check, and each run log says "The Armory left out professions, reputations; kept the last known values." If that keeps happening, check whether the Armory moved those fields in its API response and update `scripts/update.py` to match.
+- **The level 28 point was entered by hand.** The Armory missed his level 28 logout on the night of Nov 8, so `data/history.json` has it at 11:00 PM Eastern, marked `"source": "owner"`. The time is approximate; change it if the real time turns up.
+
 - **Site:** `index.html` reads `data/history.json` and draws everything in the browser.
 - **Updates:** `.github/workflows/update.yml` calls `scripts/update.py`, which reads the character from the WoW Forever Armory (through classicarmory.gg) and retries through rate limits. It records level snapshots, saves a new gear-reel frame whenever his equipped gear or his render changes, commits, and redeploys GitHub Pages (only when something was saved). The Armory redraws his picture later than it updates his gear, so a gear change is saved right away with the Armory's last picture (`"stalePic": true`, with a note on the page) and the new picture is swapped into that frame once the Armory catches up. When an Armory response leaves out professions, reputations or parts of the record, the last known values are kept instead of being wiped.
 - **The hourly clock:** GitHub's own schedule starts the workflow hours late or skips it (Nov 8–9: every 4 to 7 hours, then nothing for 9), so the Cloudflare Worker in `votes-worker/` starts it at :07 every hour with a cron trigger. GitHub's schedule stays on as a backup and does nothing when the last check was under 40 minutes ago. One-time setup:
