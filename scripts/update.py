@@ -8,11 +8,17 @@ Run by GitHub Actions every hour (see .github/workflows/update.yml), or by hand:
 
 What it does:
   * records a level snapshot each time the Armory shows a new logout
-  * downloads the character render; when it differs from the last saved one
-    (new gear or a new look), crops it, saves it to renders/, and records the
-    gear he was wearing so the site can show his evolution over time
+  * saves a new gear-reel frame whenever his equipped gear changes, or the
+    character render changes (a new look). The Armory redraws the render
+    later than it updates the gear, so a gear change is saved right away with
+    its last picture, and the picture is swapped in when the Armory catches up
+  * keeps the last known professions, reputations and record stats when an
+    Armory response comes back without them
   * writes everything to data/history.json, which index.html reads
+
+    python scripts/update.py --min-gap 40   # skip if the last check was under 40 minutes ago
 """
+import argparse
 import datetime as dt
 import email.utils
 import hashlib
@@ -79,6 +85,15 @@ def get(url, accept="*/*"):
         time.sleep(wait)
 
 
+def gear_key(gear):
+    """What the race page compares between frames: each item by slot and name."""
+    return sorted(f"{g.get('slot')}|{g.get('name')}" for g in gear or [])
+
+
+def frame_stamp(ts):
+    return dt.datetime.fromtimestamp(ts / 1000, dt.timezone.utc).strftime("%Y%m%d-%H%M")
+
+
 def gear_list(equipment):
     items = []
     for slot in SLOT_ORDER:
@@ -114,8 +129,82 @@ def save_render(png_bytes, stamp, level):
     return f"renders/{name}", im.size
 
 
-def main():
+def checked_recently(data, minutes):
+    """True when the last Armory check was less than `minutes` ago."""
+    try:
+        last = dt.datetime.strptime(data.get("checkedAt", ""), "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=dt.timezone.utc)
+    except ValueError:
+        return False
+    return dt.datetime.now(dt.timezone.utc) - last < dt.timedelta(minutes=minutes)
+
+
+def update_looks(looks, api, ts, level):
+    """Add a gear-reel frame when his gear or his render changes. Returns a line for the log."""
+    last = looks[-1] if looks else None
+    last_gear = (last or {}).get("gear") or []
+    gear = gear_list(api.get("equipment"))
+    # An empty or much shorter list is a partial Armory response, not him taking his gear off.
+    gear_known = bool(gear) and len(gear) >= len(last_gear) // 2
+    gear_changed = gear_known and last is not None and gear_key(gear) != gear_key(last_gear)
+
+    png = digest = None
+    if api.get("mainRender"):
+        try:
+            png = get(api["mainRender"], "image/png")
+            digest = hashlib.sha256(png).hexdigest()
+        except (urllib.error.URLError, TimeoutError, OSError) as exc:
+            print(f"Could not fetch the character render ({exc}). Level data still saved.")
+    new_render = digest is not None and (last is None or digest != last.get("hash"))
+
+    def picture(frame, t, lvl):
+        path, size = save_render(png, frame_stamp(t), lvl)
+        frame.update(img=path, w=size[0], h=size[1], hash=digest)
+        frame.pop("stalePic", None)
+
+    if last is None:
+        if digest is None:
+            return "No render yet for a first frame."
+        frame = {"t": ts, "level": level, "itemLevel": api.get("itemLevel"), "gear": gear}
+        picture(frame, ts, level)
+        looks.append(frame)
+        return "First character frame saved."
+
+    if gear_changed:
+        frame = {"t": ts, "level": level, "itemLevel": api.get("itemLevel"), "gear": gear}
+        if new_render:
+            picture(frame, ts, level)
+            looks.append(frame)
+            return "New gear and a new render: frame saved."
+        # The Armory hasn't redrawn him yet. Show its last picture until it does.
+        frame.update(img=last["img"], w=last.get("w"), h=last.get("h"), hash=last.get("hash"), stalePic=True)
+        looks.append(frame)
+        return "New gear: frame saved with the Armory's last render until it redraws him."
+
+    if new_render:
+        if last.get("stalePic"):
+            # The Armory caught up with gear an earlier check already saved: swap the new picture in.
+            picture(last, last["t"], last["level"])
+            return "The Armory redrew him: new render added to the latest frame."
+        frame = {"t": ts, "level": level, "itemLevel": api.get("itemLevel"), "gear": gear if gear_known else last_gear}
+        picture(frame, ts, level)
+        looks.append(frame)
+        return "New look: frame saved."
+
+    if not gear_known:
+        return "Armory sent no gear list. Look unchanged."
+    return "Gear and look unchanged."
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    ap.add_argument("--min-gap", type=float, default=0, metavar="MINUTES",
+                    help="do nothing if the last check was less than this many minutes ago")
+    args = ap.parse_args(argv)
+
     data = json.loads(DATA.read_text(encoding="utf-8"))
+    if args.min_gap and checked_recently(data, args.min_gap):
+        print(f"Checked the Armory at {data['checkedAt']}, under {args.min_gap:g} minutes ago. Skipping this run.")
+        return 0
     try:
         api = json.loads(get(API, "application/json"))
     except (urllib.error.URLError, TimeoutError, ValueError) as exc:
@@ -127,6 +216,15 @@ def main():
         print("The Armory response had no level or login time. Nothing changed.")
         return 1
 
+    prev_char = data.get("character") or {}
+    professions = [
+        {"name": p.get("name"), "skill": p.get("skill"), "max": p.get("max"), "primary": p.get("primary")}
+        for p in api.get("professions") or []
+    ]
+    kept = []
+    if not professions and prev_char.get("professions"):
+        professions = prev_char["professions"]  # the Armory sometimes leaves them out; keep the last known
+        kept.append("professions")
     data["character"] = {
         "name": api.get("name"),
         "region": api.get("region"),
@@ -137,10 +235,7 @@ def main():
         "faction": api.get("faction"),
         "itemLevel": api.get("itemLevel"),
         "lastLoginTs": ts,
-        "professions": [
-            {"name": p.get("name"), "skill": p.get("skill"), "max": p.get("max"), "primary": p.get("primary")}
-            for p in api.get("professions") or []
-        ],
+        "professions": professions,
     }
     data["armoryUrl"] = ARMORY_PAGE
 
@@ -150,35 +245,18 @@ def main():
         snaps.append({"t": ts, "level": level})
         snaps.sort(key=lambda s: s["t"])
 
-    looks = data.setdefault("looks", [])
-    new_look = False
-    render_url = api.get("mainRender")
-    if render_url:
-        try:
-            png = get(render_url, "image/png")
-            digest = hashlib.sha256(png).hexdigest()
-            if not looks or looks[-1].get("hash") != digest:
-                stamp = dt.datetime.fromtimestamp(ts / 1000, dt.timezone.utc).strftime("%Y%m%d-%H%M")
-                path, size = save_render(png, stamp, level)
-                looks.append({
-                    "t": ts, "level": level, "itemLevel": api.get("itemLevel"),
-                    "img": path, "w": size[0], "h": size[1], "hash": digest,
-                    "gear": gear_list(api.get("equipment")),
-                })
-                new_look = True
-        except (urllib.error.URLError, TimeoutError, OSError) as exc:
-            print(f"Could not fetch the character render ({exc}). Level data still saved.")
+    look_note = update_looks(data.setdefault("looks", []), api, ts, level)
 
     data["checkedAt"] = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     DATA.write_text(json.dumps(data, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
 
-    new_stats = update_stats(api, ts, level, data["checkedAt"])
+    new_stats = update_stats(api, ts, level, data["checkedAt"], kept)
 
     seen = dt.datetime.fromtimestamp(ts / 1000, dt.timezone.utc)
     print(f"Level {level}, last seen {seen:%Y-%m-%d %H:%M} UTC."
           f" {'New level snapshot.' if new_snap else 'No new logout.'}"
-          f" {'New character frame saved.' if new_look else 'Look unchanged.'}"
-          f" {new_stats}")
+          f" {look_note} {new_stats}"
+          + (f" The Armory left out {', '.join(kept)}; kept the last known values." if kept else ""))
     return 0
 
 
@@ -201,8 +279,36 @@ def flat_stats(record):
     return out
 
 
-def update_stats(api, ts, level, checked_at):
-    """Save the Armory record (kills, quests, deaths, ...) plus professions and reputation to data/stats.json."""
+def merge_record(new, old):
+    """Put back stats, and whole categories, that an Armory record response left out, at their last values.
+    The Armory sometimes answers with part of the record; counters only go up, so the old value is the best guess."""
+    restored = 0
+
+    def merge(new_cats, old_cats):
+        nonlocal restored
+        by_id = {c.get("id"): c for c in new_cats}
+        for i, oc in enumerate(old_cats):
+            nc = by_id.get(oc.get("id"))
+            if nc is None:
+                new_cats.insert(min(i, len(new_cats)), oc)
+                restored += len(flat_stats({"categories": [oc]}))
+                continue
+            have = {st.get("id") for st in nc.get("stats") or []}
+            stats = nc.setdefault("stats", [])
+            for j, st in enumerate(oc.get("stats") or []):
+                if st.get("id") not in have:
+                    stats.insert(min(j, len(stats)), st)
+                    restored += 1
+            if oc.get("sub"):
+                merge(nc.setdefault("sub", []), oc["sub"])
+
+    merge(new.setdefault("categories", []), (old or {}).get("categories") or [])
+    return restored
+
+
+def update_stats(api, ts, level, checked_at, kept):
+    """Save the Armory record (kills, quests, deaths, ...) plus professions and reputation to data/stats.json.
+    Anything the Armory leaves out of a response keeps its last known value; what was kept is added to `kept`."""
     path = ROOT / "data" / "stats.json"
     stats = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {"snaps": []}
     try:
@@ -212,10 +318,18 @@ def update_stats(api, ts, level, checked_at):
     if not record.get("categories"):
         return "Record came back empty."
 
+    if merge_record(record, stats.get("record")):
+        kept.append("some record stats")
     stats["record"] = record
-    stats["professions"] = api.get("professions") or []
-    stats["reputations"] = api.get("reputations") or []
-    stats["honorableKills"] = api.get("honorableKills")
+    for key in ("professions", "reputations"):
+        if api.get(key):
+            stats[key] = api[key]
+        elif stats.get(key):
+            if key not in kept:
+                kept.append(key)
+        else:
+            stats[key] = []
+    stats["honorableKills"] = api.get("honorableKills", stats.get("honorableKills"))
     stats["checkedAt"] = checked_at
     snaps = stats.setdefault("snaps", [])
     added = False

@@ -2,8 +2,11 @@ name: Update tracker and deploy
 
 on:
   schedule:
-    - cron: "17 * * * *"     # every hour (UTC); GitHub can still start a run late or skip one
-  workflow_dispatch:          # "Run workflow" button in the Actions tab
+    # Backup clock only. GitHub starts these hours late or skips them (on Nov 8-9 it ran about every 4 to 7
+    # hours), so the Cloudflare Worker in votes-worker/ starts this workflow on the hour instead. A scheduled
+    # run that comes within 40 minutes of the last check does nothing.
+    - cron: "17 * * * *"
+  workflow_dispatch:          # "Run workflow" button in the Actions tab, and the Worker's hourly call
   push:
     branches: [main]
 
@@ -33,23 +36,34 @@ jobs:
         if: github.event_name != 'push'
         run: |
           pip install --quiet pillow==11.3.0
-          python scripts/update.py
+          python scripts/update.py ${{ github.event_name == 'schedule' && '--min-gap 40' || '' }}
 
       - name: Save new data
+        id: save
         if: github.event_name != 'push'
         run: |
           if [ -z "$(git status --porcelain)" ]; then echo "Nothing changed."; exit 0; fi
+          echo "changed=true" >> "$GITHUB_OUTPUT"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -m "Armory check: $(date -u +'%Y-%m-%d %H:%M') UTC"
-          git push
+          # If main moved while this ran (a push of your own), put this commit on top and try again.
+          for attempt in 1 2 3; do
+            git pull --rebase --quiet origin main && git push && exit 0
+            echo "Push failed (try $attempt of 3)."; sleep 10
+          done
+          exit 1
 
+      # Deploy on your own pushes, and whenever the check saved something. A skipped check has nothing new.
       - uses: actions/configure-pages@v5
+        if: github.event_name == 'push' || steps.save.outputs.changed == 'true'
 
       - uses: actions/upload-pages-artifact@v3
+        if: github.event_name == 'push' || steps.save.outputs.changed == 'true'
         with:
           path: .
 
       - id: deployment
+        if: github.event_name == 'push' || steps.save.outputs.changed == 'true'
         uses: actions/deploy-pages@v4

@@ -343,6 +343,7 @@ table.ms { width: 100%; border-collapse: collapse; min-width: 600px; }
 .frame .lv strong { font: 800 1.6rem/1 var(--display); }
 .frame .lv span { font: 400 .8rem var(--mono); color: var(--mist); white-space: nowrap; }
 .frame .gh { font: 500 .66rem var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--tide); margin: 4px 0 0; }
+.frame .pic-note { margin: 0; font-size: .78rem; line-height: 1.4; color: var(--mist); }
 .gear { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; font-size: .88rem; }
 .gear li { display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; gap: 8px; align-items: center; }
 .gear li::before { content: ""; width: 8px; height: 8px; border-radius: 2px; background: var(--q, var(--q-common)); }
@@ -746,7 +747,7 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
     <div class="head">
       <p class="eyebrow">Evolution</p>
       <h2 id="h-looks">The gear check</h2>
-      <p class="lede">A new frame is saved automatically whenever his character model changes after a logout: new gear, new look. Newest on the right.</p>
+      <p class="lede">A new frame is saved automatically whenever his gear or his look changes after a logout. Newest on the right.</p>
     </div>
     <ol class="reel" id="reel" tabindex="0" aria-label="Saved character frames, oldest to newest"></ol>
   </section>
@@ -891,6 +892,8 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
     // Tell the 3D stage when his look last changed, so it can say if the model's gear is out of date.
     $("stage").dataset.latestLookGear = JSON.stringify(looks.length ? (looks[looks.length - 1].gear || []).map(function (g) { return g.name; }).sort() : []);
     $("stage").dataset.latestLook = String(looks.length ? looks[looks.length - 1].t : 0);
+    // The Armory redraws his picture later than it updates his gear; until it does, the newest frame borrows the last one.
+    $("stage").dataset.renderBehind = looks.length && looks[looks.length - 1].stalePic ? "1" : "";
     document.dispatchEvent(new Event("bbh:looks"));
     $("name").textContent = C.name || "Bonita Bluehair";
     $("who").textContent = [C.race || "Night Elf", C.className || "Druid", "WoW: Forever"].join(" · ");
@@ -1183,7 +1186,8 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
     looks.forEach(function (lk, idx) {
       var li = document.createElement("li"); li.className = "frame" + (idx === looks.length - 1 ? " latest" : "");
       var fig = document.createElement("figure"), img = document.createElement("img");
-      img.src = lk.img; img.loading = "lazy"; img.alt = "Bonita at level " + lk.level + " on " + fmtDay(lk.t);
+      img.src = lk.img; img.loading = "lazy";
+      img.alt = lk.stalePic ? "Bonita's last Armory picture, drawn before this gear" : "Bonita at level " + lk.level + " on " + fmtDay(lk.t);
       if (lk.w) { img.width = lk.w; img.height = lk.h; }
       fig.appendChild(img); li.appendChild(fig);
       var cap = document.createElement("div"); cap.className = "cap";
@@ -1205,6 +1209,11 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
       }
       cap.appendChild(gh);
       if (shown.length) cap.appendChild(gearList(shown));
+      if (lk.stalePic) {
+        var pn = document.createElement("p"); pn.className = "pic-note";
+        pn.textContent = "The Armory hasn't redrawn him in this gear yet, so this is its last picture. It swaps in on its own once the Armory catches up.";
+        cap.appendChild(pn);
+      }
       if (gear.length) {
         var det = document.createElement("details"), sum = document.createElement("summary");
         sum.textContent = "All " + gear.length + " equipped items";
@@ -1700,7 +1709,7 @@ function paint() {
   stage.dataset.state = ui.state;
   stage.dataset.focus = String(is3d && ui.focused);
   if (is3d) setChip("3D · gear as of " + g, "3D · " + g + " gear");
-  else if (ui.state === "stale") setChip("Armory render · current", "Render · current");
+  else if (ui.state === "stale" && !stage.dataset.renderBehind) setChip("Armory render · current", "Render · current");
   else setChip("Armory render");
   chip.classList.toggle("is-3d", is3d);
   progress.hidden = ui.state !== "loading";

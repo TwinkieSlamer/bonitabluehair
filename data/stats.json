@@ -306,8 +306,28 @@
     "1501": 1,
     "318": 1
    },
-   "prof": {},
-   "rep": {}
+   "prof": {
+    "Alchemy": 101,
+    "Herbalism": 95,
+    "First Aid": 106,
+    "Cooking": 87,
+    "Fishing": 1
+   },
+   "rep": {
+    "Darnassus": 11406,
+    "Stormwind": 8956,
+    "Ironforge": 7081,
+    "Gnomeregan Exiles": 6045,
+    "Cenarion Circle": 2960,
+    "Gadgetzan": 650,
+    "Ratchet": 600,
+    "Booty Bay": 550,
+    "Everlook": 550,
+    "Powderfuse": 550,
+    "Azeroth Commerce Authority": 0,
+    "Darkmoon Faire": 0,
+    "The League of Arathor": 0
+   }
   },
   {
    "t": 1794208186000,
@@ -366,10 +386,35 @@
     "529": 2,
     "931": 15,
     "1501": 2,
-    "318": 2
+    "318": 2,
+    "1201": 2,
+    "1200": 3,
+    "1202": 3,
+    "281": 207,
+    "1466": 4
    },
-   "prof": {},
-   "rep": {}
+   "prof": {
+    "Alchemy": 101,
+    "Herbalism": 95,
+    "First Aid": 106,
+    "Cooking": 87,
+    "Fishing": 1
+   },
+   "rep": {
+    "Darnassus": 11406,
+    "Stormwind": 8956,
+    "Ironforge": 7081,
+    "Gnomeregan Exiles": 6045,
+    "Cenarion Circle": 2960,
+    "Gadgetzan": 650,
+    "Ratchet": 600,
+    "Booty Bay": 550,
+    "Everlook": 550,
+    "Powderfuse": 550,
+    "Azeroth Commerce Authority": 0,
+    "Darkmoon Faire": 0,
+    "The League of Arathor": 0
+   }
   }
  ],
  "record": {
@@ -608,6 +653,21 @@
       "id": 1199,
       "name": "Professions learned",
       "value": 2
+     },
+     {
+      "id": 1201,
+      "name": "Professions at maximum skill",
+      "value": 2
+     },
+     {
+      "id": 1200,
+      "name": "Secondary skills at maximum skill",
+      "value": 3
+     },
+     {
+      "id": 1202,
+      "name": "Weapon skills at maximum skill",
+      "value": 3
      }
     ],
     "sub": [
@@ -624,6 +684,11 @@
         "id": 1745,
         "name": "Cooking Recipes known",
         "value": 44
+       },
+       {
+        "id": 281,
+        "name": "First Aid skill",
+        "value": 207
        },
        {
         "id": 1748,
@@ -750,6 +815,11 @@
         "value": 2
        },
        {
+        "id": 1466,
+        "name": "Most Alliance factions at Exalted",
+        "value": 4
+       },
+       {
         "id": 931,
         "name": "Total factions encountered",
         "value": 15
@@ -777,8 +847,159 @@
    }
   ]
  },
- "professions": [],
- "reputations": [],
+ "professions": [
+  {
+   "id": 171,
+   "name": "Alchemy",
+   "primary": true,
+   "skill": 101,
+   "max": 150,
+   "recipes": 15,
+   "icon": "136240"
+  },
+  {
+   "id": 182,
+   "name": "Herbalism",
+   "primary": true,
+   "skill": 95,
+   "max": 150,
+   "recipes": 3,
+   "icon": "136246"
+  },
+  {
+   "id": 129,
+   "name": "First Aid",
+   "primary": false,
+   "skill": 106,
+   "max": 150,
+   "recipes": 8,
+   "icon": "135966"
+  },
+  {
+   "id": 185,
+   "name": "Cooking",
+   "primary": false,
+   "skill": 87,
+   "max": 150,
+   "recipes": 18,
+   "icon": "133971"
+  },
+  {
+   "id": 356,
+   "name": "Fishing",
+   "primary": false,
+   "skill": 1,
+   "max": 75,
+   "recipes": 1,
+   "icon": "136245"
+  }
+ ],
+ "reputations": [
+  {
+   "id": 69,
+   "name": "Darnassus",
+   "standing": "Honored",
+   "tier": 5,
+   "value": 2406,
+   "max": 12000
+  },
+  {
+   "id": 72,
+   "name": "Stormwind",
+   "standing": "Friendly",
+   "tier": 4,
+   "value": 5956,
+   "max": 6000
+  },
+  {
+   "id": 47,
+   "name": "Ironforge",
+   "standing": "Friendly",
+   "tier": 4,
+   "value": 4081,
+   "max": 6000
+  },
+  {
+   "id": 54,
+   "name": "Gnomeregan Exiles",
+   "standing": "Friendly",
+   "tier": 4,
+   "value": 3045,
+   "max": 6000
+  },
+  {
+   "id": 609,
+   "name": "Cenarion Circle",
+   "standing": "Neutral",
+   "tier": 3,
+   "value": 2960,
+   "max": 3000
+  },
+  {
+   "id": 369,
+   "name": "Gadgetzan",
+   "standing": "Neutral",
+   "tier": 3,
+   "value": 650,
+   "max": 3000
+  },
+  {
+   "id": 470,
+   "name": "Ratchet",
+   "standing": "Neutral",
+   "tier": 3,
+   "value": 600,
+   "max": 3000
+  },
+  {
+   "id": 21,
+   "name": "Booty Bay",
+   "standing": "Neutral",
+   "tier": 3,
+   "value": 550,
+   "max": 3000
+  },
+  {
+   "id": 577,
+   "name": "Everlook",
+   "standing": "Neutral",
+   "tier": 3,
+   "value": 550,
+   "max": 3000
+  },
+  {
+   "id": 2827,
+   "name": "Powderfuse",
+   "standing": "Neutral",
+   "tier": 3,
+   "value": 550,
+   "max": 3000
+  },
+  {
+   "id": 2586,
+   "name": "Azeroth Commerce Authority",
+   "standing": "Neutral",
+   "tier": 3,
+   "value": 0,
+   "max": 3000
+  },
+  {
+   "id": 909,
+   "name": "Darkmoon Faire",
+   "standing": "Neutral",
+   "tier": 3,
+   "value": 0,
+   "max": 3000
+  },
+  {
+   "id": 509,
+   "name": "The League of Arathor",
+   "standing": "Neutral",
+   "tier": 3,
+   "value": 0,
+   "max": 3000
+  }
+ ],
  "honorableKills": 3,
  "checkedAt": "2026-11-09T16:01:35Z"
 }
