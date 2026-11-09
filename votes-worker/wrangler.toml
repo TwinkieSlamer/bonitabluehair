@@ -1,4 +1,5 @@
-# Vote server for the "Does he make it?" section. Deploy from this folder:
+# Vote server for the "Does he make it?" section, and the hourly clock for the site's updater.
+# Deploy from this folder:
 #   npx wrangler@4.152.0 deploy
 name = "bonita-votes"
 main = "src/index.js"
@@ -9,3 +10,8 @@ workers_dev = true
 binding = "DB"
 database_name = "bonita-votes"
 database_id = "d15217e9-b096-4e06-b818-a352cc0f5391"
+
+# Every hour at :07 (UTC), start the site's "Update tracker and deploy" workflow on GitHub. GitHub's own
+# schedule starts it hours late or not at all. Needs the GITHUB_DISPATCH_TOKEN secret (see README).
+[triggers]
+crons = ["7 * * * *"]

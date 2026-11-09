@@ -1,6 +1,7 @@
 // Vote server for bonitabluehair.com ("Does he make it?").
 //   GET  /votes  -> { votes: [{ id, name, pick, level, t, switched }] }, earliest call first
 //   POST /vote   { token, pick: "yes" | "no", name } -> { votes, you }
+// It's also the clock for the site's updater: see scheduled() at the bottom.
 // Each browser keeps a random secret token. Votes are stored under a hash of it, so the public list
 // can't be used to change someone else's vote. The level stamp comes from the site's own data, not
 // from the browser, and voting closes once he hits 60 or Christmas arrives.
@@ -121,7 +122,38 @@ async function castVote(req, env) {
   return json(req, 200, { votes: await listVotes(env), you: id });
 }
 
+// GitHub's own schedule starts the updater hours late or skips it, so this Worker's cron trigger
+// (wrangler.toml) asks GitHub to run it every hour. The token is a fine-grained GitHub token for the
+// bonitabluehair repo with "Actions: Read and write", saved with:
+//   npx wrangler@4.152.0 secret put GITHUB_DISPATCH_TOKEN
+const UPDATE_WORKFLOW = "https://api.github.com/repos/TwinkieSlamer/bonitabluehair/actions/workflows/update.yml/dispatches";
+
+async function startUpdate(env) {
+  if (!env.GITHUB_DISPATCH_TOKEN) {
+    console.log("GITHUB_DISPATCH_TOKEN isn't set, so the hourly update wasn't started.");
+    return;
+  }
+  const r = await fetch(UPDATE_WORKFLOW, {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer " + env.GITHUB_DISPATCH_TOKEN,
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      "User-Agent": "bonita-votes-worker",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ ref: "main" }),
+  });
+  // Throwing marks this cron run as failed in the Cloudflare dashboard, so a bad or expired token shows up there.
+  if (!r.ok) throw new Error("GitHub didn't start the update: HTTP " + r.status + " " + (await r.text()).slice(0, 300));
+  console.log("Started the update workflow.");
+}
+
 export default {
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(startUpdate(env));
+  },
+
   async fetch(req, env) {
     const url = new URL(req.url);
     if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: corsHeaders(req) });
