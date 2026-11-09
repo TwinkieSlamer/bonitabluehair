@@ -536,21 +536,6 @@
       "id": 1199,
       "name": "Professions learned",
       "value": 2
-     },
-     {
-      "id": 1201,
-      "name": "Professions at maximum skill",
-      "value": 2
-     },
-     {
-      "id": 1200,
-      "name": "Secondary skills at maximum skill",
-      "value": 3
-     },
-     {
-      "id": 1202,
-      "name": "Weapon skills at maximum skill",
-      "value": 3
      }
     ],
     "sub": [
@@ -567,11 +552,6 @@
         "id": 1745,
         "name": "Cooking Recipes known",
         "value": 38
-       },
-       {
-        "id": 281,
-        "name": "First Aid skill",
-        "value": 207
        },
        {
         "id": 1748,
@@ -698,11 +678,6 @@
         "value": 2
        },
        {
-        "id": 1466,
-        "name": "Most Alliance factions at Exalted",
-        "value": 4
-       },
-       {
         "id": 931,
         "name": "Total factions encountered",
         "value": 14
@@ -733,5 +708,5 @@
  "professions": [],
  "reputations": [],
  "honorableKills": 1,
- "checkedAt": "2026-11-08T23:47:37Z"
+ "checkedAt": "2026-11-09T06:48:54Z"
 }
