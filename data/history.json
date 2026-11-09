@@ -17,6 +17,10 @@
   {
    "t": 1794155447000,
    "level": 25
+  },
+  {
+   "t": 1794208186000,
+   "level": 30
   }
  ],
  "looks": [
@@ -102,6 +106,101 @@
      "ilvl": 16
     }
    ]
+  },
+  {
+   "t": 1794208186000,
+   "level": 30,
+   "itemLevel": 20,
+   "img": "renders/20261109-0709-l30.webp",
+   "w": 400,
+   "h": 680,
+   "hash": "a64d14adbe6445eb60206b18e6b231ff3157d67c803518150e9db9021c85f756",
+   "gear": [
+    {
+     "slot": "Neck",
+     "name": "Ephemeral Choker",
+     "quality": "rare",
+     "ilvl": 18
+    },
+    {
+     "slot": "Shoulder",
+     "name": "Unstable Crystalline Shoulderpads",
+     "quality": "rare",
+     "ilvl": 33
+    },
+    {
+     "slot": "Back",
+     "name": "Catacomb Cloak",
+     "quality": "uncommon",
+     "ilvl": 17
+    },
+    {
+     "slot": "Chest",
+     "name": "Prospector's Chestpiece",
+     "quality": "uncommon",
+     "ilvl": 23
+    },
+    {
+     "slot": "Shirt",
+     "name": "Red Linen Shirt",
+     "quality": "common",
+     "ilvl": 10
+    },
+    {
+     "slot": "Wrist",
+     "name": "Bridgebreaker Bindings",
+     "quality": "rare",
+     "ilvl": 29
+    },
+    {
+     "slot": "Hands",
+     "name": "Runebound Gloves",
+     "quality": "uncommon",
+     "ilvl": 36
+    },
+    {
+     "slot": "Waist",
+     "name": "Belt of Vindication",
+     "quality": "rare",
+     "ilvl": 29
+    },
+    {
+     "slot": "Legs",
+     "name": "Leggings of the Fang",
+     "quality": "rare",
+     "ilvl": 22
+    },
+    {
+     "slot": "Feet",
+     "name": "Blackened Defias Boots",
+     "quality": "rare",
+     "ilvl": 20
+    },
+    {
+     "slot": "Finger",
+     "name": "Malignant Root",
+     "quality": "rare",
+     "ilvl": 32
+    },
+    {
+     "slot": "Finger",
+     "name": "Minor Channeling Ring",
+     "quality": "uncommon",
+     "ilvl": 24
+    },
+    {
+     "slot": "Two-Hand",
+     "name": "Segmented Spider Leg",
+     "quality": "rare",
+     "ilvl": 20
+    },
+    {
+     "slot": "Relic",
+     "name": "Idol of Shifting Tides",
+     "quality": "uncommon",
+     "ilvl": 16
+    }
+   ]
   }
  ],
  "character": {
@@ -110,12 +209,12 @@
   "ruleset": "Normal",
   "race": "Night Elf",
   "className": "Druid",
-  "spec": "Restoration",
+  "spec": "Feral Combat",
   "faction": "Alliance",
-  "itemLevel": 18,
-  "lastLoginTs": 1794155447000,
+  "itemLevel": 20,
+  "lastLoginTs": 1794208186000,
   "professions": []
  },
  "armoryUrl": "https://classicarmory.gg/character/us/forever/bonita-bluehair",
- "checkedAt": "2026-11-09T06:48:54Z"
+ "checkedAt": "2026-11-09T16:01:35Z"
 }

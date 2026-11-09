@@ -308,6 +308,68 @@
    },
    "prof": {},
    "rep": {}
+  },
+  {
+   "t": 1794208186000,
+   "level": 30,
+   "ilvl": 20,
+   "s": {
+    "932": 12,
+    "63570": 1,
+    "63571": 1,
+    "63572": 1,
+    "63573": 3,
+    "15027": 3,
+    "15028": 1,
+    "15029": 2,
+    "1197": 2863,
+    "1198": 2383,
+    "107": 2840,
+    "1337": 9,
+    "1336": 1224,
+    "108": 20,
+    "588": 3,
+    "381": 3,
+    "1458": 3,
+    "1487": 1143,
+    "1488": 942,
+    "1489": 639,
+    "60": 21,
+    "796": 3,
+    "800": 1,
+    "112": 1,
+    "114": 1,
+    "321": 7,
+    "918": 7,
+    "98": 303,
+    "95": 0,
+    "94": 68,
+    "1199": 2,
+    "1524": 114,
+    "1745": 44,
+    "1748": 18,
+    "1519": 1,
+    "1527": 105,
+    "1729": 32,
+    "1538": 103,
+    "349": 77,
+    "353": 21,
+    "64222": 36,
+    "339": 2,
+    "1043": 126,
+    "1044": 24,
+    "345": 5,
+    "922": 7,
+    "923": 6,
+    "346": 15,
+    "347": 46,
+    "529": 2,
+    "931": 15,
+    "1501": 2,
+    "318": 2
+   },
+   "prof": {},
+   "rep": {}
   }
  ],
  "record": {
@@ -319,7 +381,7 @@
      {
       "id": 932,
       "name": "Total 5-player dungeons entered",
-      "value": 9
+      "value": 12
      }
     ],
     "sub": [
@@ -338,6 +400,11 @@
         "value": 1
        },
        {
+        "id": 63572,
+        "name": "Shade of the Archmage Kills (City of Dalaran)",
+        "value": 1
+       },
+       {
         "id": 63573,
         "name": "Durgen Dirgehammer Kills (Hall of Thanes)",
         "value": 3
@@ -351,6 +418,11 @@
         "id": 15028,
         "name": "Mutanus the Devourer kills (Wailing Caverns)",
         "value": 1
+       },
+       {
+        "id": 15029,
+        "name": "Bazil Thredd kills (Stormwind Stockade)",
+        "value": 2
        }
       ]
      }
@@ -363,12 +435,12 @@
      {
       "id": 1197,
       "name": "Total kills",
-      "value": 2069
+      "value": 2863
      },
      {
       "id": 1198,
       "name": "Total kills that grant experience or honor",
-      "value": 1689
+      "value": 2383
      }
     ],
     "sub": [
@@ -379,17 +451,17 @@
        {
         "id": 107,
         "name": "Creatures killed",
-        "value": 2048
+        "value": 2840
        },
        {
         "id": 1337,
         "name": "Different creature types killed",
-        "value": 8
+        "value": 9
        },
        {
         "id": 1336,
         "name": "Creature type killed the most",
-        "value": 967,
+        "value": 1224,
         "detail": "Humanoid"
        },
        {
@@ -406,17 +478,17 @@
        {
         "id": 588,
         "name": "Total Honorable Kills",
-        "value": 1
+        "value": 3
        },
        {
         "id": 381,
         "name": "World Honorable Kills",
-        "value": 1
+        "value": 3
        },
        {
         "id": 1458,
         "name": "Continent with the most Honorable Kills",
-        "value": 1,
+        "value": 3,
         "detail": "Eastern Kingdoms"
        }
       ]
@@ -428,17 +500,17 @@
        {
         "id": 1487,
         "name": "Total Killing Blows",
-        "value": 901
+        "value": 1143
        },
        {
         "id": 1488,
         "name": "World Killing Blows",
-        "value": 769
+        "value": 942
        },
        {
         "id": 1489,
         "name": "Continent with the most Killing Blows",
-        "value": 466,
+        "value": 639,
         "detail": "Eastern Kingdoms"
        }
       ]
@@ -452,7 +524,7 @@
      {
       "id": 60,
       "name": "Total deaths",
-      "value": 17
+      "value": 21
      }
     ],
     "sub": [
@@ -463,7 +535,7 @@
        {
         "id": 796,
         "name": "Resurrected by priests",
-        "value": 1
+        "value": 3
        },
        {
         "id": 800,
@@ -495,12 +567,12 @@
        {
         "id": 321,
         "name": "Total raid and dungeon deaths",
-        "value": 6
+        "value": 7
        },
        {
         "id": 918,
         "name": "Total deaths in 5-player dungeons",
-        "value": 6
+        "value": 7
        }
       ]
      }
@@ -513,7 +585,7 @@
      {
       "id": 98,
       "name": "Quests completed",
-      "value": 236
+      "value": 303
      },
      {
       "id": 95,
@@ -523,7 +595,7 @@
      {
       "id": 94,
       "name": "Quests abandoned",
-      "value": 62
+      "value": 68
      }
     ],
     "sub": []
@@ -546,12 +618,12 @@
        {
         "id": 1524,
         "name": "Cooking skill",
-        "value": 87
+        "value": 114
        },
        {
         "id": 1745,
         "name": "Cooking Recipes known",
-        "value": 38
+        "value": 44
        },
        {
         "id": 1748,
@@ -572,7 +644,7 @@
        {
         "id": 1527,
         "name": "Highest Alchemy skill",
-        "value": 101
+        "value": 105
        },
        {
         "id": 1729,
@@ -582,7 +654,7 @@
        {
         "id": 1538,
         "name": "Highest Herbalism skill",
-        "value": 95
+        "value": 103
        }
       ]
      }
@@ -595,12 +667,12 @@
      {
       "id": 349,
       "name": "Flight paths taken",
-      "value": 62
+      "value": 77
      },
      {
       "id": 353,
       "name": "Number of times hearthed",
-      "value": 19
+      "value": 21
      }
     ],
     "sub": []
@@ -612,7 +684,7 @@
      {
       "id": 64222,
       "name": "Times camped",
-      "value": 21
+      "value": 36
      }
     ],
     "sub": [
@@ -628,12 +700,12 @@
        {
         "id": 1043,
         "name": "Greed rolls made on loot",
-        "value": 112
+        "value": 126
        },
        {
         "id": 1044,
         "name": "Need rolls made on loot",
-        "value": 17
+        "value": 24
        }
       ]
      },
@@ -649,7 +721,7 @@
        {
         "id": 922,
         "name": "Mana potions consumed",
-        "value": 6
+        "value": 7
        },
        {
         "id": 923,
@@ -659,12 +731,12 @@
        {
         "id": 346,
         "name": "Beverages consumed",
-        "value": 12
+        "value": 15
        },
        {
         "id": 347,
         "name": "Food eaten",
-        "value": 39
+        "value": 46
        }
       ]
      },
@@ -680,7 +752,7 @@
        {
         "id": 931,
         "name": "Total factions encountered",
-        "value": 14
+        "value": 15
        }
       ]
      }
@@ -693,12 +765,12 @@
      {
       "id": 1501,
       "name": "Total deaths from other players",
-      "value": 1
+      "value": 2
      },
      {
       "id": 318,
       "name": "Total deaths from opposite faction",
-      "value": 1
+      "value": 2
      }
     ],
     "sub": []
@@ -707,6 +779,6 @@
  },
  "professions": [],
  "reputations": [],
- "honorableKills": 1,
- "checkedAt": "2026-11-09T06:48:54Z"
+ "honorableKills": 3,
+ "checkedAt": "2026-11-09T16:01:35Z"
 }
