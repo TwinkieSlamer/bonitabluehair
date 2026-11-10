@@ -12,6 +12,8 @@ What it does:
     character render changes (a new look). The Armory redraws the render
     later than it updates the gear, so a gear change is saved right away with
     its last picture, and the picture is swapped in when the Armory catches up
+  * reads his professions and reputations from the Armory's /extras
+    endpoint (they left the main response on Nov 8, 2026)
   * keeps the last known professions, reputations and record stats when an
     Armory response comes back without them
   * writes everything to data/history.json, which index.html reads
@@ -37,6 +39,8 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "history.json"
 RENDERS = ROOT / "renders"
 API = "https://classicarmory.gg/api/character/us/forever/bonita-bluehair?ns=forever"
+EXTRAS = API.replace("?ns=", "/extras?ns=")  # professions and reputations
+EXTRA_KEYS = ("professions", "reputations")
 ARMORY_PAGE = "https://classicarmory.gg/character/us/forever/bonita-bluehair"
 UA = {"User-Agent": "christmas-bet-tracker/1.0 (+https://bonitabluehair.com)"}
 
@@ -195,6 +199,24 @@ def update_looks(looks, api, ts, level):
     return "Gear and look unchanged."
 
 
+def add_extras(api):
+    """Copy his professions and reputations into the main Armory response, where the rest of this script reads them.
+    Until Nov 8, 2026 the main response carried both; since then the Armory serves them from /extras, which its own
+    page only loads when those tabs are opened. A failed or empty reply leaves them out, and the last known values stay."""
+    if all(api.get(key) for key in EXTRA_KEYS):
+        return
+    try:
+        extras = json.loads(get(EXTRAS, "application/json"))
+    except (urllib.error.URLError, TimeoutError, ValueError) as exc:
+        print(f"Could not get professions and reputations ({exc}).")
+        return
+    if not isinstance(extras, dict):
+        return
+    for key in EXTRA_KEYS:
+        if not api.get(key) and isinstance(extras.get(key), list):
+            api[key] = extras[key]
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--min-gap", type=float, default=0, metavar="MINUTES",
@@ -216,6 +238,7 @@ def main(argv=None):
         print("The Armory response had no level or login time. Nothing changed.")
         return 1
 
+    add_extras(api)
     prev_char = data.get("character") or {}
     professions = [
         {"name": p.get("name"), "skill": p.get("skill"), "max": p.get("max"), "primary": p.get("primary")}
@@ -321,7 +344,7 @@ def update_stats(api, ts, level, checked_at, kept):
     if merge_record(record, stats.get("record")):
         kept.append("some record stats")
     stats["record"] = record
-    for key in ("professions", "reputations"):
+    for key in EXTRA_KEYS:
         if api.get(key):
             stats[key] = api[key]
         elif stats.get(key):
@@ -332,21 +355,26 @@ def update_stats(api, ts, level, checked_at, kept):
     stats["honorableKills"] = api.get("honorableKills", stats.get("honorableKills"))
     stats["checkedAt"] = checked_at
     snaps = stats.setdefault("snaps", [])
-    added = False
-    if not any(s["t"] == ts for s in snaps):
-        snaps.append({
-            "t": ts,
-            "level": level,
-            "ilvl": api.get("itemLevel"),
-            "s": flat_stats(record),
-            "prof": {p["name"]: p.get("skill") for p in stats["professions"] if p.get("name")},
-            "rep": {r["name"]: REP_OFFSET.get(r.get("tier"), 0) + (r.get("value") or 0)
-                    for r in stats["reputations"] if r.get("name")},
-        })
+    now = {
+        "prof": {p["name"]: p.get("skill") for p in stats["professions"] if p.get("name")},
+        "rep": {r["name"]: REP_OFFSET.get(r.get("tier"), 0) + (r.get("value") or 0)
+                for r in stats["reputations"] if r.get("name")},
+    }
+    snap = next((s for s in snaps if s["t"] == ts), None)
+    if snap is None:
+        snaps.append({"t": ts, "level": level, "ilvl": api.get("itemLevel"), "s": flat_stats(record), **now})
         snaps.sort(key=lambda s: s["t"])
-        added = True
+        note = "New stats snapshot."
+    else:
+        # Skills and standings are as of his last logout, like the level. A snapshot saved while the Armory was
+        # leaving them out carried the values from before; now that they've arrived, put the real ones in.
+        fixed = [key for key, field in zip(EXTRA_KEYS, ("prof", "rep")) if api.get(key) and snap.get(field) != now[field]]
+        for key, field in zip(EXTRA_KEYS, ("prof", "rep")):
+            if key in fixed:
+                snap[field] = now[field]
+        note = f"Stats snapshot corrected ({', '.join(fixed)})." if fixed else "Stats unchanged."
     path.write_text(json.dumps(stats, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
-    return "New stats snapshot." if added else "Stats unchanged."
+    return note
 
 
 if __name__ == "__main__":
