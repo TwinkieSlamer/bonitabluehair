@@ -321,25 +321,25 @@
   "professions": [
    {
     "name": "Alchemy",
-    "skill": 101,
+    "skill": 105,
     "max": 150,
     "primary": true
    },
    {
     "name": "Herbalism",
-    "skill": 95,
+    "skill": 105,
     "max": 150,
     "primary": true
    },
    {
-    "name": "First Aid",
-    "skill": 106,
+    "name": "Cooking",
+    "skill": 114,
     "max": 150,
     "primary": false
    },
    {
-    "name": "Cooking",
-    "skill": 87,
+    "name": "First Aid",
+    "skill": 106,
     "max": 150,
     "primary": false
    },
@@ -352,5 +352,5 @@
   ]
  },
  "armoryUrl": "https://classicarmory.gg/character/us/forever/bonita-bluehair",
- "checkedAt": "2026-11-10T01:08:04Z"
+ "checkedAt": "2026-11-10T02:08:06Z"
 }

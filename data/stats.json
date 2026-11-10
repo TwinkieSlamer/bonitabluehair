@@ -481,26 +481,27 @@
     "318": 2
    },
    "prof": {
-    "Alchemy": 101,
-    "Herbalism": 95,
+    "Alchemy": 105,
+    "Herbalism": 105,
+    "Cooking": 114,
     "First Aid": 106,
-    "Cooking": 87,
     "Fishing": 1
    },
    "rep": {
-    "Darnassus": 11406,
-    "Stormwind": 8956,
-    "Ironforge": 7081,
-    "Gnomeregan Exiles": 6045,
+    "Stormwind": 12787,
+    "Darnassus": 12775,
+    "Ironforge": 9443,
+    "Gnomeregan Exiles": 7301,
+    "Gelkis Clan Centaur": 3750,
     "Cenarion Circle": 2960,
+    "Azeroth Commerce Authority": 2075,
+    "Kirin Tor": 772,
     "Gadgetzan": 650,
     "Ratchet": 600,
     "Booty Bay": 550,
     "Everlook": 550,
     "Powderfuse": 550,
-    "Azeroth Commerce Authority": 0,
-    "Darkmoon Faire": 0,
-    "The League of Arathor": 0
+    "Magram Clan Centaur": -6850
    }
   }
  ],
@@ -939,7 +940,7 @@
    "id": 171,
    "name": "Alchemy",
    "primary": true,
-   "skill": 101,
+   "skill": 105,
    "max": 150,
    "recipes": 15,
    "icon": "136240"
@@ -948,10 +949,19 @@
    "id": 182,
    "name": "Herbalism",
    "primary": true,
-   "skill": 95,
+   "skill": 105,
    "max": 150,
    "recipes": 3,
    "icon": "136246"
+  },
+  {
+   "id": 185,
+   "name": "Cooking",
+   "primary": false,
+   "skill": 114,
+   "max": 150,
+   "recipes": 21,
+   "icon": "133971"
   },
   {
    "id": 129,
@@ -961,15 +971,6 @@
    "max": 150,
    "recipes": 8,
    "icon": "135966"
-  },
-  {
-   "id": 185,
-   "name": "Cooking",
-   "primary": false,
-   "skill": 87,
-   "max": 150,
-   "recipes": 18,
-   "icon": "133971"
   },
   {
    "id": 356,
@@ -983,35 +984,43 @@
  ],
  "reputations": [
   {
+   "id": 72,
+   "name": "Stormwind",
+   "standing": "Honored",
+   "tier": 5,
+   "value": 3787,
+   "max": 12000
+  },
+  {
    "id": 69,
    "name": "Darnassus",
    "standing": "Honored",
    "tier": 5,
-   "value": 2406,
+   "value": 3775,
    "max": 12000
-  },
-  {
-   "id": 72,
-   "name": "Stormwind",
-   "standing": "Friendly",
-   "tier": 4,
-   "value": 5956,
-   "max": 6000
   },
   {
    "id": 47,
    "name": "Ironforge",
-   "standing": "Friendly",
-   "tier": 4,
-   "value": 4081,
-   "max": 6000
+   "standing": "Honored",
+   "tier": 5,
+   "value": 443,
+   "max": 12000
   },
   {
    "id": 54,
    "name": "Gnomeregan Exiles",
    "standing": "Friendly",
    "tier": 4,
-   "value": 3045,
+   "value": 4301,
+   "max": 6000
+  },
+  {
+   "id": 92,
+   "name": "Gelkis Clan Centaur",
+   "standing": "Friendly",
+   "tier": 4,
+   "value": 750,
    "max": 6000
   },
   {
@@ -1020,6 +1029,22 @@
    "standing": "Neutral",
    "tier": 3,
    "value": 2960,
+   "max": 3000
+  },
+  {
+   "id": 2586,
+   "name": "Azeroth Commerce Authority",
+   "standing": "Neutral",
+   "tier": 3,
+   "value": 2075,
+   "max": 3000
+  },
+  {
+   "id": 2740,
+   "name": "Kirin Tor",
+   "standing": "Neutral",
+   "tier": 3,
+   "value": 772,
    "max": 3000
   },
   {
@@ -1063,30 +1088,14 @@
    "max": 3000
   },
   {
-   "id": 2586,
-   "name": "Azeroth Commerce Authority",
-   "standing": "Neutral",
-   "tier": 3,
-   "value": 0,
-   "max": 3000
-  },
-  {
-   "id": 909,
-   "name": "Darkmoon Faire",
-   "standing": "Neutral",
-   "tier": 3,
-   "value": 0,
-   "max": 3000
-  },
-  {
-   "id": 509,
-   "name": "The League of Arathor",
-   "standing": "Neutral",
-   "tier": 3,
-   "value": 0,
-   "max": 3000
+   "id": 93,
+   "name": "Magram Clan Centaur",
+   "standing": "Hated",
+   "tier": 0,
+   "value": 35150,
+   "max": 36000
   }
  ],
  "honorableKills": 3,
- "checkedAt": "2026-11-10T01:08:04Z"
+ "checkedAt": "2026-11-10T02:08:06Z"
 }
