@@ -891,7 +891,11 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
       hi.src = lk.img; if (lk.w) { hi.width = lk.w; hi.height = lk.h; }
     }
     // Tell the 3D stage when his look last changed, so it can say if the model's gear is out of date.
-    $("stage").dataset.latestLookGear = JSON.stringify(looks.length ? (looks[looks.length - 1].gear || []).map(function (g) { return g.name; }).sort() : []);
+    // Only items the model draws count: a necklace, ring, trinket or relic doesn't appear on a character (and has
+    // no slot in the export), so swapping one doesn't make the model out of date.
+    var UNDRAWN = { Neck: 1, Finger: 1, Trinket: 1, Relic: 1 };
+    $("stage").dataset.latestLookGear = JSON.stringify(looks.length ? (looks[looks.length - 1].gear || [])
+      .filter(function (g) { return !UNDRAWN[g.slot]; }).map(function (g) { return g.name; }).sort() : []);
     $("stage").dataset.latestLook = String(looks.length ? looks[looks.length - 1].t : 0);
     // The Armory redraws his picture later than it updates his gear; until it does, the newest frame borrows the last one.
     $("stage").dataset.renderBehind = looks.length && looks[looks.length - 1].stalePic ? "1" : "";
@@ -1778,7 +1782,8 @@ async function start() {
   const lookT = params.get("look") ? Date.parse(params.get("look") + "T23:00:00") : await latestLook();
   const exportT = manifest.exportedAt ? Date.parse(manifest.exportedAt) : manifest.gearAsOf ? Date.parse(manifest.gearAsOf + "T23:59:59") : 0;
   // Stale only when the gear reel has a newer frame than the export, and (when the manifest lists the model's
-  // gear) that frame's gear is actually different. The Armory render lags, so a newer frame can show the same gear.
+  // gear) that frame's drawn gear is actually different. The Armory render lags, so a newer frame can show the
+  // same gear, and jewellery isn't drawn at all: the manifest's "gear" lists drawn items only.
   let lookGear = [];
   try { lookGear = JSON.parse(stage.dataset.latestLookGear || "[]"); } catch (e) {}
   const sameGear = Array.isArray(manifest.gear) && manifest.gear.length && lookGear.length
