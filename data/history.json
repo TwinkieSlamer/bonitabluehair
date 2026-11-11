@@ -40,6 +40,10 @@
    "t": 1794370393914,
    "level": 34,
    "source": "roster"
+  },
+  {
+   "t": 1794372594000,
+   "level": 34
   }
  ],
  "looks": [
@@ -410,6 +414,102 @@
    "w": 400,
    "h": 680,
    "hash": "c9374aaa939ad470a09a08dd09ddcb41f3b46c4e698c37ecc5da81208487f111"
+  },
+  {
+   "t": 1794372594000,
+   "level": 34,
+   "itemLevel": 22,
+   "gear": [
+    {
+     "slot": "Neck",
+     "name": "Thermaplugg Medal of Honor",
+     "quality": "rare",
+     "ilvl": 34
+    },
+    {
+     "slot": "Shoulder",
+     "name": "Unstable Crystalline Shoulderpads",
+     "quality": "rare",
+     "ilvl": 33
+    },
+    {
+     "slot": "Back",
+     "name": "Durable Cape of the Bandit",
+     "quality": "uncommon",
+     "ilvl": 29
+    },
+    {
+     "slot": "Chest",
+     "name": "Prospector's Chestpiece",
+     "quality": "uncommon",
+     "ilvl": 23
+    },
+    {
+     "slot": "Shirt",
+     "name": "Red Linen Shirt",
+     "quality": "common",
+     "ilvl": 10
+    },
+    {
+     "slot": "Wrist",
+     "name": "Bridgebreaker Bindings",
+     "quality": "rare",
+     "ilvl": 29
+    },
+    {
+     "slot": "Hands",
+     "name": "Runebound Gloves",
+     "quality": "uncommon",
+     "ilvl": 36
+    },
+    {
+     "slot": "Waist",
+     "name": "Belt of Vindication",
+     "quality": "rare",
+     "ilvl": 29
+    },
+    {
+     "slot": "Legs",
+     "name": "Leggings of the Fang",
+     "quality": "rare",
+     "ilvl": 22
+    },
+    {
+     "slot": "Feet",
+     "name": "Blackened Defias Boots",
+     "quality": "rare",
+     "ilvl": 20
+    },
+    {
+     "slot": "Finger",
+     "name": "Ring of Ruin",
+     "quality": "uncommon",
+     "ilvl": 35
+    },
+    {
+     "slot": "Finger",
+     "name": "Seal of Wrynn",
+     "quality": "rare",
+     "ilvl": 31
+    },
+    {
+     "slot": "Two-Hand",
+     "name": "Segmented Spider Leg",
+     "quality": "rare",
+     "ilvl": 20
+    },
+    {
+     "slot": "Relic",
+     "name": "Idol of Shifting Tides",
+     "quality": "uncommon",
+     "ilvl": 16
+    }
+   ],
+   "img": "renders/20261109-1919-l32.webp",
+   "w": 400,
+   "h": 680,
+   "hash": "c9374aaa939ad470a09a08dd09ddcb41f3b46c4e698c37ecc5da81208487f111",
+   "stalePic": true
   }
  ],
  "character": {
@@ -420,8 +520,8 @@
   "className": "Druid",
   "spec": "Feral Combat",
   "faction": "Alliance",
-  "itemLevel": 21,
-  "lastLoginTs": 1794287739000,
+  "itemLevel": 22,
+  "lastLoginTs": 1794372594000,
   "professions": [
    {
     "name": "Herbalism",
@@ -436,14 +536,14 @@
     "primary": true
    },
    {
-    "name": "Cooking",
-    "skill": 114,
+    "name": "First Aid",
+    "skill": 132,
     "max": 150,
     "primary": false
    },
    {
-    "name": "First Aid",
-    "skill": 112,
+    "name": "Cooking",
+    "skill": 114,
     "max": 150,
     "primary": false
    },
@@ -456,5 +556,5 @@
   ]
  },
  "armoryUrl": "https://classicarmory.gg/character/us/forever/bonita-bluehair",
- "checkedAt": "2026-11-11T04:13:14Z"
+ "checkedAt": "2026-11-11T05:08:05Z"
 }
