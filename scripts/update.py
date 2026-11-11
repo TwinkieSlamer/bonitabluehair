@@ -8,6 +8,9 @@ Run by GitHub Actions every hour (see .github/workflows/update.yml), or by hand:
 
 What it does:
   * records a level snapshot each time the Armory shows a new logout
+  * also reads his level from the Armory's guild roster, which follows the
+    game while he is still online, and records a snapshot when the roster
+    is ahead of his character sheet
   * saves a new gear-reel frame whenever his equipped gear changes, or the
     character render changes (a new look). The Armory redraws the render
     later than it updates the gear, so a gear change is saved right away with
@@ -31,6 +34,7 @@ import pathlib
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 
 from PIL import Image
@@ -41,6 +45,7 @@ RENDERS = ROOT / "renders"
 API = "https://classicarmory.gg/api/character/us/forever/bonita-bluehair?ns=forever"
 EXTRAS = API.replace("?ns=", "/extras?ns=")  # professions and reputations
 EXTRA_KEYS = ("professions", "reputations")
+GUILD = "https://classicarmory.gg/api/guild/{region}/forever/{guild}?ns=forever"  # the roster, with each member's level
 ARMORY_PAGE = "https://classicarmory.gg/character/us/forever/bonita-bluehair"
 UA = {"User-Agent": "christmas-bet-tracker/1.0 (+https://bonitabluehair.com)"}
 
@@ -217,6 +222,32 @@ def add_extras(api):
             api[key] = extras[key]
 
 
+def roster_level(api):
+    """His level on his guild's roster, or None when it can't be read.
+    The character sheet (level, gear, stats) only refreshes when he logs out. The guild roster follows the game more
+    closely, so it shows a new level while he is still online: on Nov 11, 2026 it said 34 for hours while the sheet
+    said 33. The guild comes from the sheet, so this keeps working if he changes guilds, and stops if he leaves."""
+    guild, me = api.get("guildSlug"), api.get("slug")
+    if not guild or not me:
+        return None
+    url = GUILD.format(region=urllib.parse.quote(str(api.get("region") or "us"), safe=""),
+                       guild=urllib.parse.quote(str(guild), safe=""))
+    try:
+        roster = json.loads(get(url, "application/json"))
+    except (urllib.error.URLError, TimeoutError, ValueError) as exc:
+        print(f"Could not get the guild roster ({exc}).")
+        return None
+    members = roster.get("members") if isinstance(roster, dict) else None
+    for m in members if isinstance(members, list) else []:
+        if not isinstance(m, dict) or m.get("slug") != me:
+            continue
+        if m.get("realmSlug") and api.get("realmSlug") and m["realmSlug"] != api["realmSlug"]:
+            continue  # same name on another ruleset
+        lvl = m.get("level")
+        return lvl if isinstance(lvl, int) and not isinstance(lvl, bool) and 1 <= lvl <= 60 else None
+    return None
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--min-gap", type=float, default=0, metavar="MINUTES",
@@ -268,6 +299,14 @@ def main(argv=None):
         snaps.append({"t": ts, "level": level})
         snaps.sort(key=lambda s: s["t"])
 
+    # A level the roster shows before his sheet does. It is stamped with the time of this check: he reached it some
+    # time since the last one. His next logout adds its own snapshot as usual.
+    roster, roster_note = roster_level(api), ""
+    if roster is not None and roster > max(s["level"] for s in snaps):
+        snaps.append({"t": int(time.time() * 1000), "level": roster, "source": "roster"})
+        snaps.sort(key=lambda s: s["t"])
+        roster_note = f" The guild roster has him at level {roster}, ahead of his character sheet: level snapshot added."
+
     look_note = update_looks(data.setdefault("looks", []), api, ts, level)
 
     data["checkedAt"] = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -277,7 +316,7 @@ def main(argv=None):
 
     seen = dt.datetime.fromtimestamp(ts / 1000, dt.timezone.utc)
     print(f"Level {level}, last seen {seen:%Y-%m-%d %H:%M} UTC."
-          f" {'New level snapshot.' if new_snap else 'No new logout.'}"
+          f" {'New level snapshot.' if new_snap else 'No new logout.'}{roster_note}"
           f" {look_note} {new_stats}"
           + (f" The Armory left out {', '.join(kept)}; kept the last known values." if kept else ""))
     return 0

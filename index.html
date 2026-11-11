@@ -815,7 +815,8 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
     // Armory's logouts; the Armory stays the referee if the two ever disagree.
     var live = (L && typeof L.level === "number" && L.time) ? { t: L.time * 1000, level: L.level, xp: L.xp || 0, xpMax: L.xpMax || 0 } : null;
     var lastArmory = armory.length ? armory[armory.length - 1] : null;
-    var armoryAfter = live ? armory.filter(function (s) { return s.t >= live.t - 5 * 60 * 1000; }) : [];
+    // Only a logout referees the addon: a guild-roster reading ("source": "roster") can lag the game by a few minutes.
+    var armoryAfter = live ? armory.filter(function (s) { return s.source !== "roster" && s.t >= live.t - 5 * 60 * 1000; }) : [];
     var mismatch = !!live && armoryAfter.length > 0 && armoryAfter[0].level < live.level;
     var useLive = !!live && !mismatch && (!lastArmory || live.t > lastArmory.t || live.level > lastArmory.level);
     if (live && !mismatch) {
@@ -1231,7 +1232,7 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
     var src = $("source");
     src.textContent = "";
     var sb = document.createElement("strong"); sb.textContent = "Where the data comes from. "; src.appendChild(sb);
-    src.appendChild(document.createTextNode("Blizzard's WoW Forever Armory, read through Classic Armory about once an hour. The Armory updates when he logs out, so the level here can trail the game. Last seen in game: " +
+    src.appendChild(document.createTextNode("Blizzard's WoW Forever Armory, read through Classic Armory about once an hour. His character sheet (gear, stats, last logout) only updates when he logs out. His level also comes from his guild's roster, which follows the game more closely, so a new level can show here before he logs out. Last logout: " +
       (C.lastLoginTs ? fmtWhen(C.lastLoginTs) : "unknown") + ". Last checked: " + (D.checkedAt ? fmtWhen(Date.parse(D.checkedAt)) : "unknown") + ". "));
     if (D.armoryUrl) {
       var a = document.createElement("a"); a.href = D.armoryUrl; a.target = "_blank"; a.rel = "noopener";
