@@ -326,101 +326,6 @@
    "img": "renders/20261109-1919-l32.webp",
    "w": 400,
    "h": 680,
-   "hash": "d020ad875d390c623e4dbb158b403c3815251541960e4921cf4727d54f1c8a28"
-  },
-  {
-   "t": 1794251994000,
-   "level": 32,
-   "itemLevel": 21,
-   "gear": [
-    {
-     "slot": "Neck",
-     "name": "Ephemeral Choker",
-     "quality": "rare",
-     "ilvl": 18
-    },
-    {
-     "slot": "Shoulder",
-     "name": "Unstable Crystalline Shoulderpads",
-     "quality": "rare",
-     "ilvl": 33
-    },
-    {
-     "slot": "Back",
-     "name": "Durable Cape of the Bandit",
-     "quality": "uncommon",
-     "ilvl": 29
-    },
-    {
-     "slot": "Chest",
-     "name": "Prospector's Chestpiece",
-     "quality": "uncommon",
-     "ilvl": 23
-    },
-    {
-     "slot": "Shirt",
-     "name": "Red Linen Shirt",
-     "quality": "common",
-     "ilvl": 10
-    },
-    {
-     "slot": "Wrist",
-     "name": "Bridgebreaker Bindings",
-     "quality": "rare",
-     "ilvl": 29
-    },
-    {
-     "slot": "Hands",
-     "name": "Runebound Gloves",
-     "quality": "uncommon",
-     "ilvl": 36
-    },
-    {
-     "slot": "Waist",
-     "name": "Belt of Vindication",
-     "quality": "rare",
-     "ilvl": 29
-    },
-    {
-     "slot": "Legs",
-     "name": "Leggings of the Fang",
-     "quality": "rare",
-     "ilvl": 22
-    },
-    {
-     "slot": "Feet",
-     "name": "Blackened Defias Boots",
-     "quality": "rare",
-     "ilvl": 20
-    },
-    {
-     "slot": "Finger",
-     "name": "Malignant Root",
-     "quality": "rare",
-     "ilvl": 32
-    },
-    {
-     "slot": "Finger",
-     "name": "Seal of Wrynn",
-     "quality": "rare",
-     "ilvl": 31
-    },
-    {
-     "slot": "Two-Hand",
-     "name": "Segmented Spider Leg",
-     "quality": "rare",
-     "ilvl": 20
-    },
-    {
-     "slot": "Relic",
-     "name": "Idol of Shifting Tides",
-     "quality": "uncommon",
-     "ilvl": 16
-    }
-   ],
-   "img": "renders/20261109-1919-l32.webp",
-   "w": 400,
-   "h": 680,
    "hash": "c9374aaa939ad470a09a08dd09ddcb41f3b46c4e698c37ecc5da81208487f111"
   },
   {
@@ -516,8 +421,7 @@
    "img": "renders/20261109-1919-l32.webp",
    "w": 400,
    "h": 680,
-   "hash": "c9374aaa939ad470a09a08dd09ddcb41f3b46c4e698c37ecc5da81208487f111",
-   "stalePic": true
+   "hash": "c9374aaa939ad470a09a08dd09ddcb41f3b46c4e698c37ecc5da81208487f111"
   },
   {
    "t": 1794426579000,

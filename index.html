@@ -1216,7 +1216,10 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
       if (shown.length) cap.appendChild(gearList(shown));
       if (lk.stalePic) {
         var pn = document.createElement("p"); pn.className = "pic-note";
-        pn.textContent = "The Armory hasn't redrawn him in this gear yet, so this is its last picture. It swaps in on its own once the Armory catches up.";
+        // Only the newest frame can still get its picture: the Armory draws him as he is now, never as he was.
+        pn.textContent = idx === looks.length - 1
+          ? "The Armory hasn't redrawn him in this gear yet, so this is its last picture. It swaps in on its own once the Armory catches up."
+          : "The Armory didn't redraw him before his gear changed again, so this picture is from before this gear.";
         cap.appendChild(pn);
       }
       if (gear.length) {

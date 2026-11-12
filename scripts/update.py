@@ -37,7 +37,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from PIL import Image
+from PIL import Image, ImageChops
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "history.json"
@@ -118,13 +118,45 @@ def gear_list(equipment):
     return items
 
 
-def save_render(png_bytes, stamp, level):
+UNDRAWN = {"Neck", "Finger", "Trinket", "Relic"}  # slots that don't appear on a character, so not in his picture
+
+
+def drawn_key(gear):
+    """gear_key for the items a picture of him shows."""
+    return gear_key([g for g in gear or [] if g.get("slot") not in UNDRAWN])
+
+
+def cropped(png_bytes):
+    """The Armory render trimmed to the figure, with a little room around it."""
     im = Image.open(io.BytesIO(png_bytes)).convert("RGBA")
     box = im.getchannel("A").getbbox()
     if box:
         pad = 24
         im = im.crop((max(0, box[0] - pad), max(0, box[1] - pad),
                       min(im.width, box[2] + pad), min(im.height, box[3] + pad)))
+    return im
+
+
+def same_picture(png_bytes):
+    """True when a render with a new hash is the picture already saved, drawn again.
+    Blizzard sometimes re-renders him with a few dozen pixels different (79 of 272,000 on Nov 10, 2026): a new file,
+    the same look. Compares against renders/latest.png, the last picture saved, and allows 0.2% of pixels to differ."""
+    latest = RENDERS / "latest.png"
+    if not latest.exists():
+        return False
+    try:
+        new, old = cropped(png_bytes), Image.open(latest).convert("RGBA")
+    except OSError:
+        return False
+    if new.size != old.size:
+        return False
+    flat = [Image.alpha_composite(Image.new("RGBA", im.size, (10, 15, 30, 255)), im).convert("RGB") for im in (new, old)]
+    differing = sum(ImageChops.difference(*flat).convert("L").histogram()[25:])  # off by more than 24 of 255
+    return differing <= new.width * new.height * 0.002
+
+
+def save_render(png_bytes, stamp, level):
+    im = cropped(png_bytes)
     RENDERS.mkdir(exist_ok=True)
     name = f"{stamp}-l{level}.webp"
     im.save(RENDERS / name, "WEBP", quality=88, method=6)
@@ -184,16 +216,29 @@ def update_looks(looks, api, ts, level):
             picture(frame, ts, level)
             looks.append(frame)
             return "New gear and a new render: frame saved."
-        # The Armory hasn't redrawn him yet. Show its last picture until it does.
-        frame.update(img=last["img"], w=last.get("w"), h=last.get("h"), hash=last.get("hash"), stalePic=True)
+        # The Armory hasn't redrawn him yet, so the frame borrows its last picture. That picture is only behind when
+        # something it shows changed, or it was already behind: a new necklace or ring looks the same.
+        frame.update(img=last["img"], w=last.get("w"), h=last.get("h"), hash=last.get("hash"))
+        if last.get("stalePic") or drawn_key(gear) != drawn_key(last_gear):
+            frame["stalePic"] = True
+            looks.append(frame)
+            return "New gear: frame saved with the Armory's last render until it redraws him."
         looks.append(frame)
-        return "New gear: frame saved with the Armory's last render until it redraws him."
+        return "New gear that his picture doesn't show: frame saved with the current render."
 
     if new_render:
         if last.get("stalePic"):
             # The Armory caught up with gear an earlier check already saved: swap the new picture in.
             picture(last, last["t"], last["level"])
             return "The Armory redrew him: new render added to the latest frame."
+        if same_picture(png):
+            last["hash"] = digest  # a new file, the same look: nothing to add to the reel
+            return "The Armory redrew the same picture. Look unchanged."
+        if last["t"] == ts:
+            # A second, different picture for the same logout. Two frames would share one file name, and the reel
+            # would show the same moment twice, so the picture replaces the one on this frame.
+            picture(last, ts, last["level"])
+            return "The Armory redrew him again for the same logout: picture replaced on the latest frame."
         frame = {"t": ts, "level": level, "itemLevel": api.get("itemLevel"), "gear": gear if gear_known else last_gear}
         picture(frame, ts, level)
         looks.append(frame)
