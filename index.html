@@ -1668,9 +1668,11 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
     s.setProperty("--hero-ink2", css(mix(rgb("#97a3c2"), rgb("#d6deef"), light)));
     s.setProperty("--hero-holly", css(mix(rgb("#ec5f55"), rgb("#ff9a92"), light)));
     s.setProperty("--hero-shadow", (0.55 * light).toFixed(2));
-    // The moon sinks and fades into the dawn; the sun climbs out of the horizon, warm while it's low.
-    s.setProperty("--moon-o", clamp((2 - alt) / 10, 0, 1).toFixed(3));
-    s.setProperty("--moon-set", clamp((alt + 12) / 14, 0, 1).toFixed(3));
+    // The moon sinks and fades through the blue hour; the sun climbs out of the horizon, warm while it's low.
+    // They share one spot, so they hand off: the moon is gone (and fully sunk) once the sun is 4° below the
+    // horizon, and the sun only starts to show at 3° below. The two discs are never on screen together.
+    s.setProperty("--moon-o", clamp((-4 - alt) / 8, 0, 1).toFixed(3));
+    s.setProperty("--moon-set", clamp((alt + 12) / 8, 0, 1).toFixed(3));
     s.setProperty("--sun-o", clamp((alt + 3) / 6, 0, 1).toFixed(3));
     s.setProperty("--sun-rise", (1 - clamp((alt + 2) / 22, 0, 1)).toFixed(3));
     s.setProperty("--sun-edge", css(mix(rgb("#ff9d5c"), rgb("#ffe7a6"), clamp(alt / 20, 0, 1))));
