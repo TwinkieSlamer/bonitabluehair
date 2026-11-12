@@ -1,8 +1,8 @@
 {
-  "model": "models/bonita-2026-11-09.glb",
-  "bytes": 418456,
-  "exportedAt": "2026-11-09T17:01:00-05:00",
-  "gearAsOf": "2026-11-11",
+  "model": "models/bonita-2026-11-12.glb",
+  "bytes": 412176,
+  "exportedAt": "2026-11-12T16:54:00-05:00",
+  "gearAsOf": "2026-11-12",
   "idleClip": "Idle",
   "orientation": "0deg 0deg 0deg",
   "cameraOrbit": "0deg 84deg 4.25m",
@@ -14,12 +14,12 @@
     "Durable Cape of the Bandit",
     "Prospector's Chestpiece",
     "Red Linen Shirt",
-    "Bridgebreaker Bindings",
+    "Technician's Bracers",
     "Runebound Gloves",
     "Belt of Vindication",
-    "Leggings of the Fang",
+    "Triprunner Dungarees",
     "Blackened Defias Boots",
     "Segmented Spider Leg"
   ],
-  "source": "wow.export 0.2.21 from the local WoW: Forever 1.60.1.70862 install. Night Elf female, appearance matched to the Armory render (Loose Tail hair, teal 863, Crane markings), gear from the Armory item IDs at level 32. Idle clip only; staff on its hand bone, shoulder pads on the collarbone bones; cape texture (cape_cloth_b_02orange, file 137285) added by hand because wow.export doesn't load cape textures; meshopt + WebP 1024. Checked against his Nov 11 gear at level 34: the ten drawn items (the \"gear\" list) are unchanged, only his necklace and one ring changed, and those aren't drawn, so the model was not exported again. Extracted game art: see README."
+  "source": "wow.export 0.2.21 from the local WoW: Forever 1.60.1.70862 install. Night Elf female, appearance matched to the Armory render (Loose Tail hair, teal 863, Crane markings), with the default circlet, facial jewelry and necklace geosets (3701, 1601, 3601) switched off because the render doesn't show them. Gear from the Armory item IDs at level 35: the ten drawn items in the \"gear\" list. Against the Nov 9 model only the legs changed on the body texture (Triprunner Dungarees for Leggings of the Fang); the new bracers sit under his gloves. Idle clip only; staff on its hand bone, shoulder pads on the collarbone bones; cape texture (cape_cloth_b_02orange, file 137285) added by hand because wow.export doesn't load cape textures; meshopt + WebP 1024. Extracted game art: see README."
 }
