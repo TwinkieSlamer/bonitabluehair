@@ -1047,6 +1047,100 @@
     "Bloodsail Buccaneers": -8000,
     "Magram Clan Centaur": -21850
    }
+  },
+  {
+   "t": 1794629718000,
+   "level": 36,
+   "ilvl": 23,
+   "s": {
+    "932": 17,
+    "63570": 1,
+    "63571": 1,
+    "63572": 2,
+    "63573": 3,
+    "15027": 3,
+    "15028": 1,
+    "15029": 2,
+    "6140": 1,
+    "1197": 4302,
+    "1198": 3567,
+    "107": 4277,
+    "1337": 9,
+    "1336": 2030,
+    "108": 22,
+    "588": 3,
+    "381": 3,
+    "1458": 3,
+    "1487": 1642,
+    "1488": 1340,
+    "1489": 964,
+    "60": 28,
+    "796": 4,
+    "800": 1,
+    "112": 1,
+    "114": 1,
+    "321": 9,
+    "918": 9,
+    "98": 421,
+    "95": 105.3,
+    "94": 100,
+    "1199": 2,
+    "1201": 2,
+    "1200": 3,
+    "1202": 3,
+    "1524": 114,
+    "1745": 46,
+    "281": 207,
+    "1748": 32,
+    "1519": 1,
+    "1527": 105,
+    "1729": 32,
+    "1538": 108,
+    "349": 112,
+    "353": 26,
+    "64222": 52,
+    "339": 2,
+    "1043": 194,
+    "1044": 30,
+    "344": 40,
+    "1125": 40,
+    "345": 12,
+    "922": 13,
+    "923": 8,
+    "346": 17,
+    "347": 62,
+    "529": 3,
+    "1466": 4,
+    "931": 20,
+    "1501": 3,
+    "318": 3
+   },
+   "prof": {
+    "Herbalism": 108,
+    "Alchemy": 105,
+    "First Aid": 238,
+    "Cooking": 114,
+    "Fishing": 1
+   },
+   "rep": {
+    "Stormwind": 14446,
+    "Darnassus": 13608,
+    "Ironforge": 10641,
+    "Gnomeregan Exiles": 8322,
+    "Gelkis Clan Centaur": 6750,
+    "Cenarion Circle": 2960,
+    "Azeroth Commerce Authority": 2075,
+    "Kirin Tor": 1993,
+    "Booty Bay": 892,
+    "Gadgetzan": 840,
+    "Ratchet": 827,
+    "Everlook": 740,
+    "Powderfuse": 740,
+    "Brotherhood of the Horse": 176,
+    "Darkmoon Faire": 50,
+    "Bloodsail Buccaneers": -8000,
+    "Magram Clan Centaur": -21850
+   }
   }
  ],
  "record": {
@@ -1117,12 +1211,12 @@
      {
       "id": 1197,
       "name": "Total kills",
-      "value": 4296
+      "value": 4302
      },
      {
       "id": 1198,
       "name": "Total kills that grant experience or honor",
-      "value": 3561
+      "value": 3567
      }
     ],
     "sub": [
@@ -1133,7 +1227,7 @@
        {
         "id": 107,
         "name": "Creatures killed",
-        "value": 4271
+        "value": 4277
        },
        {
         "id": 1337,
@@ -1182,17 +1276,17 @@
        {
         "id": 1487,
         "name": "Total Killing Blows",
-        "value": 1636
+        "value": 1642
        },
        {
         "id": 1488,
         "name": "World Killing Blows",
-        "value": 1334
+        "value": 1340
        },
        {
         "id": 1489,
         "name": "Continent with the most Killing Blows",
-        "value": 958,
+        "value": 964,
         "detail": "Eastern Kingdoms"
        }
       ]
@@ -1267,17 +1361,17 @@
      {
       "id": 98,
       "name": "Quests completed",
-      "value": 417
+      "value": 421
      },
      {
       "id": 95,
       "name": "Average quests completed per day",
-      "value": 139
+      "value": 105.3
      },
      {
       "id": 94,
       "name": "Quests abandoned",
-      "value": 99
+      "value": 100
      }
     ],
     "sub": []
@@ -1330,7 +1424,7 @@
        {
         "id": 1748,
         "name": "First Aid Manuals learned",
-        "value": 30
+        "value": 32
        },
        {
         "id": 1519,
@@ -1369,12 +1463,12 @@
      {
       "id": 349,
       "name": "Flight paths taken",
-      "value": 108
+      "value": 112
      },
      {
       "id": 353,
       "name": "Number of times hearthed",
-      "value": 25
+      "value": 26
      }
     ],
     "sub": []
@@ -1415,6 +1509,17 @@
       "id": 145,
       "name": "Consumables",
       "stats": [
+       {
+        "id": 344,
+        "name": "Bandages used",
+        "value": 40
+       },
+       {
+        "id": 1125,
+        "name": "Bandage used most",
+        "value": 40,
+        "detail": "Triage Bandage"
+       },
        {
         "id": 345,
         "name": "Health potions consumed",
@@ -1507,8 +1612,8 @@
    "id": 129,
    "name": "First Aid",
    "primary": false,
-   "skill": 211,
-   "max": 225,
+   "skill": 238,
+   "max": 300,
    "recipes": 14,
    "icon": "135966"
   },
@@ -1637,19 +1742,19 @@
    "max": 3000
   },
   {
+   "id": 2826,
+   "name": "Brotherhood of the Horse",
+   "standing": "Neutral",
+   "tier": 3,
+   "value": 176,
+   "max": 3000
+  },
+  {
    "id": 909,
    "name": "Darkmoon Faire",
    "standing": "Neutral",
    "tier": 3,
    "value": 50,
-   "max": 3000
-  },
-  {
-   "id": 2826,
-   "name": "Brotherhood of the Horse",
-   "standing": "Neutral",
-   "tier": 3,
-   "value": 1,
    "max": 3000
   },
   {
@@ -1670,5 +1775,5 @@
   }
  ],
  "honorableKills": 3,
- "checkedAt": "2026-11-14T04:08:09Z"
+ "checkedAt": "2026-11-14T05:08:07Z"
 }
