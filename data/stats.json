@@ -1419,7 +1419,7 @@
        {
         "id": 281,
         "name": "First Aid skill",
-        "value": 207
+        "value": 330
        },
        {
         "id": 1748,
@@ -1596,8 +1596,7 @@
    "primary": true,
    "skill": 108,
    "max": 150,
-   "recipes": 3,
-   "icon": "136246"
+   "recipes": 3
   },
   {
    "id": 171,
@@ -1605,8 +1604,7 @@
    "primary": true,
    "skill": 105,
    "max": 150,
-   "recipes": 15,
-   "icon": "136240"
+   "recipes": 15
   },
   {
    "id": 129,
@@ -1614,8 +1612,7 @@
    "primary": false,
    "skill": 238,
    "max": 300,
-   "recipes": 14,
-   "icon": "135966"
+   "recipes": 14
   },
   {
    "id": 185,
@@ -1623,8 +1620,7 @@
    "primary": false,
    "skill": 114,
    "max": 150,
-   "recipes": 22,
-   "icon": "133971"
+   "recipes": 22
   },
   {
    "id": 356,
@@ -1632,8 +1628,7 @@
    "primary": false,
    "skill": 1,
    "max": 75,
-   "recipes": 1,
-   "icon": "136245"
+   "recipes": 1
   }
  ],
  "reputations": [
@@ -1775,5 +1770,5 @@
   }
  ],
  "honorableKills": 3,
- "checkedAt": "2026-11-14T19:08:04Z"
+ "checkedAt": "2026-11-15T03:55:33Z"
 }

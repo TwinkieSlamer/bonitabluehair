@@ -64,6 +64,11 @@
   {
    "t": 1794629718000,
    "level": 36
+  },
+  {
+   "t": 1794714933354,
+   "level": 37,
+   "source": "roster"
   }
  ],
  "looks": [
@@ -541,13 +546,8 @@
   "faction": "Alliance",
   "itemLevel": 23,
   "lastLoginTs": 1794629718000,
+  "xp": 14643,
   "professions": [
-   {
-    "name": "Herbalism",
-    "skill": 108,
-    "max": 150,
-    "primary": true
-   },
    {
     "name": "Alchemy",
     "skill": 105,
@@ -555,10 +555,10 @@
     "primary": true
    },
    {
-    "name": "First Aid",
-    "skill": 238,
-    "max": 300,
-    "primary": false
+    "name": "Herbalism",
+    "skill": 108,
+    "max": 150,
+    "primary": true
    },
    {
     "name": "Cooking",
@@ -571,13 +571,15 @@
     "skill": 1,
     "max": 75,
     "primary": false
+   },
+   {
+    "name": "First Aid",
+    "skill": 238,
+    "max": 300,
+    "primary": false
    }
   ]
  },
  "armoryUrl": "https://classicarmory.gg/character/us/forever/bonita-bluehair",
- "checkedAt": "2026-11-14T19:08:04Z",
- "paused": {
-  "since": "2026-11-14T19:08:04Z",
-  "note": "The Armory closed its data feed to outside trackers on Nov 14, and the tracker is moving to Blizzard's own data service."
- }
+ "checkedAt": "2026-11-15T03:55:33Z"
 }
