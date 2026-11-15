@@ -23,4 +23,13 @@ jobs:
         env:
           BLIZZARD_CLIENT_ID: ${{ secrets.BLIZZARD_CLIENT_ID }}
           BLIZZARD_CLIENT_SECRET: ${{ secrets.BLIZZARD_CLIENT_SECRET }}
-        run: python scripts/blizzard_probe.py
+        run: python scripts/blizzard_probe.py --dump blizzard-dump
+
+      # The full replies about him (public game data), for writing and testing the updater. Kept three days.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: blizzard-dump
+          path: blizzard-dump
+          if-no-files-found: ignore
+          retention-days: 3

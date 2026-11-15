@@ -15,6 +15,7 @@ someone else's character, which is why a match now has to be him.
 import base64
 import json
 import os
+import pathlib
 import sys
 import time
 import urllib.error
@@ -31,6 +32,13 @@ FOREVER, KNOWN, BOGUS = "forever", "classicann", "doesnotexist"
 SUB = ["status", "equipment", "character-media", "statistics", "achievements/statistics", "professions",
        "reputations", "specializations", "pvp-summary"]
 results = []
+DUMP = None  # with --dump DIR, the full replies about him are also written there as JSON (the workflow uploads them)
+
+
+def save(name, data):
+    if DUMP is not None and data is not None:
+        DUMP.mkdir(parents=True, exist_ok=True)
+        (DUMP / f"{name.replace('/', '-')}.json").write_text(json.dumps(data, indent=1, ensure_ascii=False), encoding="utf-8")
 
 
 def ns(kind, flavor):
@@ -145,6 +153,9 @@ def shape(v, indent=1, depth=0, budget=None):
 
 
 def main():
+    global DUMP
+    if "--dump" in sys.argv:
+        DUMP = pathlib.Path(sys.argv[sys.argv.index("--dump") + 1])
     tok = token()
 
     print(f"\n== 1. Does the API know a '{FOREVER}' game version? (compared with '{KNOWN}', which exists, and '{BOGUS}', which doesn't)")
@@ -203,6 +214,7 @@ def main():
 
     flavor, path, summary = found
     profile_ns = ns("profile", flavor)
+    save("summary", summary)
     results.append(("character summary", profile_ns, 200))
     print(f"\n== 5. Found him: {path} in {profile_ns}")
     for k in ("name", "level", "last_login_timestamp", "equipped_item_level", "average_item_level", "experience"):
@@ -221,6 +233,7 @@ def main():
         print(f"\n  -- {sub}: HTTP {status}{reason(data) if status != 200 else ''}")
         if status != 200 or not isinstance(data, dict):
             continue
+        save(sub, data)
         if sub == "equipment":
             for it in data.get("equipped_items") or []:
                 print(f"    {((it.get('slot') or {}).get('name') or '?'):<12} {it.get('item', {}).get('id')!s:<8} {it.get('name')!r} quality={((it.get('quality') or {}).get('type'))} level={((it.get('level') or {}).get('value'))} inv={((it.get('inventory_type') or {}).get('name'))}")
@@ -244,6 +257,8 @@ def main():
         print(f"  {base.split('.com', 1)[-1]}/roster in {gns}: HTTP {status}{reason(data) if status != 200 else ''}")
         members = ((data or {}).get("members") or []) if isinstance(data, dict) else []
         print(f"  members: {len(members)}")
+        # Only his own entry is kept: the other members are other people's characters.
+        save("guild-roster", {"member_count": len(members), "members": [m for m in members if (m.get("character") or {}).get("slug") == f"{FIRST}-{LAST}"]})
         for m in members:
             c = m.get("character") or {}
             if str(c.get("name") or "").lower().startswith(FIRST):
