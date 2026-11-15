@@ -2,9 +2,15 @@
 
 Can Bonita Bluehair hit level 60 in WoW: Forever before Christmas? This site keeps score.
 
-## Open items (as of Nov 12, 2026)
+## Open items (as of Nov 14, 2026)
 
 Delete each one once it's done.
+
+- **The tracker has no data source, and updates are paused.** classicarmory.gg's `/api/` addresses have answered `403 Forbidden` to the tracker since the Nov 14 20:07 UTC check, from GitHub's runners and from a home PC alike, while its own pages still load the same data. Its feed is closed to outside programs, which is the site owner's call: don't work around it (no browser disguise, cookies or copied tokens). Everything on the site is as of the last good check, Nov 14 19:08 UTC (level 36). Until there is a new source: `PAUSED` at the top of `scripts/update.py` makes every check fetch nothing and succeed, and `"paused"` in `data/history.json` makes both pages say updates are paused. The plan is to read Blizzard's official API instead:
+  1. The owner creates an API client at https://develop.battle.net/access/clients and saves its two values as repository Actions secrets named `BLIZZARD_CLIENT_ID` and `BLIZZARD_CLIENT_SECRET` (repo → Settings → Secrets and variables → Actions, or `gh secret set NAME --repo TwinkieSlamer/bonitabluehair`, which asks for the value). Nobody else should handle the secret.
+  2. Run the "Blizzard API probe" workflow (Actions tab; `scripts/blizzard_probe.py`). It tries the likely namespaces (`profile-forever-us` first) and prints the status and shape of each endpoint: character summary, equipment, character media (the picture), statistics, professions, reputations and the guild roster. It prints public game data only, never the token or the secrets.
+  3. Rewrite `scripts/update.py` against those responses and pass the two secrets to the "Check the Armory" step in `update.yml`, then set `PAUSED = None`, remove `"paused"` from `data/history.json`, and correct the "Where the data comes from" lines on both pages and the Updates section below.
+  Not known until the probe runs: whether Blizzard exposes WoW: Forever characters to outside clients at all, and whether professions, reputations and the picture are among what it exposes. If it doesn't, the fallbacks are the XP addon kit (level and XP only) or entering levels by hand.
 
 - **The level 28 point was entered by hand.** The Armory missed his level 28 logout on the night of Nov 8, so `data/history.json` has it at 11:00 PM Eastern, marked `"source": "owner"`. The time is approximate; change it if the real time turns up.
 

@@ -1,0 +1,26 @@
+name: Blizzard API probe
+
+# Run by hand (Actions tab -> Blizzard API probe -> Run workflow) once the two secrets below are saved. It prints
+# what Blizzard's official API returns for the character, so scripts/update.py can be rewritten to read it.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Ask Blizzard's API about the character
+        env:
+          BLIZZARD_CLIENT_ID: ${{ secrets.BLIZZARD_CLIENT_ID }}
+          BLIZZARD_CLIENT_SECRET: ${{ secrets.BLIZZARD_CLIENT_SECRET }}
+        run: python scripts/blizzard_probe.py

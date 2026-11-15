@@ -49,6 +49,15 @@ GUILD = "https://classicarmory.gg/api/guild/{region}/forever/{guild}?ns=forever"
 ARMORY_PAGE = "https://classicarmory.gg/character/us/forever/bonita-bluehair"
 UA = {"User-Agent": "christmas-bet-tracker/1.0 (+https://bonitabluehair.com)"}
 
+# The Armory (classicarmory.gg) closed its data feed to outside programs on Nov 14, 2026. Every /api/ address has
+# answered 403 Forbidden since the 20:07 UTC check, from GitHub's runners and from a home PC alike, while its own
+# pages still load the same data. That is the site owner's call, so the tracker doesn't work around it (no browser
+# disguise, cookies or copied tokens). Until this script reads Blizzard's official API instead (see the README's
+# open items), a check fetches nothing and changes nothing, so the hourly runs stop failing and stop knocking on a
+# closed door. Set this to None to make checks run again.
+PAUSED = ("Checks are paused: the Armory has refused the tracker's requests (403 Forbidden) since Nov 14, 2026."
+          " Nothing was fetched or changed.")
+
 SLOT_ORDER = ["head", "neck", "shoulder", "back", "chest", "shirt", "tabard", "wrist", "hands", "waist",
               "legs", "feet", "finger1", "finger2", "trinket1", "trinket2", "mainhand", "offhand", "ranged"]
 
@@ -298,6 +307,9 @@ def main(argv=None):
     ap.add_argument("--min-gap", type=float, default=0, metavar="MINUTES",
                     help="do nothing if the last check was less than this many minutes ago")
     args = ap.parse_args(argv)
+    if PAUSED:
+        print(PAUSED)
+        return 0
 
     data = json.loads(DATA.read_text(encoding="utf-8"))
     if args.min_gap and checked_recently(data, args.min_gap):

@@ -566,7 +566,7 @@ footer { border-top: 1px solid var(--rule); }
     who.appendChild(document.createTextNode(" · " + [C.race, cls].filter(Boolean).join(" · ") + " · WoW: Forever"));
     var asof = $("asof"); asof.textContent = "";
     asof.appendChild(el("span", null, "Last seen " + fmtWhen(last.t)));
-    asof.appendChild(el("span", null, "Armory read " + (S.checkedAt ? fmtWhen(Date.parse(S.checkedAt)) : "unknown")));
+    asof.appendChild(el("span", null, "Armory read " + (S.checkedAt ? fmtWhen(Date.parse(S.checkedAt)) : "unknown") + (H.paused ? " · paused" : "")));
     asof.appendChild(el("span", null, snaps.length + (snaps.length === 1 ? " reading so far" : " readings so far")));
 
     // Index the latest record by stat id.
@@ -774,7 +774,7 @@ footer { border-top: 1px solid var(--rule); }
     });
     $("full-sum").textContent = "Show all " + count + " stats";
 
-    $("source").textContent = "Blizzard's WoW Forever Armory statistics, read through Classic Armory about once an hour. The Armory refreshes when he logs out. Last checked: " + (S.checkedAt ? fmtWhen(Date.parse(S.checkedAt)) : "unknown") + ".";
+    $("source").textContent = (H.paused ? "Updates are paused. " + (H.paused.note ? H.paused.note + " " : "") : "") + "Blizzard's WoW Forever Armory statistics, read through Classic Armory about once an hour. The Armory refreshes when he logs out. Last checked: " + (S.checkedAt ? fmtWhen(Date.parse(S.checkedAt)) : "unknown") + ".";
   }).catch(function (err) {
     if (window.console) console.warn("Record failed to load:", err);
     $("load-error").hidden = false;

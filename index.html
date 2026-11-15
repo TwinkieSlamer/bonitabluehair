@@ -908,7 +908,8 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
     var led = $("ledger");
     led.setAttribute("data-state", state);
     $("entry").textContent = "Entry · " + fmtDow(dayOfEntry);
-    $("armory-read").textContent = D.checkedAt ? "Armory read " + fmtWhen(Date.parse(D.checkedAt)) : "";
+    // "paused" is set in the data while the tracker has no source to read; both pages then say the numbers are frozen.
+    $("armory-read").textContent = D.checkedAt ? "Armory read " + fmtWhen(Date.parse(D.checkedAt)) + (D.paused ? " · paused" : "") : "";
     $("stamp-date").textContent = "Official call · " + fmtDay(dayOfEntry);
     $("stamp-text").textContent = stampText;
     var stampEl = $("stamp");
@@ -1238,6 +1239,11 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
     // Footer source line
     var src = $("source");
     src.textContent = "";
+    if (D.paused) {
+      var pb = document.createElement("strong"); pb.textContent = "Updates are paused. "; src.appendChild(pb);
+      src.appendChild(document.createTextNode((D.paused.note ? D.paused.note + " " : "") + "Everything here is as of " +
+        (D.checkedAt ? fmtWhen(Date.parse(D.checkedAt)) : "the last check") + ". "));
+    }
     var sb = document.createElement("strong"); sb.textContent = "Where the data comes from. "; src.appendChild(sb);
     src.appendChild(document.createTextNode("Blizzard's WoW Forever Armory, read through Classic Armory about once an hour. His character sheet (gear, stats, last logout) only updates when he logs out. His level also comes from his guild's roster, which follows the game more closely, so a new level can show here before he logs out. Last logout: " +
       (C.lastLoginTs ? fmtWhen(C.lastLoginTs) : "unknown") + ". Last checked: " + (D.checkedAt ? fmtWhen(Date.parse(D.checkedAt)) : "unknown") + ". "));
