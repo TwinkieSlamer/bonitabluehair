@@ -32,8 +32,12 @@ jobs:
         with:
           python-version: "3.12"
 
+      # Reads Blizzard's official API. The API client's ID and secret are repository Actions secrets.
       - name: Check the Armory
         if: github.event_name != 'push'
+        env:
+          BLIZZARD_CLIENT_ID: ${{ secrets.BLIZZARD_CLIENT_ID }}
+          BLIZZARD_CLIENT_SECRET: ${{ secrets.BLIZZARD_CLIENT_SECRET }}
         run: |
           pip install --quiet pillow==11.3.0
           python scripts/update.py ${{ github.event_name == 'schedule' && '--min-gap 40' || '' }}

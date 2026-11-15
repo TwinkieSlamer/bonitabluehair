@@ -755,7 +755,7 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
 
 <footer>
   <div class="wrap foot">
-    <p id="source"><strong>Where the data comes from.</strong> Blizzard's WoW Forever Armory, read through Classic Armory about once an hour.</p>
+    <p id="source"><strong>Where the data comes from.</strong> Blizzard's WoW Forever Armory, read from Blizzard's own data service about once an hour.</p>
     <p><strong>How the math works.</strong> XP per level comes from the Classic XP table: 4,084,700 XP from level 1 to 60. Play time per level is estimated from that XP divided by how fast XP comes in at that level, which rises with level the way mob XP does (45 + 5 × level per kill). The projection assumes he keeps the same daily play time as his recent pace. The Armory doesn't show XP inside a level, so every count starts at the beginning of his current level.</p>
   </div>
 </footer>
@@ -1245,7 +1245,7 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
         (D.checkedAt ? fmtWhen(Date.parse(D.checkedAt)) : "the last check") + ". "));
     }
     var sb = document.createElement("strong"); sb.textContent = "Where the data comes from. "; src.appendChild(sb);
-    src.appendChild(document.createTextNode("Blizzard's WoW Forever Armory, read through Classic Armory about once an hour. His character sheet (gear, stats, last logout) only updates when he logs out. His level also comes from his guild's roster, which follows the game more closely, so a new level can show here before he logs out. Last logout: " +
+    src.appendChild(document.createTextNode("Blizzard's WoW Forever Armory, read from Blizzard's own data service about once an hour. His character sheet (gear, stats, last logout) only updates when he logs out. His level also comes from his guild's roster, which follows the game more closely, so a new level can show here before he logs out. Last logout: " +
       (C.lastLoginTs ? fmtWhen(C.lastLoginTs) : "unknown") + ". Last checked: " + (D.checkedAt ? fmtWhen(Date.parse(D.checkedAt)) : "unknown") + ". "));
     if (D.armoryUrl) {
       var a = document.createElement("a"); a.href = D.armoryUrl; a.target = "_blank"; a.rel = "noopener";

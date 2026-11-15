@@ -1,35 +1,38 @@
 #!/usr/bin/env python3
-"""Check Bonita Bluehair on the WoW Forever Armory and update the site's data.
+"""Check Bonita Bluehair in WoW: Forever and update the site's data.
 
-Run by GitHub Actions every hour (see .github/workflows/update.yml), or by hand:
+Reads Blizzard's official World of Warcraft API (his "Armory" data). Run by GitHub Actions every hour (see
+.github/workflows/update.yml), which passes the API client's ID and secret from the repository's Actions secrets:
 
     pip install pillow
-    python scripts/update.py
+    BLIZZARD_CLIENT_ID=... BLIZZARD_CLIENT_SECRET=... python scripts/update.py
 
 What it does:
-  * records a level snapshot each time the Armory shows a new logout
-  * also reads his level from the Armory's guild roster, which follows the
-    game while he is still online, and records a snapshot when the roster
-    is ahead of his character sheet
+  * records a level snapshot each time his character sheet shows a new logout
+  * also reads his level from his guild's roster, which follows the game
+    while he is still online, and records a snapshot when the roster is
+    ahead of his sheet
   * saves a new gear-reel frame whenever his equipped gear changes, or the
-    character render changes (a new look). The Armory redraws the render
+    character render changes (a new look). Blizzard redraws the render
     later than it updates the gear, so a gear change is saved right away with
-    its last picture, and the picture is swapped in when the Armory catches up
-  * reads his professions and reputations from the Armory's /extras
-    endpoint (they left the main response on Nov 8, 2026)
-  * keeps the last known professions, reputations and record stats when an
-    Armory response comes back without them
-  * writes everything to data/history.json, which index.html reads
+    its last picture, and the picture is swapped in when the render catches up
+  * saves his professions, reputations and record (kills, quests, deaths...)
+  * keeps the last known professions, reputations and record stats when a
+    reply comes back without them
+  * writes everything to data/history.json and data/stats.json, which the pages read
 
     python scripts/update.py --min-gap 40   # skip if the last check was under 40 minutes ago
 """
 import argparse
+import base64
 import datetime as dt
 import email.utils
 import hashlib
 import http.client
 import io
 import json
+import math
+import os
 import pathlib
 import sys
 import time
@@ -42,21 +45,26 @@ from PIL import Image, ImageChops
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "history.json"
 RENDERS = ROOT / "renders"
-API = "https://classicarmory.gg/api/character/us/forever/bonita-bluehair?ns=forever"
-EXTRAS = API.replace("?ns=", "/extras?ns=")  # professions and reputations
+# The source is Blizzard's official World of Warcraft API (https://develop.battle.net). WoW: Forever is the "forever"
+# game version there. Its characters have a first and last name and no realm, so he is simply
+# /profile/wow/character/bonita-bluehair in the namespace profile-forever-us. scripts/blizzard_probe.py is how that
+# was found, and prints the shape of every reply used here.
+# Until Nov 14, 2026 this script read the same data through classicarmory.gg's internal feed. That site then closed
+# the feed to outside programs (403 Forbidden on every /api/ address), which is its owner's call, so the tracker
+# moved to the official API rather than work around it.
+BLIZZARD = "https://us.api.blizzard.com"
+TOKEN_URL = "https://oauth.battle.net/token"
+NAMESPACE = "profile-forever-us"
+SLUG = "bonita-bluehair"
+CHARACTER = f"/profile/wow/character/{SLUG}"
 EXTRA_KEYS = ("professions", "reputations")
-GUILD = "https://classicarmory.gg/api/guild/{region}/forever/{guild}?ns=forever"  # the roster, with each member's level
-ARMORY_PAGE = "https://classicarmory.gg/character/us/forever/bonita-bluehair"
+ARMORY_PAGE = "https://classicarmory.gg/character/us/forever/bonita-bluehair"  # a page for people; the site links to it
 UA = {"User-Agent": "christmas-bet-tracker/1.0 (+https://bonitabluehair.com)"}
 
-# The Armory (classicarmory.gg) closed its data feed to outside programs on Nov 14, 2026. Every /api/ address has
-# answered 403 Forbidden since the 20:07 UTC check, from GitHub's runners and from a home PC alike, while its own
-# pages still load the same data. That is the site owner's call, so the tracker doesn't work around it (no browser
-# disguise, cookies or copied tokens). Until this script reads Blizzard's official API instead (see the README's
-# open items), a check fetches nothing and changes nothing, so the hourly runs stop failing and stop knocking on a
-# closed door. Set this to None to make checks run again.
-PAUSED = ("Checks are paused: the Armory has refused the tracker's requests (403 Forbidden) since Nov 14, 2026."
-          " Nothing was fetched or changed.")
+# Set this to a sentence to make every check fetch nothing, change nothing and print the sentence (used Nov 14-15,
+# 2026, between the Armory feed closing and the move to Blizzard's API). The pages show a "paused" note while
+# data/history.json has a "paused" entry; a successful check removes it.
+PAUSED = None
 
 SLOT_ORDER = ["head", "neck", "shoulder", "back", "chest", "shirt", "tabard", "wrist", "hands", "waist",
               "legs", "feet", "finger1", "finger2", "trinket1", "trinket2", "mainhand", "offhand", "ranged"]
@@ -82,9 +90,9 @@ def retry_wait(exc, attempt):
     return RETRY_DELAYS[attempt]
 
 
-def get(url, accept="*/*"):
+def get(url, accept="*/*", headers=None):
     """Fetch a URL, waiting and trying again through rate limits, server errors and dropped connections."""
-    req = urllib.request.Request(url, headers={**UA, "Accept": accept})
+    req = urllib.request.Request(url, headers={**UA, "Accept": accept, **(headers or {})})
     retries = len(RETRY_DELAYS)
     for attempt in range(retries + 1):
         try:
@@ -258,22 +266,156 @@ def update_looks(looks, api, ts, level):
     return "Gear and look unchanged."
 
 
-def add_extras(api):
-    """Copy his professions and reputations into the main Armory response, where the rest of this script reads them.
-    Until Nov 8, 2026 the main response carried both; since then the Armory serves them from /extras, which its own
-    page only loads when those tabs are opened. A failed or empty reply leaves them out, and the last known values stay."""
-    if all(api.get(key) for key in EXTRA_KEYS):
-        return
+class SourceError(Exception):
+    """The API client can't be used: its ID and secret are missing or refused."""
+
+
+_token = None
+
+
+def blizzard_token():
+    """An access token for the API client whose ID and secret are in the environment. None of the three is ever printed."""
+    global _token
+    if _token:
+        return _token
+    cid = os.environ.get("BLIZZARD_CLIENT_ID", "").strip()
+    secret = os.environ.get("BLIZZARD_CLIENT_SECRET", "").strip()
+    if not cid or not secret:
+        raise SourceError("BLIZZARD_CLIENT_ID and BLIZZARD_CLIENT_SECRET are not set (repository Actions secrets; see the README)")
+    req = urllib.request.Request(TOKEN_URL, data=b"grant_type=client_credentials", headers={
+        **UA, "Authorization": "Basic " + base64.b64encode(f"{cid}:{secret}".encode()).decode(),
+        "Content-Type": "application/x-www-form-urlencoded"})
     try:
-        extras = json.loads(get(EXTRAS, "application/json"))
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            body = json.loads(resp.read())
+    except urllib.error.HTTPError as exc:
+        raise SourceError(f"Blizzard refused the API client's ID and secret (HTTP {exc.code})") from None
     except (urllib.error.URLError, TimeoutError, ValueError) as exc:
-        print(f"Could not get professions and reputations ({exc}).")
-        return
-    if not isinstance(extras, dict):
-        return
-    for key in EXTRA_KEYS:
-        if not api.get(key) and isinstance(extras.get(key), list):
-            api[key] = extras[key]
+        raise SourceError(f"could not get an access token ({exc})") from None
+    _token = body.get("access_token") if isinstance(body, dict) else None
+    if not _token:
+        raise SourceError("Blizzard's token reply had no token in it")
+    return _token
+
+
+def bz(path):
+    """One reply from Blizzard's API, parsed. The token travels in a header, so it is never part of a logged URL."""
+    url = f"{BLIZZARD}{path}?namespace={NAMESPACE}&locale=en_US"
+    return json.loads(get(url, "application/json", {"Authorization": "Bearer " + blizzard_token()}))
+
+
+def optional(what, path):
+    """A reply the check can live without: None, with a line in the log, when it can't be had."""
+    try:
+        reply = bz(path)
+    except (urllib.error.URLError, TimeoutError, ValueError) as exc:
+        print(f"Could not get {what} ({exc}).")
+        return None
+    return reply if isinstance(reply, dict) else None
+
+
+def named(x):
+    return x.get("name") if isinstance(x, dict) else None
+
+
+# Blizzard's slot types -> the slot keys in SLOT_ORDER.
+SLOT_KEYS = {"HEAD": "head", "NECK": "neck", "SHOULDER": "shoulder", "BACK": "back", "CHEST": "chest", "SHIRT": "shirt",
+             "TABARD": "tabard", "WRIST": "wrist", "HANDS": "hands", "WAIST": "waist", "LEGS": "legs", "FEET": "feet",
+             "FINGER_1": "finger1", "FINGER_2": "finger2", "TRINKET_1": "trinket1", "TRINKET_2": "trinket2",
+             "MAIN_HAND": "mainhand", "OFF_HAND": "offhand", "RANGED": "ranged"}
+
+
+def to_equipment(reply):
+    """Blizzard's equipped_items as {slot key: item}, with the labels the gear reel has always used
+    (inventory type "Finger", "Two-Hand", "Relic"..., quality in lower case)."""
+    out = {}
+    for it in (reply or {}).get("equipped_items") or []:
+        key = SLOT_KEYS.get((it.get("slot") or {}).get("type"))
+        if not key or not it.get("name"):
+            continue
+        out[key] = {"id": (it.get("item") or {}).get("id"), "name": it["name"],
+                    "quality": str((it.get("quality") or {}).get("type") or "").lower() or None,
+                    "itemLevel": (it.get("level") or {}).get("value"),
+                    "slotLabel": named(it.get("inventory_type")) or named(it.get("slot"))}
+    return out
+
+
+def to_professions(reply):
+    rows = []
+    for kind, primary in (("primaries", True), ("secondaries", False)):
+        for p in (reply or {}).get(kind) or []:
+            tiers = p.get("tiers") or []
+            tier = max(tiers, key=lambda t: t.get("max_skill_points") or 0) if tiers else {}
+            rows.append({"id": (p.get("profession") or {}).get("id"), "name": named(p.get("profession")), "primary": primary,
+                         "skill": tier.get("skill_points"), "max": tier.get("max_skill_points"),
+                         "recipes": sum(len(t.get("known_recipes") or []) for t in tiers)})
+    return [r for r in rows if r["name"]]
+
+
+def to_reputations(reply):
+    rows = []
+    for r in (reply or {}).get("reputations") or []:
+        st = r.get("standing") or {}
+        rows.append({"id": (r.get("faction") or {}).get("id"), "name": named(r.get("faction")), "standing": st.get("name"),
+                     "tier": st.get("tier"), "value": st.get("value"), "max": st.get("max")})
+    return [r for r in rows if r["name"]]
+
+
+def to_record(reply):
+    """Blizzard's achievement statistics as the record the site saves: categories of {id, name, value[, detail]}.
+    Counts arrive as floats; whole ones become ints and the rest keep one decimal, as the saved record always had."""
+    def number(q):
+        if isinstance(q, bool) or not isinstance(q, (int, float)):
+            return q
+        return int(q) if float(q).is_integer() else math.floor(q * 10 + 0.5) / 10
+
+    def stat(s):
+        row = {"id": s.get("id"), "name": s.get("name"), "value": number(s.get("quantity"))}
+        if s.get("description"):
+            row["detail"] = s["description"]
+        return row
+
+    def cat(c, top):
+        row = {"id": c.get("id"), "name": c.get("name"), "stats": [stat(s) for s in c.get("statistics") or []]}
+        subs = [cat(x, False) for x in c.get("sub_categories") or []]
+        if top or subs:  # a top-level category always lists its sub-categories, even when it has none
+            row["sub"] = subs
+        return row
+
+    cats = (reply or {}).get("categories")
+    return {"categories": [cat(c, True) for c in cats]} if cats else None
+
+
+def read_character():
+    """Everything the tracker uses, read from Blizzard's API and laid out the way the rest of this script has always
+    worked with it, so the saved data keeps its shape. Only the summary (level and last logout) is essential; a
+    part that can't be had is left out and the last known values stay."""
+    summary = bz(CHARACTER)
+    if not isinstance(summary, dict):
+        raise ValueError("the character summary was not an object")
+    api = {
+        "name": summary.get("name_search") or " ".join(x for x in (summary.get("name"), summary.get("surname")) if x),
+        "slug": SLUG, "region": "us", "realm": named(summary.get("ruleset")),
+        "level": summary.get("level"), "lastLoginTs": summary.get("last_login_timestamp"), "xp": summary.get("experience"),
+        "race": named(summary.get("race")), "className": named(summary.get("character_class")),
+        "faction": named(summary.get("faction")), "itemLevel": summary.get("equipped_item_level"),
+        "guildSlug": (summary.get("guild") or {}).get("slug"),
+    }
+    api["equipment"] = to_equipment(optional("his gear", CHARACTER + "/equipment"))
+    media = optional("his picture's address", CHARACTER + "/character-media")
+    api["mainRender"] = next((a.get("value") for a in (media or {}).get("assets") or [] if a.get("key") == "main-raw"), None)
+    specs = optional("his talents", CHARACTER + "/specializations")
+    active = next((g for g in (specs or {}).get("specialization_groups") or [] if g.get("is_active")), None)
+    trees = (active or {}).get("specializations") or []
+    if trees:
+        api["spec"] = max(trees, key=lambda t: t.get("spent_points") or 0).get("specialization_name")
+    pvp = optional("his PvP summary", CHARACTER + "/pvp-summary")
+    if isinstance((pvp or {}).get("honorable_kills"), int):
+        api["honorableKills"] = pvp["honorable_kills"]
+    api["professions"] = to_professions(optional("his professions", CHARACTER + "/professions"))
+    api["reputations"] = to_reputations(optional("his reputations", CHARACTER + "/reputations"))
+    api["record"] = to_record(optional("his record", CHARACTER + "/achievements/statistics"))
+    return api
 
 
 def roster_level(api):
@@ -281,25 +423,25 @@ def roster_level(api):
     The character sheet (level, gear, stats) only refreshes when he logs out. The guild roster follows the game more
     closely, so it shows a new level while he is still online: on Nov 11, 2026 it said 34 for hours while the sheet
     said 33. The guild comes from the sheet, so this keeps working if he changes guilds, and stops if he leaves."""
-    guild, me = api.get("guildSlug"), api.get("slug")
-    if not guild or not me:
+    guild = api.get("guildSlug")
+    if not guild:
         return None
-    url = GUILD.format(region=urllib.parse.quote(str(api.get("region") or "us"), safe=""),
-                       guild=urllib.parse.quote(str(guild), safe=""))
-    try:
-        roster = json.loads(get(url, "application/json"))
-    except (urllib.error.URLError, TimeoutError, ValueError) as exc:
-        print(f"Could not get the guild roster ({exc}).")
-        return None
-    members = roster.get("members") if isinstance(roster, dict) else None
+    roster = optional("the guild roster", f"/data/wow/guild/{urllib.parse.quote(str(guild), safe='')}/roster")
+    members = (roster or {}).get("members")
     for m in members if isinstance(members, list) else []:
-        if not isinstance(m, dict) or m.get("slug") != me:
+        c = m.get("character") if isinstance(m, dict) else None
+        if not isinstance(c, dict) or c.get("slug") != SLUG:
             continue
-        if m.get("realmSlug") and api.get("realmSlug") and m["realmSlug"] != api["realmSlug"]:
-            continue  # same name on another ruleset
-        lvl = m.get("level")
+        lvl = c.get("level")
         return lvl if isinstance(lvl, int) and not isinstance(lvl, bool) and 1 <= lvl <= 60 else None
     return None
+
+
+def like(old, new):
+    """`new` rows in the order `old` had them (matched by id), anything new after. Blizzard lists things in its own
+    order; keeping the saved order means a check that changes nothing changes nothing in the files."""
+    place = {row.get("id"): i for i, row in enumerate(old or []) if isinstance(row, dict)}
+    return sorted(new, key=lambda row: place.get(row.get("id"), len(place)))
 
 
 def main(argv=None):
@@ -313,20 +455,23 @@ def main(argv=None):
 
     data = json.loads(DATA.read_text(encoding="utf-8"))
     if args.min_gap and checked_recently(data, args.min_gap):
-        print(f"Checked the Armory at {data['checkedAt']}, under {args.min_gap:g} minutes ago. Skipping this run.")
+        print(f"Last checked at {data['checkedAt']}, under {args.min_gap:g} minutes ago. Skipping this run.")
         return 0
     try:
-        api = json.loads(get(API, "application/json"))
+        api = read_character()
+    except SourceError as exc:
+        print(f"Could not use Blizzard's API: {exc}. Nothing changed.")
+        return 1
     except (urllib.error.URLError, TimeoutError, ValueError) as exc:
-        print(f"Could not reach the Armory: {exc}")
+        print(f"Could not reach Blizzard's API: {exc}. Nothing changed.")
         return 1
 
     level, ts = api.get("level"), api.get("lastLoginTs")
-    if not isinstance(level, int) or not isinstance(ts, int):
-        print("The Armory response had no level or login time. Nothing changed.")
+    if not isinstance(level, int) or isinstance(level, bool) or not isinstance(ts, int):
+        print("Blizzard's reply had no level or login time. Nothing changed.")
         return 1
 
-    add_extras(api)
+    data.pop("paused", None)  # a check got through: the pages stop saying updates are paused
     prev_char = data.get("character") or {}
     professions = [
         {"name": p.get("name"), "skill": p.get("skill"), "max": p.get("max"), "primary": p.get("primary")}
@@ -334,7 +479,7 @@ def main(argv=None):
     ]
     kept = []
     if not professions and prev_char.get("professions"):
-        professions = prev_char["professions"]  # the Armory sometimes leaves them out; keep the last known
+        professions = prev_char["professions"]  # a reply without them: keep the last known
         kept.append("professions")
     data["character"] = {
         "name": api.get("name"),
@@ -342,10 +487,11 @@ def main(argv=None):
         "ruleset": api.get("realm"),
         "race": api.get("race"),
         "className": api.get("className"),
-        "spec": api.get("spec"),
+        "spec": api.get("spec") or prev_char.get("spec"),
         "faction": api.get("faction"),
         "itemLevel": api.get("itemLevel"),
         "lastLoginTs": ts,
+        "xp": api.get("xp"),  # XP into his current level, as Blizzard reports it (nothing on the pages uses it yet)
         "professions": professions,
     }
     data["armoryUrl"] = ARMORY_PAGE
@@ -375,7 +521,7 @@ def main(argv=None):
     print(f"Level {level}, last seen {seen:%Y-%m-%d %H:%M} UTC."
           f" {'New level snapshot.' if new_snap else 'No new logout.'}{roster_note}"
           f" {look_note} {new_stats}"
-          + (f" The Armory left out {', '.join(kept)}; kept the last known values." if kept else ""))
+          + (f" Blizzard's API left out {', '.join(kept)}; kept the last known values." if kept else ""))
     return 0
 
 
@@ -398,9 +544,23 @@ def flat_stats(record):
     return out
 
 
+def order_record(new, old):
+    """Put the new record's categories, sub-categories and stats in the order the saved record has them."""
+    def order(new_cats, old_cats):
+        new_cats[:] = like(old_cats, new_cats)
+        by_id = {c.get("id"): c for c in old_cats or []}
+        for nc in new_cats:
+            oc = by_id.get(nc.get("id")) or {}
+            nc["stats"] = like(oc.get("stats"), nc.get("stats") or [])
+            if nc.get("sub"):
+                order(nc["sub"], oc.get("sub"))
+
+    order(new.setdefault("categories", []), (old or {}).get("categories"))
+
+
 def merge_record(new, old):
-    """Put back stats, and whole categories, that an Armory record response left out, at their last values.
-    The Armory sometimes answers with part of the record; counters only go up, so the old value is the best guess."""
+    """Put back stats, and whole categories, that a record reply left out, at their last values.
+    Counters only go up, so the old value is the best guess."""
     restored = 0
 
     def merge(new_cats, old_cats):
@@ -426,23 +586,21 @@ def merge_record(new, old):
 
 
 def update_stats(api, ts, level, checked_at, kept):
-    """Save the Armory record (kills, quests, deaths, ...) plus professions and reputation to data/stats.json.
-    Anything the Armory leaves out of a response keeps its last known value; what was kept is added to `kept`."""
+    """Save his record (kills, quests, deaths, ...) plus professions and reputation to data/stats.json.
+    Anything a reply leaves out keeps its last known value; what was kept is added to `kept`."""
     path = ROOT / "data" / "stats.json"
     stats = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {"snaps": []}
-    try:
-        record = json.loads(get(API.replace("?ns=", "/record?ns="), "application/json"))
-    except (urllib.error.URLError, TimeoutError, ValueError) as exc:
-        return f"Record not available ({exc})."
-    if not record.get("categories"):
-        return "Record came back empty."
+    record = api.get("record")
+    if not record or not record.get("categories"):
+        return "Record not available."
 
+    order_record(record, stats.get("record"))
     if merge_record(record, stats.get("record")):
         kept.append("some record stats")
     stats["record"] = record
     for key in EXTRA_KEYS:
         if api.get(key):
-            stats[key] = api[key]
+            stats[key] = like(stats.get(key), api[key])
         elif stats.get(key):
             if key not in kept:
                 kept.append(key)
