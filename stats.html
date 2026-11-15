@@ -370,7 +370,7 @@ footer { border-top: 1px solid var(--rule); }
 
 <footer>
   <div class="wrap foot">
-    <p id="source">Blizzard's WoW Forever Armory statistics, read from Blizzard's own data service about once an hour. The Armory refreshes when he logs out.</p>
+    <p id="source">Blizzard's official character statistics for WoW: Forever, checked about once an hour. They refresh when he logs out.</p>
     <p>"Per level" divides by the levels he has gained since level 1. Reputation standings run from Hated to Exalted; the cell that's lit is where he stands now.</p>
   </div>
 </footer>
@@ -777,7 +777,7 @@ footer { border-top: 1px solid var(--rule); }
     });
     $("full-sum").textContent = "Show all " + count + " stats";
 
-    $("source").textContent = (H.paused ? "Updates are paused. " + (H.paused.note ? H.paused.note + " " : "") : "") + "Blizzard's WoW Forever Armory statistics, read from Blizzard's own data service about once an hour. The Armory refreshes when he logs out. Last checked: " + (S.checkedAt ? fmtWhen(Date.parse(S.checkedAt)) : "unknown") + ".";
+    $("source").textContent = (H.paused ? "Updates are paused. " + (H.paused.note ? H.paused.note + " " : "") : "") + "Blizzard's official character statistics for WoW: Forever, checked about once an hour. They refresh when he logs out. Last checked: " + (S.checkedAt ? fmtWhen(Date.parse(S.checkedAt)) : "unknown") + ".";
   }).catch(function (err) {
     if (window.console) console.warn("Record failed to load:", err);
     $("load-error").hidden = false;
