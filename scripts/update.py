@@ -477,6 +477,9 @@ def main(argv=None):
         {"name": p.get("name"), "skill": p.get("skill"), "max": p.get("max"), "primary": p.get("primary")}
         for p in api.get("professions") or []
     ]
+    # Keep the order they were saved in, so the race page's "Herbalism · Alchemy" doesn't flip with the API's order.
+    place = {p.get("name"): i for i, p in enumerate(prev_char.get("professions") or [])}
+    professions.sort(key=lambda p: place.get(p["name"], len(place)))
     kept = []
     if not professions and prev_char.get("professions"):
         professions = prev_char["professions"]  # a reply without them: keep the last known

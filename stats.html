@@ -561,7 +561,10 @@ footer { border-top: 1px solid var(--rule); }
     // Header
     var who = $("who"); who.textContent = "";
     who.appendChild(document.createTextNode((C.name || "Bonita Bluehair") + " · "));
-    who.appendChild(el("b", null, "Level " + lvl));
+    // The header shows the same level as the race page: the newest reading, which can be a guild-roster level
+    // ahead of his last logout. The trackers below stay as of that logout, when the record was last refreshed.
+    var shownLvl = (H.snapshots || []).reduce(function (m, s) { return Math.max(m, Math.floor(s.level) || 0); }, lvl);
+    who.appendChild(el("b", null, "Level " + Math.min(60, shownLvl)));
     var cls = [C.spec, C.className].filter(Boolean).join(" ");
     who.appendChild(document.createTextNode(" · " + [C.race, cls].filter(Boolean).join(" · ") + " · WoW: Forever"));
     var asof = $("asof"); asof.textContent = "";

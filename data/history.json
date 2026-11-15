@@ -549,16 +549,22 @@
   "xp": 14643,
   "professions": [
    {
+    "name": "Herbalism",
+    "skill": 108,
+    "max": 150,
+    "primary": true
+   },
+   {
     "name": "Alchemy",
     "skill": 105,
     "max": 150,
     "primary": true
    },
    {
-    "name": "Herbalism",
-    "skill": 108,
-    "max": 150,
-    "primary": true
+    "name": "First Aid",
+    "skill": 238,
+    "max": 300,
+    "primary": false
    },
    {
     "name": "Cooking",
@@ -570,12 +576,6 @@
     "name": "Fishing",
     "skill": 1,
     "max": 75,
-    "primary": false
-   },
-   {
-    "name": "First Aid",
-    "skill": 238,
-    "max": 300,
     "primary": false
    }
   ]
