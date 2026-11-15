@@ -6,6 +6,8 @@ Can Bonita Bluehair hit level 60 in WoW: Forever before Christmas? This site kee
 
 Delete each one once it's done.
 
+- **The 3D model is out of date.** At his Nov 15 04:01 UTC logout (level 38) he had new gloves (Tiger Hunter Gloves) and bracers (Fur-Lined Bracers). The page shows Blizzard's picture, which is current, with "The 3D model still has his Nov 12 gear" until the model is exported again (steps under "The 3D stage").
+
 - **The level 28 point was entered by hand.** The Armory missed his level 28 logout on the night of Nov 8, so `data/history.json` has it at 11:00 PM Eastern, marked `"source": "owner"`. The time is approximate; change it if the real time turns up.
 
 - **Site:** `index.html` reads `data/history.json` and draws everything in the browser.
