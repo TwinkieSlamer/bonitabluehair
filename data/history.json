@@ -82,6 +82,10 @@
    "t": 1794802094654,
    "level": 39,
    "source": "roster"
+  },
+  {
+   "t": 1794811526000,
+   "level": 40
   }
  ],
  "looks": [
@@ -642,6 +646,113 @@
    "w": 399,
    "h": 680,
    "hash": "b1e462ede667e9fd7eb1eebb312ae542e3b78856d4a6d194c864ddb0674849d1"
+  },
+  {
+   "t": 1794811526000,
+   "level": 40,
+   "itemLevel": 28,
+   "gear": [
+    {
+     "slot": "Head",
+     "name": "Twilight Mine Light",
+     "quality": "uncommon",
+     "ilvl": 45
+    },
+    {
+     "slot": "Neck",
+     "name": "Thermaplugg Medal of Honor",
+     "quality": "rare",
+     "ilvl": 34
+    },
+    {
+     "slot": "Shoulder",
+     "name": "Rune-Etched Epaulets",
+     "quality": "rare",
+     "ilvl": 41
+    },
+    {
+     "slot": "Back",
+     "name": "Durable Cape of the Bandit",
+     "quality": "uncommon",
+     "ilvl": 29
+    },
+    {
+     "slot": "Chest",
+     "name": "Prospector's Chestpiece",
+     "quality": "uncommon",
+     "ilvl": 23
+    },
+    {
+     "slot": "Shirt",
+     "name": "Red Linen Shirt",
+     "quality": "common",
+     "ilvl": 10
+    },
+    {
+     "slot": "Tabard",
+     "name": "Farholde Keep Tabard",
+     "quality": "common",
+     "ilvl": 20
+    },
+    {
+     "slot": "Wrist",
+     "name": "Oathbound Bracers",
+     "quality": "rare",
+     "ilvl": 39
+    },
+    {
+     "slot": "Hands",
+     "name": "Tiger Hunter Gloves",
+     "quality": "uncommon",
+     "ilvl": 37
+    },
+    {
+     "slot": "Waist",
+     "name": "Belt of Vindication",
+     "quality": "rare",
+     "ilvl": 29
+    },
+    {
+     "slot": "Legs",
+     "name": "Triprunner Dungarees",
+     "quality": "rare",
+     "ilvl": 37
+    },
+    {
+     "slot": "Feet",
+     "name": "Excelsior Boots",
+     "quality": "uncommon",
+     "ilvl": 41
+    },
+    {
+     "slot": "Finger",
+     "name": "Ring of Ruin",
+     "quality": "uncommon",
+     "ilvl": 35
+    },
+    {
+     "slot": "Finger",
+     "name": "Seal of Wrynn",
+     "quality": "rare",
+     "ilvl": 31
+    },
+    {
+     "slot": "Two-Hand",
+     "name": "Segmented Spider Leg",
+     "quality": "rare",
+     "ilvl": 20
+    },
+    {
+     "slot": "Relic",
+     "name": "Idol of Shifting Tides",
+     "quality": "uncommon",
+     "ilvl": 16
+    }
+   ],
+   "img": "renders/20261116-0645-l40.webp",
+   "w": 400,
+   "h": 681,
+   "hash": "1fa8dff3bc30748b721739715f96435df6a99a56ebcb0b7961259b469c6d6e95"
   }
  ],
  "character": {
@@ -652,13 +763,13 @@
   "className": "Druid",
   "spec": "Feral Combat",
   "faction": "Alliance",
-  "itemLevel": 24,
-  "lastLoginTs": 1794779188000,
-  "xp": 48934,
+  "itemLevel": 28,
+  "lastLoginTs": 1794811526000,
+  "xp": 76189,
   "professions": [
    {
     "name": "Herbalism",
-    "skill": 108,
+    "skill": 118,
     "max": 150,
     "primary": true
    },
@@ -677,7 +788,7 @@
    {
     "name": "Cooking",
     "skill": 139,
-    "max": 150,
+    "max": 225,
     "primary": false
    },
    {
@@ -689,5 +800,5 @@
   ]
  },
  "armoryUrl": "https://classicarmory.gg/character/us/forever/bonita-bluehair",
- "checkedAt": "2026-11-16T06:08:07Z"
+ "checkedAt": "2026-11-16T07:08:07Z"
 }
