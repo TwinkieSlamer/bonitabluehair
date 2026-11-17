@@ -10,7 +10,9 @@ import { MeshoptDecoder, MeshoptEncoder } from "meshoptimizer";
 
 // From the Night Elf female HD model (file 921844): attachment bone index and position (game space) per slot.
 // wow.export names each loose piece "<slot>_Item<item id>_<n>", so these match by slot, whatever the item.
+// (List them all with export-kit/step-attachments.js: the ids are 1 right hand, 5 and 6 shoulders, 11 helm.)
 const ATTACH = [
+  [/^Head_Item/, { bone: 210, pos: [-0.053803522139787674, 0, 2.041548490524292] }],
   [/^Main-hand_Item/, { bone: 225, pos: [0, 0, 0] }],
   [/^Shoulder \(R\)_Item/, { bone: 204, pos: [-0.09428267925977707, -0.1509692221879959, 1.9462634325027466] }],
   [/^Shoulder \(L\)_Item/, { bone: 205, pos: [-0.09427326172590256, 0.1509847193956375, 1.94625985622406] }]
@@ -63,6 +65,21 @@ for (const node of root.listNodes()) {
   joint.addChild(node);
   node.setTranslation(d.t).setRotation(d.q).setScale(d.s);
   console.log(`${node.getName()} -> joint ${bi} (${joint.getName()}) t=${d.t.map((x) => x.toFixed(3))} s=${d.s.map((x) => x.toFixed(3))}`);
+}
+// An item's effect pieces (the glow on a miner's helm lamp, say) come out wearing the body's texture, because
+// wow.export doesn't export the effect's own. They would show as a scrap of skin stuck on the item, so any piece of
+// an attached item that shares a material with the body is dropped.
+const bodyMaterials = new Set();
+for (const n of root.listNodes()) if (n.getSkin() && n.getMesh()) for (const p of n.getMesh().listPrimitives()) bodyMaterials.add(p.getMaterial());
+for (const node of root.listNodes()) {
+  const mesh = node.getMesh();
+  if (!mesh || node.getSkin() || !ATTACH.some(([re]) => re.test(node.getName()))) continue;
+  for (const prim of mesh.listPrimitives()) {
+    if (!bodyMaterials.has(prim.getMaterial())) continue;
+    mesh.removePrimitive(prim);
+    console.log(`${node.getName()}: dropped a piece wearing the body's texture (an effect wow.export doesn't export)`);
+  }
+  if (!mesh.listPrimitives().length) node.dispose();
 }
 // The cape. wow.export 0.2.21 doesn't load cape textures for this client, so the cloak mesh comes out wearing
 // the body's texture. Pass the cape's own texture (PNG) as the third argument to give it its own material.
