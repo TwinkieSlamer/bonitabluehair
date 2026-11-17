@@ -95,6 +95,10 @@
    "t": 1794892091203,
    "level": 41,
    "source": "roster"
+  },
+  {
+   "t": 1794894313000,
+   "level": 41
   }
  ],
  "looks": [
@@ -773,8 +777,8 @@
   "spec": "Feral Combat",
   "faction": "Alliance",
   "itemLevel": 28,
-  "lastLoginTs": 1794861253000,
-  "xp": 89442,
+  "lastLoginTs": 1794894313000,
+  "xp": 58776,
   "professions": [
    {
     "name": "Herbalism",
@@ -784,8 +788,8 @@
    },
    {
     "name": "Alchemy",
-    "skill": 105,
-    "max": 150,
+    "skill": 141,
+    "max": 225,
     "primary": true
    },
    {
@@ -796,7 +800,7 @@
    },
    {
     "name": "Cooking",
-    "skill": 139,
+    "skill": 171,
     "max": 225,
     "primary": false
    },
@@ -809,5 +813,5 @@
   ]
  },
  "armoryUrl": "https://classicarmory.gg/character/us/forever/bonita-bluehair",
- "checkedAt": "2026-11-17T05:08:11Z"
+ "checkedAt": "2026-11-17T06:08:04Z"
 }
