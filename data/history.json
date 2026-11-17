@@ -99,6 +99,10 @@
   {
    "t": 1794894313000,
    "level": 41
+  },
+  {
+   "t": 1794932810000,
+   "level": 41
   }
  ],
  "looks": [
@@ -777,7 +781,7 @@
   "spec": "Feral Combat",
   "faction": "Alliance",
   "itemLevel": 28,
-  "lastLoginTs": 1794894313000,
+  "lastLoginTs": 1794932810000,
   "xp": 58776,
   "professions": [
    {
@@ -813,5 +817,5 @@
   ]
  },
  "armoryUrl": "https://classicarmory.gg/character/us/forever/bonita-bluehair",
- "checkedAt": "2026-11-17T16:08:05Z"
+ "checkedAt": "2026-11-17T17:08:08Z"
 }
