@@ -126,6 +126,12 @@ h1 { font-size: clamp(2.8rem, 7.4vw, 5.4rem); line-height: .95; }
 .stage-offer p { margin: 0; font-size: 13px; line-height: 1.35; }
 .stage-offer button { min-height: 44px; padding: 0 10px; border: 1px solid var(--tide); border-radius: 6px; background: rgba(90, 214, 198, .08); color: var(--tide); cursor: pointer; font: 500 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
 .stage-offer button:hover { background: rgba(90, 214, 198, .16); }
+/* The 3D model is behind his gear (he changes it every day or two): the page shows his current picture, and says so
+   in one quiet line under it, with a way to see the older model. No panel, no button that reads as an error. */
+.stage-offer.quiet { bottom: 2px; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0 8px; padding: 0; border: 0; background: none; font: 500 10px/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
+.stage-offer.quiet p { font: inherit; }
+.stage-offer.quiet button { min-height: 32px; padding: 0 4px; border: 0; border-radius: 4px; background: none; color: var(--mist); font: inherit; letter-spacing: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.stage-offer.quiet button:hover { background: none; color: var(--moon); }
 .stage .chip3d { position: absolute; top: 6px; left: 0; z-index: 2; padding: 3px 6px; border: 1px solid rgba(151, 163, 194, .45); border-radius: 4px; background: rgba(10, 15, 30, .6); font: 500 10px/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); white-space: nowrap; }
 
 .level-row { grid-area: level; display: flex; flex-direction: column; gap: 12px; padding-bottom: 8px; min-width: 0; }
@@ -486,6 +492,7 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
   .stage-hint { bottom: 10px; gap: 8px; font-size: 11px; }
   .stage-offer { left: 10px; right: 10px; bottom: 10px; }
   .stage-offer p { font-size: 14px; }
+  .stage-offer.quiet { bottom: 8px; font-size: 11px; }
   .level-row { flex-direction: row; flex-wrap: wrap; align-items: flex-end; gap: 20px 36px; padding-bottom: 0; }
   .level-k { font-size: 12px; }
   .level-n { gap: 10px; }
@@ -1736,6 +1743,7 @@ function paint() {
   hintText.textContent = ui.focused ? "← → turn · Home front" : wideMQ.matches ? "Drag or use arrow keys to turn" : "Drag to turn";
   front.hidden = !(is3d && ui.turned);
   offer.hidden = !ui.offer;
+  offer.classList.toggle("quiet", !!(ui.offer && ui.offer.quiet));
   if (ui.offer) {
     notice.hidden = !ui.offer.notice;
     notice.textContent = ui.offer.notice || "";
@@ -1802,7 +1810,8 @@ async function start() {
     ? manifest.gear.slice().sort().join("|") === lookGear.join("|") : false;
   if (lookT && exportT && lookT > exportT && !sameGear) {
     ui.state = "stale";
-    ui.offer = { notice: "The 3D model still has his " + gearDay() + " gear.", label: "Show 3D anyway" };
+    // Quiet on purpose: this happens every day or two and isn't a fault. His current picture is already showing.
+    ui.offer = { quiet: true, notice: "3D update pending", label: "View " + gearDay() + " model" };
     return paint();
   }
   if (isSlow() || manifest.autoload === false) {
