@@ -115,6 +115,10 @@
   {
    "t": 1794976822000,
    "level": 43
+  },
+  {
+   "t": 1795024834000,
+   "level": 43
   }
  ],
  "looks": [
@@ -996,6 +1000,113 @@
    "w": 400,
    "h": 681,
    "hash": "1fa8dff3bc30748b721739715f96435df6a99a56ebcb0b7961259b469c6d6e95"
+  },
+  {
+   "t": 1795024834000,
+   "level": 43,
+   "itemLevel": 34,
+   "gear": [
+    {
+     "slot": "Head",
+     "name": "Twilight Mine Light",
+     "quality": "uncommon",
+     "ilvl": 45
+    },
+    {
+     "slot": "Neck",
+     "name": "Thermaplugg Medal of Honor",
+     "quality": "rare",
+     "ilvl": 34
+    },
+    {
+     "slot": "Shoulder",
+     "name": "Rune-Etched Epaulets",
+     "quality": "rare",
+     "ilvl": 41
+    },
+    {
+     "slot": "Back",
+     "name": "Royal Cape of the Beast",
+     "quality": "uncommon",
+     "ilvl": 43
+    },
+    {
+     "slot": "Chest",
+     "name": "Prospector's Chestpiece",
+     "quality": "uncommon",
+     "ilvl": 23
+    },
+    {
+     "slot": "Shirt",
+     "name": "Red Linen Shirt",
+     "quality": "common",
+     "ilvl": 10
+    },
+    {
+     "slot": "Tabard",
+     "name": "Farholde Keep Tabard",
+     "quality": "common",
+     "ilvl": 20
+    },
+    {
+     "slot": "Wrist",
+     "name": "Branded Leather Bracers",
+     "quality": "rare",
+     "ilvl": 42
+    },
+    {
+     "slot": "Hands",
+     "name": "Tiger Hunter Gloves",
+     "quality": "uncommon",
+     "ilvl": 37
+    },
+    {
+     "slot": "Waist",
+     "name": "Belt of Vindication",
+     "quality": "rare",
+     "ilvl": 29
+    },
+    {
+     "slot": "Legs",
+     "name": "Oilskin Leggings",
+     "quality": "rare",
+     "ilvl": 47
+    },
+    {
+     "slot": "Feet",
+     "name": "Imperial Leather Boots",
+     "quality": "uncommon",
+     "ilvl": 43
+    },
+    {
+     "slot": "Finger",
+     "name": "Archaedic Stone of Eluding",
+     "quality": "rare",
+     "ilvl": 47
+    },
+    {
+     "slot": "Finger",
+     "name": "Seal of Wrynn",
+     "quality": "rare",
+     "ilvl": 31
+    },
+    {
+     "slot": "Two-Hand",
+     "name": "Guardian Staff",
+     "quality": "uncommon",
+     "ilvl": 42
+    },
+    {
+     "slot": "Relic",
+     "name": "Idol of Shifting Tides",
+     "quality": "uncommon",
+     "ilvl": 16
+    }
+   ],
+   "img": "renders/20261118-1800-l43.webp",
+   "w": 426,
+   "h": 681,
+   "hash": "a7561665f76323370dcb895a206b9f9a6f9fe249fdcc842acdea72bb9a93fda7"
   }
  ],
  "character": {
@@ -1006,9 +1117,9 @@
   "className": "Druid",
   "spec": "Feral Combat",
   "faction": "Alliance",
-  "itemLevel": 33,
-  "lastLoginTs": 1794976822000,
-  "xp": 12485,
+  "itemLevel": 34,
+  "lastLoginTs": 1795024834000,
+  "xp": 71451,
   "professions": [
    {
     "name": "Herbalism",
@@ -1043,5 +1154,5 @@
   ]
  },
  "armoryUrl": "https://classicarmory.gg/character/us/forever/bonita-bluehair",
- "checkedAt": "2026-11-18T17:08:17Z"
+ "checkedAt": "2026-11-18T18:08:07Z"
 }
