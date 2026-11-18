@@ -1215,9 +1215,9 @@
     }
    ],
    "img": "renders/20261118-2007-l44.webp",
-   "w": 425,
+   "w": 426,
    "h": 681,
-   "hash": "962aa387a397817ea3ce3650f1ea4d60931d9d409d99fb1f8e195de58d39ce5a"
+   "hash": "a7561665f76323370dcb895a206b9f9a6f9fe249fdcc842acdea72bb9a93fda7"
   }
  ],
  "character": {
@@ -1265,5 +1265,5 @@
   ]
  },
  "armoryUrl": "https://classicarmory.gg/character/us/forever/bonita-bluehair",
- "checkedAt": "2026-11-18T21:08:06Z"
+ "checkedAt": "2026-11-18T22:08:09Z"
 }
