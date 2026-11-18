@@ -111,6 +111,10 @@
   {
    "t": 1794972393000,
    "level": 43
+  },
+  {
+   "t": 1794976822000,
+   "level": 43
   }
  ],
  "looks": [
@@ -897,7 +901,7 @@
   "spec": "Feral Combat",
   "faction": "Alliance",
   "itemLevel": 33,
-  "lastLoginTs": 1794972393000,
+  "lastLoginTs": 1794976822000,
   "xp": 12485,
   "professions": [
    {
@@ -908,7 +912,7 @@
    },
    {
     "name": "Alchemy",
-    "skill": 141,
+    "skill": 156,
     "max": 225,
     "primary": true
    },
@@ -933,5 +937,5 @@
   ]
  },
  "armoryUrl": "https://classicarmory.gg/character/us/forever/bonita-bluehair",
- "checkedAt": "2026-11-18T04:08:16Z"
+ "checkedAt": "2026-11-18T04:48:19Z"
 }
