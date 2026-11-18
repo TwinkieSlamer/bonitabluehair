@@ -1,8 +1,8 @@
 {
-  "model": "models/bonita-2026-11-16.glb",
-  "bytes": 414804,
-  "exportedAt": "2026-11-16T23:52:00-05:00",
-  "gearAsOf": "2026-11-16",
+  "model": "models/bonita-2026-11-18.glb",
+  "bytes": 444940,
+  "exportedAt": "2026-11-18T17:27:00-05:00",
+  "gearAsOf": "2026-11-18",
   "idleClip": "Idle",
   "orientation": "0deg 0deg 0deg",
   "cameraOrbit": "0deg 84deg 4.25m",
@@ -12,16 +12,16 @@
   "gear": [
     "Twilight Mine Light",
     "Rune-Etched Epaulets",
-    "Durable Cape of the Bandit",
+    "Royal Cape of the Beast",
     "Prospector's Chestpiece",
-    "Red Linen Shirt",
+    "Sweat-Stained Shirt",
     "Farholde Keep Tabard",
-    "Oathbound Bracers",
+    "Branded Leather Bracers",
     "Tiger Hunter Gloves",
     "Belt of Vindication",
-    "Triprunner Dungarees",
-    "Excelsior Boots",
-    "Segmented Spider Leg"
+    "Oilskin Leggings",
+    "Imperial Leather Boots",
+    "Guardian Staff"
   ],
-  "source": "wow.export 0.2.21 from the local WoW: Forever 1.60.1.70862 install. Night Elf female, appearance matched to the Armory render (Loose Tail hair, teal 863, Crane markings), with the default circlet, facial jewelry and necklace geosets (3701, 1601, 3601) switched off because the render doesn't show them. Gear from Blizzard's API item IDs at level 40 (his Nov 16 15:34 Eastern logout): the twelve drawn items in the \"gear\" list, the first model with a helm and a tabard. The helm hides his hair, as in game. Idle clip only; helm on its head bone, staff on its hand bone, shoulder pads on the collarbone bones; the helm lamp's glow effect is dropped (wow.export exports it wearing the body texture); cape texture (cape_cloth_b_02orange, file 137285) added by hand because wow.export doesn't load cape textures; meshopt + WebP 1024. Extracted game art: see README."
+  "source": "wow.export 0.2.21 from the local WoW: Forever 1.60.1.70862 install. Night Elf female, appearance matched to the Armory render (Loose Tail hair, teal 863, Crane markings), with the default circlet, facial jewelry and necklace geosets (3701, 1601, 3601) switched off because the render doesn't show them. Gear from Blizzard's API item IDs at level 44 (his Nov 18 15:07 Eastern logout): the twelve drawn items in the \"gear\" list. New since the Nov 16 model: cape, staff, legs, boots, bracers and shirt. The helm hides his hair, as in game. Idle clip only; helm on its head bone, staff on its hand bone, shoulder pads on the collarbone bones; the helm lamp's glow effect is dropped; cape texture (cape_mage_a_01blue, file 137347) looked up with export-kit/step-cape-texture.js and added by fix-attach.mjs because wow.export doesn't load cape textures; meshopt + WebP 1024. Extracted game art: see README."
 }
