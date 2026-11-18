@@ -24,11 +24,11 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url || steps.deployment_retry.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -60,14 +60,27 @@ jobs:
           exit 1
 
       # Deploy on your own pushes, and whenever the check saved something. A skipped check has nothing new.
-      - uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@v6
         if: github.event_name == 'push' || steps.save.outputs.changed == 'true'
 
-      - uses: actions/upload-pages-artifact@v3
+      # From v4 this leaves out files whose names start with a dot. The site has none (.github and .gitignore only).
+      - uses: actions/upload-pages-artifact@v5
         if: github.event_name == 'push' || steps.save.outputs.changed == 'true'
         with:
           path: .
 
+      # Now and then GitHub can't find the files the step above uploaded a second earlier ("No artifacts named
+      # github-pages were found": Nov 13 and Nov 17, 2026, each time fine an hour later). So a failed deploy is tried
+      # once more after a short wait, and the run only fails, and only emails the owner, if that fails too.
       - id: deployment
         if: github.event_name == 'push' || steps.save.outputs.changed == 'true'
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
+        continue-on-error: true
+
+      - name: Wait before trying the deploy again
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 30
+
+      - id: deployment_retry
+        if: steps.deployment.outcome == 'failure'
+        uses: actions/deploy-pages@v5
