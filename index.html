@@ -1230,6 +1230,10 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
           : "The Armory didn't redraw him before his gear changed again, so this picture is from before this gear.";
         cap.appendChild(pn);
       }
+      if (lk.note) {   // a line written by hand about one frame's picture
+        var fn = document.createElement("p"); fn.className = "pic-note"; fn.textContent = lk.note;
+        cap.appendChild(fn);
+      }
       if (gear.length) {
         var det = document.createElement("details"), sum = document.createElement("summary");
         sum.textContent = "All " + gear.length + " equipped items";

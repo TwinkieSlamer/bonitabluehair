@@ -15,7 +15,8 @@ What it does:
   * saves a new gear-reel frame whenever his equipped gear changes, or the
     character render changes (a new look). Blizzard redraws the render
     later than it updates the gear, so a gear change is saved right away with
-    its last picture, and the picture is swapped in when the render catches up
+    its last picture, and the picture is swapped in when the render catches up.
+    Its picture server sometimes hands back an older picture; that is ignored
   * saves his professions, reputations and record (kills, quests, deaths...)
   * keeps the last known professions, reputations and record stats when a
     reply comes back without them
@@ -90,13 +91,16 @@ def retry_wait(exc, attempt):
     return RETRY_DELAYS[attempt]
 
 
-def get(url, accept="*/*", headers=None):
-    """Fetch a URL, waiting and trying again through rate limits, server errors and dropped connections."""
+def get(url, accept="*/*", headers=None, meta=None):
+    """Fetch a URL, waiting and trying again through rate limits, server errors and dropped connections.
+    A dict passed as `meta` gets the reply's Last-Modified header (the date the server gives the file)."""
     req = urllib.request.Request(url, headers={**UA, "Accept": accept, **(headers or {})})
     retries = len(RETRY_DELAYS)
     for attempt in range(retries + 1):
         try:
             with urllib.request.urlopen(req, timeout=30) as resp:
+                if meta is not None:
+                    meta["Last-Modified"] = resp.headers.get("Last-Modified")
                 return resp.read()
         except urllib.error.HTTPError as exc:
             if exc.code not in RETRYABLE_STATUS or attempt == retries:
@@ -172,6 +176,26 @@ def same_picture(png_bytes):
     return differing <= new.width * new.height * 0.002
 
 
+def file_date(text):
+    """A reply's Last-Modified header as milliseconds, or None when it is missing or unreadable."""
+    try:
+        return int(email.utils.parsedate_to_datetime(text).timestamp() * 1000)
+    except (TypeError, ValueError):
+        return None
+
+
+def older_picture(looks, digest, drawn_at):
+    """True when a picture that differs from the reel's newest one is an older picture, served again.
+    Blizzard's picture server answers from more than one copy of his file, and a copy can be days behind: on
+    Nov 18, 2026 about half the hourly checks got his Nov 16 picture back in place of the one drawn that morning, and
+    the reel filed it as a new look three times. The file's own date settles it when both dates are known. Without
+    them, a picture is an old one when an earlier frame already has it."""
+    held = looks[-1].get("picAt")
+    if drawn_at and held and drawn_at != held:
+        return drawn_at < held
+    return any(look.get("hash") == digest for look in looks[:-1])
+
+
 def save_render(png_bytes, stamp, level):
     im = cropped(png_bytes)
     RENDERS.mkdir(exist_ok=True)
@@ -205,18 +229,34 @@ def update_looks(looks, api, ts, level):
     gear_known = bool(gear) and len(gear) >= len(last_gear) // 2
     gear_changed = gear_known and last is not None and gear_key(gear) != gear_key(last_gear)
 
-    png = digest = None
+    png = digest = drawn_at = None
     if api.get("mainRender"):
         try:
-            png = get(api["mainRender"], "image/png")
+            meta = {}
+            png = get(api["mainRender"], "image/png", meta=meta)
             digest = hashlib.sha256(png).hexdigest()
+            drawn_at = file_date(meta.get("Last-Modified"))  # when Blizzard made this picture file
         except (urllib.error.URLError, TimeoutError, OSError) as exc:
             print(f"Could not fetch the character render ({exc}). Level data still saved.")
+    went_back = ""
+    if last is not None and digest is not None and digest != last.get("hash") and older_picture(looks, digest, drawn_at):
+        # Not a redraw: carry on as if no picture had come, so the reel keeps the newer one it has.
+        dated_text = (dt.datetime.fromtimestamp(drawn_at / 1000, dt.timezone.utc).strftime("file dated %b %d %H:%M UTC")
+                      if drawn_at else "no file date")
+        went_back = f" Blizzard's picture server sent an older picture of him again ({dated_text}): ignored."
+        png = digest = drawn_at = None
     new_render = digest is not None and (last is None or digest != last.get("hash"))
+
+    def dated(frame):
+        if drawn_at:
+            frame["picAt"] = drawn_at
+        else:
+            frame.pop("picAt", None)
 
     def picture(frame, t, lvl):
         path, size = save_render(png, frame_stamp(t), lvl)
         frame.update(img=path, w=size[0], h=size[1], hash=digest)
+        dated(frame)
         frame.pop("stalePic", None)
 
     if last is None:
@@ -236,12 +276,14 @@ def update_looks(looks, api, ts, level):
         # The Armory hasn't redrawn him yet, so the frame borrows its last picture. That picture is only behind when
         # something it shows changed, or it was already behind: a new necklace or ring looks the same.
         frame.update(img=last["img"], w=last.get("w"), h=last.get("h"), hash=last.get("hash"))
+        if last.get("picAt"):
+            frame["picAt"] = last["picAt"]
         if last.get("stalePic") or drawn_key(gear) != drawn_key(last_gear):
             frame["stalePic"] = True
             looks.append(frame)
-            return "New gear: frame saved with the Armory's last render until it redraws him."
+            return "New gear: frame saved with the Armory's last render until it redraws him." + went_back
         looks.append(frame)
-        return "New gear that his picture doesn't show: frame saved with the current render."
+        return "New gear that his picture doesn't show: frame saved with the current render." + went_back
 
     if new_render:
         if last.get("stalePic"):
@@ -250,6 +292,7 @@ def update_looks(looks, api, ts, level):
             return "The Armory redrew him: new render added to the latest frame."
         if same_picture(png):
             last["hash"] = digest  # a new file, the same look: nothing to add to the reel
+            dated(last)
             return "The Armory redrew the same picture. Look unchanged."
         if last["t"] == ts:
             # A second, different picture for the same logout. Two frames would share one file name, and the reel
@@ -262,8 +305,8 @@ def update_looks(looks, api, ts, level):
         return "New look: frame saved."
 
     if not gear_known:
-        return "Armory sent no gear list. Look unchanged."
-    return "Gear and look unchanged."
+        return "Armory sent no gear list. Look unchanged." + went_back
+    return "Gear and look unchanged." + went_back
 
 
 class SourceError(Exception):
