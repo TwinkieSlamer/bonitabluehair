@@ -127,7 +127,7 @@ h2 { font-size: var(--size-section); line-height: 1.05; }
 .navstatus { display: flex; align-items: center; gap: 7px; padding-bottom: 15px; font: 500 11px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; color: #ec5f55; }
 .navstatus::before { content: ""; flex: none; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 .navstatus.is-gold { color: #f2c96b; }
-.navstatus .long { display: none; }
+.navstatus .long, .tab .long { display: none; }
 
 .hero { position: relative; z-index: 1; display: grid; grid-template-columns: 104px minmax(0, 1fr); grid-template-areas: "title title" "mini text"; gap: 18px 16px; align-items: end; padding-top: 18px; padding-bottom: 28px; }
 .hero-title { grid-area: title; display: grid; gap: 6px; min-width: 0; }
@@ -257,8 +257,8 @@ footer { border-top: 1px solid var(--rule); }
 @media (min-width: 768px) {
   .topnav { padding: 16px 40px 0; }
   .tab { padding: 0 14px; letter-spacing: .12em; }
-  .navstatus .long { display: inline; }
-  .navstatus .short { display: none; }
+  .navstatus .long, .tab .long { display: inline; }
+  .navstatus .short, .tab .short { display: none; }
   .hero { grid-template-columns: 168px minmax(0, 1fr); grid-template-areas: "mini title" "mini text"; column-gap: 40px; row-gap: 16px; padding-top: 28px; padding-bottom: 40px; }
   .hero-title { align-self: end; }
   .mini img { height: 272px; }
@@ -289,10 +289,11 @@ footer { border-top: 1px solid var(--rule); }
   <div class="celestial" aria-hidden="true"><div class="sun"></div><div class="moon"></div></div>
   <nav class="topnav" aria-label="Pages">
     <div class="tabs">
-      <a class="tab" href="./">The race</a>
-      <a class="tab" href="stats.html" aria-current="page">The record</a>
+      <a class="tab" href="./"><span class="long">The race</span><span class="short">Race</span></a>
+      <a class="tab" href="stats.html" aria-current="page"><span class="long">The record</span><span class="short">Record</span></a>
+      <a class="tab" href="hourglass.html"><span class="long">The hourglass</span><span class="short">Hourglass</span></a>
     </div>
-    <span class="navstatus" id="navstatus"><span class="long">Deadline · Dec 25 · 12:00 AM ET</span><span class="short">Dec 25 deadline</span></span>
+    <span class="navstatus" id="navstatus"><span class="long">Deadline · Dec 25 · 12:00 AM ET</span><span class="short">Dec 25</span></span>
   </nav>
   <div class="wrap hero">
     <div class="hero-title">
@@ -404,7 +405,7 @@ footer { border-top: 1px solid var(--rule); }
     ns.classList.toggle("is-gold", at60.length > 0);
     if (at60.length) { longEl.textContent = "Bet settled · " + fmtDay(at60[0].t); shortEl.textContent = "Bet settled"; }
     else if (Date.now() >= deadline) { longEl.textContent = "Bet settled · " + etDate(deadline); shortEl.textContent = "Bet settled"; }
-    else { longEl.textContent = "Deadline · " + etDate(deadline) + " · " + etTime(deadline) + " ET"; shortEl.textContent = etDate(deadline) + " deadline"; }
+    else { longEl.textContent = "Deadline · " + etDate(deadline) + " · " + etTime(deadline) + " ET"; shortEl.textContent = etDate(deadline); }
   }
   setStatus();
   setInterval(setStatus, 60 * 1000);

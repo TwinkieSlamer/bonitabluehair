@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bonita's Hourglass</title>
+<meta name="description" content="The time left in the bet that Bonita Bluehair can't hit level 60 in WoW: Forever by Christmas, draining out of an hourglass in real time.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Bonita Bluehair: the hourglass">
+<meta property="og:description" content="The time left before Christmas, draining in real time.">
+<meta property="og:url" content="https://bonitabluehair.com/hourglass.html">
+<meta property="og:image" content="https://bonitabluehair.com/renders/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0a0f1e">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0f1e'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-weight='700' font-size='30' text-anchor='middle' fill='%235ad6c6'%3E60%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@800&family=Grenze:wght@800&family=IBM+Plex+Mono:wght@500&family=Instrument+Sans:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+/* The hourglass: the bet's time as sand. The top bulb holds exactly the share of the time that's left (launch to
+   deadline) and drains in real time; a thin stream of grains falls through the neck. Header, tabs, sky and snow are
+   the same as on the other two pages. */
+:root {
+  color-scheme: dark;
+  --night: #0a0f1e;
+  --surface: #10182c;
+  --rule: #24314f;
+  --moon: #eef1f8;
+  --mist: #97a3c2;
+  --tide: #5ad6c6;
+  --gold: #f2c96b;
+  --holly: #ec5f55;
+  --font-display: 'Grenze', Georgia, serif;
+  --font-numeral: 'Grenze Gotisch', 'Grenze', serif;
+  --font-body: 'Instrument Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --size-label: 11px;
+  --tracking-label: 0.12em;
+  --gutter-phone: 16px;
+  --gutter-desktop: 40px;
+  --content-max: 1200px;
+  --gutter: var(--gutter-phone);
+}
+@media (min-width: 768px) { :root { --gutter: var(--gutter-desktop); } }
+
+* { box-sizing: border-box; }
+html { background: var(--night); }
+html, body { margin: 0; }
+body { background: var(--night); color: var(--moon); font: 400 16px/1.55 var(--font-body); -webkit-font-smoothing: antialiased; }
+[hidden] { display: none !important; }
+a { color: var(--tide); text-underline-offset: 3px; }
+a:focus-visible { outline: 2px solid var(--tide); outline-offset: 3px; border-radius: 2px; }
+.wrap { width: 100%; max-width: calc(var(--content-max) + 2 * var(--gutter)); margin: 0 auto; padding-left: max(var(--gutter), env(safe-area-inset-left, 0px)); padding-right: max(var(--gutter), env(safe-area-inset-right, 0px)); }
+.lbl, .eyebrow { font: 500 var(--size-label)/1.4 var(--font-mono); letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--mist); }
+.eyebrow { letter-spacing: .14em; margin: 0; }
+h1 { font-family: var(--font-display); font-weight: 800; text-wrap: balance; margin: 0; }
+
+/* Header: the sky, moon, snow and tabs of the other pages; here it holds the whole hourglass. */
+.top { --sky-top: #17243f; --sky-mid: #111b33; --sky-low: #0a0f1e; --sky-glow: rgba(240, 140, 90, 0); --hero-ink2: #97a3c2; --hero-holly: #ec5f55; --hero-shadow: 0; --rise-dist: 24px; --set-dist: 18px;
+  position: relative; overflow: hidden; padding-top: env(safe-area-inset-top, 0px);
+  background: radial-gradient(130% 55% at 50% 100%, var(--sky-glow) 0%, rgba(240, 140, 90, 0) 70%), linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 46%, var(--sky-low) 100%); }
+.top .eyebrow, .top .lede, .top .facts, .top .unit, .top .tab:not([aria-current="page"]) { color: var(--hero-ink2); }
+.top h1, .top .eyebrow, .top .lede, .top .facts, .top .tab, .top .navstatus, .top .count { text-shadow: 0 1px 3px rgba(5, 10, 25, var(--hero-shadow)); }
+.top .navstatus:not(.is-gold) { color: var(--hero-holly); }
+.celestial { position: absolute; top: 58px; right: 12px; width: 40px; height: 40px; pointer-events: none; }
+.celestial .moon, .celestial .sun { position: absolute; inset: 0; border-radius: 50%; }
+.celestial .moon { background: radial-gradient(circle at 38% 36%, #fff 0%, #eef1f8 46%, #c6cfe3 100%); box-shadow: 0 0 60px 16px rgba(238, 241, 248, .16), 0 0 180px 70px rgba(238, 241, 248, .06);
+  opacity: var(--moon-o, 1); transform: translateY(calc(var(--moon-set, 0) * var(--set-dist, 50px))); }
+.celestial .sun { background: radial-gradient(circle at 50% 50%, #fffbef 0%, #fff0c2 42%, var(--sun-edge, #ffd27a) 100%);
+  box-shadow: 0 0 50px 18px color-mix(in srgb, var(--sun-edge, #ffd27a) 45%, transparent), 0 0 160px 80px color-mix(in srgb, var(--sun-edge, #ffd27a) 18%, transparent);
+  opacity: var(--sun-o, 0); transform: translateY(calc(var(--sun-rise, 1) * var(--rise-dist, 70px))); }
+#snow { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.topnav { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; padding: 12px 16px 0; display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
+.tabs { display: flex; gap: 2px; }
+.tab { display: inline-flex; align-items: center; min-height: 44px; padding: 0 9px; border: 1px solid transparent; border-radius: 6px 6px 0 0; color: #97a3c2; text-decoration: none; font: 500 12px/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
+.tab:hover { color: #eef1f8; }
+.tab[aria-current="page"] { border-color: #24314f; border-bottom-color: transparent; background: rgba(16, 24, 44, .85); color: #eef1f8; }
+.tab:focus-visible { outline: 2px solid var(--tide); outline-offset: -2px; }
+.tab .long { display: none; }
+.navstatus { display: flex; align-items: center; gap: 7px; padding-bottom: 15px; font: 500 11px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; color: #ec5f55; }
+.navstatus::before { content: ""; flex: none; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.navstatus.is-gold { color: #f2c96b; }
+.navstatus .long { display: none; }
+
+/* The hourglass and its clock */
+.scene { position: relative; z-index: 1; display: grid; justify-items: center; gap: 28px; padding-top: 24px; padding-bottom: 44px; }
+.glass-wrap { position: relative; width: min(58vw, 240px); }
+.glass-wrap::before { content: ""; position: absolute; left: -35%; right: -35%; top: 6%; bottom: 6%; border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 50%, rgba(242, 201, 107, .13) 0%, rgba(90, 214, 198, .05) 40%, rgba(10, 15, 30, 0) 70%); pointer-events: none; }
+#glass { position: relative; display: block; width: 100%; height: auto; overflow: visible; filter: drop-shadow(0 18px 22px rgba(0, 0, 0, .5)); }
+.clock { display: grid; justify-items: center; gap: 18px; text-align: center; min-width: 0; }
+.clock h1 { font-size: clamp(1.7rem, 3.6vw, 2.4rem); line-height: 1.05; }
+.count { display: flex; justify-content: center; gap: 4px 14px; margin: 0; font-variant-numeric: tabular-nums; }
+.count div { display: grid; justify-items: center; gap: 2px; min-width: 0; }
+.count b { font: 800 clamp(3.1rem, 13vw, 6rem)/.9 var(--font-numeral); color: var(--gold); }
+.count .unit { font: 500 var(--size-label)/1.3 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--mist); }
+.count.done b { color: var(--mist); }
+.count.won b { color: var(--gold); }
+.lede { margin: 0; max-width: 34ch; color: var(--mist); font-size: 1.05rem; }
+.lede strong { color: var(--moon); font-weight: 600; }
+.facts { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.facts li { display: flex; justify-content: center; gap: 8px; }
+.facts .v { color: var(--moon); }
+.meter { position: relative; width: min(100%, 360px); height: 8px; border-radius: 4px; background: #1b2742; overflow: hidden; }
+.meter span { position: absolute; inset: 0 auto 0 0; border-radius: 4px 0 0 4px; background: var(--gold); }
+
+footer { border-top: 1px solid var(--rule); }
+.foot { padding-top: 26px; padding-bottom: calc(36px + env(safe-area-inset-bottom, 0px)); color: var(--mist); font-size: .9rem; display: grid; gap: 8px; }
+.foot p { margin: 0; max-width: 70ch; }
+.foot b { color: var(--moon); font-weight: 600; }
+
+@media (min-width: 768px) {
+  .topnav { padding: 16px 40px 0; }
+  .tab { padding: 0 14px; letter-spacing: .12em; }
+  .tab .long, .navstatus .long { display: inline; }
+  .tab .short, .navstatus .short { display: none; }
+  .scene { grid-template-columns: auto minmax(0, 1fr); align-items: center; justify-items: start; column-gap: 72px; padding-top: 36px; padding-bottom: 64px; }
+  .glass-wrap { width: 320px; justify-self: end; }
+  .clock { justify-items: start; text-align: left; }
+  .count { justify-content: flex-start; }
+  .facts li { justify-content: flex-start; }
+}
+@media (min-width: 960px) {
+  .celestial { top: 58px; right: 40px; width: 80px; height: 80px; }
+  .glass-wrap { width: 360px; }
+}
+@media (min-width: 1240px) {
+  .celestial { right: 70px; width: 104px; height: 104px; }
+}
+</style>
+</head>
+<body>
+
+<header class="top" data-sky-host>
+  <canvas id="snow" aria-hidden="true"></canvas>
+  <div class="celestial" aria-hidden="true"><div class="sun"></div><div class="moon"></div></div>
+  <nav class="topnav" aria-label="Pages">
+    <div class="tabs">
+      <a class="tab" href="./"><span class="long">The race</span><span class="short">Race</span></a>
+      <a class="tab" href="stats.html"><span class="long">The record</span><span class="short">Record</span></a>
+      <a class="tab" href="hourglass.html" aria-current="page"><span class="long">The hourglass</span><span class="short">Hourglass</span></a>
+    </div>
+    <span class="navstatus" id="navstatus"><span class="long">Deadline · Dec 25 · 12:00 AM ET</span><span class="short">Dec 25</span></span>
+  </nav>
+
+  <div class="wrap scene">
+    <div class="glass-wrap">
+      <svg id="glass" viewBox="0 0 300 540" role="img" aria-labelledby="glass-label">
+        <title id="glass-label">An hourglass draining the time left before Christmas</title>
+        <defs>
+          <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#7a5532"/><stop offset=".55" stop-color="#5a3c22"/><stop offset="1" stop-color="#3a2614"/>
+          </linearGradient>
+          <linearGradient id="post" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#3a2614"/><stop offset=".45" stop-color="#8a6238"/><stop offset="1" stop-color="#3a2614"/>
+          </linearGradient>
+          <linearGradient id="sand" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#f7d888"/><stop offset="1" stop-color="#d9a24a"/>
+          </linearGradient>
+          <linearGradient id="pane" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#eef1f8" stop-opacity=".10"/><stop offset=".35" stop-color="#eef1f8" stop-opacity=".02"/>
+            <stop offset=".8" stop-color="#eef1f8" stop-opacity=".03"/><stop offset="1" stop-color="#eef1f8" stop-opacity=".09"/>
+          </linearGradient>
+          <clipPath id="inside"><path id="inside-path"/></clipPath>
+        </defs>
+        <!-- Back posts, then the glass and sand, then the front posts and the end plates. -->
+        <rect x="30" y="34" width="9" height="472" rx="4" fill="url(#post)" opacity=".55"/>
+        <rect x="261" y="34" width="9" height="472" rx="4" fill="url(#post)" opacity=".55"/>
+        <path id="glass-fill" fill="url(#pane)"/>
+        <g clip-path="url(#inside)">
+          <path id="sand-top" fill="url(#sand)"/>
+          <path id="sand-bottom" fill="url(#sand)"/>
+          <line id="stream" x1="150" x2="150" stroke="#f2c96b" stroke-width="1.6" stroke-linecap="round" opacity=".28"/>
+          <g id="grains" fill="#f7d888"></g>
+        </g>
+        <path id="glass-edge" fill="none" stroke="#eef1f8" stroke-opacity=".38" stroke-width="1.6"/>
+        <path id="glass-shine" fill="none" stroke="#ffffff" stroke-opacity=".16" stroke-width="3" stroke-linecap="round"/>
+        <rect x="14" y="6" width="272" height="28" rx="6" fill="url(#wood)"/>
+        <rect x="22" y="29" width="256" height="5" rx="2" fill="#2a1c0f"/>
+        <rect x="14" y="506" width="272" height="28" rx="6" fill="url(#wood)"/>
+        <rect x="22" y="506" width="256" height="5" rx="2" fill="#2a1c0f"/>
+        <line x1="26" x2="274" y1="13" y2="13" stroke="#f2c96b" stroke-opacity=".35"/>
+        <line x1="26" x2="274" y1="527" y2="527" stroke="#f2c96b" stroke-opacity=".35"/>
+      </svg>
+    </div>
+
+    <div class="clock">
+      <p class="eyebrow" id="eyebrow">Sand left in the bet</p>
+      <h1 id="headline">Time left until Christmas</h1>
+      <div class="count" id="count" role="timer" aria-live="off" aria-atomic="true">
+        <div><b id="c-d">--</b><span class="unit">Days</span></div>
+        <div><b id="c-h">--</b><span class="unit">Hours</span></div>
+        <div><b id="c-m">--</b><span class="unit">Min</span></div>
+        <div><b id="c-s">--</b><span class="unit">Sec</span></div>
+      </div>
+      <div class="meter" aria-hidden="true"><span id="meter"></span></div>
+      <ul class="facts lbl">
+        <li><span id="f-left">Sand left</span></li>
+        <li>Runs out <span class="v" id="f-end">Dec 25 · 12:00 AM ET</span></li>
+        <li id="f-level-row" hidden><span class="v" id="f-level"></span></li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<footer>
+  <div class="wrap foot">
+    <p><b>How the hourglass works.</b> The sand runs from launch, <span id="foot-start">Nov 4 at 6:00 PM ET</span>, to the deadline, <span id="foot-end">Dec 25 at 12:00 AM ET</span>: <span id="foot-span">50 days and 6 hours</span>. The top bulb always holds the share of that time that's left, measured by the sand's volume, so it drains in real time, about 2% a day. The clock is your device's clock.</p>
+    <p>His level comes from the same hourly check of Blizzard's character data as <a href="./">the race</a>.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var LAUNCH = Date.parse("2026-11-04T23:00:00Z"), DEADLINE = Date.parse("2026-12-25T05:00:00Z");
+  var H = null, wonAt = null;
+  function $(id) { return document.getElementById(id); }
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function fmtDay(t) { return new Date(t).toLocaleDateString("en-US", { month: "short", day: "numeric" }); }
+  function etDate(t) { try { return new Date(t).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "America/New_York" }); } catch (e) { return fmtDay(t); } }
+  function etTime(t) { try { return new Date(t).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/New_York" }); } catch (e) { return ""; } }
+  function plural(n, w) { return n + " " + w + (n === 1 ? "" : "s"); }
+  var reduceMQ = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
+  function reduced() { return !!(reduceMQ && reduceMQ.matches); }
+  function onChange(mq, fn) { if (!mq) return; if (mq.addEventListener) mq.addEventListener("change", fn); else if (mq.addListener) mq.addListener(fn); }
+
+  // ---- The glass. Each bulb's half-width follows w(t), t = 0 at the neck and 1 at the end plate. ----
+  var CX = 150, NECK = 270, HALF = 228;   // glass from y 42 to 498
+  var NW = 4.5, W = 112;
+  function w(t) {
+    var u = Math.min(1, t / 0.6);
+    var swell = 0.55 * (1 - Math.cos(Math.PI * u)) / 2 + 0.45 * Math.sin(Math.PI / 2 * u);
+    var v = NW + (W - NW) * swell;
+    if (t > 0.6) { var k = (t - 0.6) / 0.4; v = W - 16 * k * k; }
+    return v;
+  }
+  var STEPS = 120, CUM = [0];   // area of one bulb from the neck to t, in viewBox units
+  for (var i = 1; i <= STEPS; i++) {
+    var a = (i - 1) / STEPS, b = i / STEPS;
+    CUM.push(CUM[i - 1] + (w(a) + w(b)) * (b - a) * HALF);   // 2·w averaged over the slice, times its height
+  }
+  function areaTo(t) { var x = Math.max(0, Math.min(1, t)) * STEPS, i = Math.floor(x); return i >= STEPS ? CUM[STEPS] : CUM[i] + (CUM[i + 1] - CUM[i]) * (x - i); }
+  function tForArea(A) { var lo = 0, hi = 1; for (var k = 0; k < 40; k++) { var m = (lo + hi) / 2; if (areaTo(m) < A) lo = m; else hi = m; } return (lo + hi) / 2; }
+  var FULL = 0.84, CAP = areaTo(FULL);   // a full top bulb is filled to 84% of its height
+
+  function f(n) { return n.toFixed(2); }
+  function outline() {
+    var right = [], left = [];
+    for (var i = STEPS; i >= 0; i -= 2) { var t = i / STEPS; right.push([CX + w(t), NECK - t * HALF]); }
+    for (var j = 2; j <= STEPS; j += 2) { var s = j / STEPS; right.push([CX + w(s), NECK + s * HALF]); }
+    for (var k = right.length - 1; k >= 0; k--) left.push([2 * CX - right[k][0], right[k][1]]);
+    var pts = right.concat(left);
+    return "M" + pts.map(function (p) { return f(p[0]) + "," + f(p[1]); }).join(" L") + " Z";
+  }
+  function shine() {   // a highlight down the left of each bulb, just inside the glass
+    function side(sign) {
+      var pts = [];
+      for (var i = 0.2; i <= 0.82; i += 0.04) pts.push([CX - w(i) * 0.86, NECK + sign * i * HALF]);
+      return "M" + pts.map(function (p) { return f(p[0]) + "," + f(p[1]); }).join(" L");
+    }
+    return side(-1) + " " + side(1);
+  }
+  var glassPath = outline();
+  $("inside-path").setAttribute("d", glassPath);
+  $("glass-fill").setAttribute("d", glassPath);
+  $("glass-edge").setAttribute("d", glassPath);
+  $("glass-shine").setAttribute("d", shine());
+
+  // ---- Sand: the top holds `left` (0..1) of the full amount, by area; the rest has fallen into the bottom. ----
+  var topSurface = NECK, bottomPeak = NECK + HALF, flowing = true;
+  function drawSand(left) {
+    left = Math.max(0, Math.min(1, left));
+    var tTop = tForArea(left * CAP), yTop = NECK - tTop * HALF;
+    var dip = left > 0 ? Math.min(5, tTop * HALF * 0.4) : 0;   // the shallow funnel the draining sand makes
+    var dw = Math.min(w(tTop) * 0.6, 36);
+    $("sand-top").setAttribute("d", left <= 0 ? "" :
+      "M0," + f(yTop) + " L" + f(CX - dw) + "," + f(yTop) + " Q" + CX + "," + f(yTop + dip * 2) + " " + f(CX + dw) + "," + f(yTop) +
+      " L300," + f(yTop) + " L300," + (NECK + 1) + " L0," + (NECK + 1) + " Z");
+    var fallen = (1 - left) * CAP, tBot = tForArea(areaTo(1) - fallen), yBot = NECK + tBot * HALF;
+    var peak = Math.min(16, (NECK + HALF - yBot) * 0.6);   // the heap in the middle of the bottom pile
+    $("sand-bottom").setAttribute("d", fallen <= 0 ? "" :
+      "M0," + f(yBot + peak * 0.25) + " Q" + CX + "," + f(yBot - peak * 1.75) + " 300," + f(yBot + peak * 0.25) +
+      " L300," + (NECK + HALF + 2) + " L0," + (NECK + HALF + 2) + " Z");
+    topSurface = yTop; bottomPeak = fallen > 0 ? yBot - peak * 0.75 : NECK + HALF;
+    var s = $("stream");
+    s.setAttribute("y1", NECK - 2); s.setAttribute("y2", f(bottomPeak));
+    s.style.display = flowing && left > 0 ? "" : "none";
+  }
+
+  // ---- The drip: single grains let go of the neck one after another and fall onto the heap. It is the page's
+  // point, so it keeps going under "reduce motion", only sparser (a grain about every 1.2 s instead of 0.3 s). ----
+  var grains = [], gHost = $("grains"), raf = 0, last = 0, due = 0, onScreen = true;
+  for (var g = 0; g < 10; g++) {
+    var c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    c.setAttribute("r", (1.3 + (g % 3) * 0.3).toFixed(2));
+    c.setAttribute("cx", CX); c.setAttribute("cy", -10);
+    gHost.appendChild(c);
+    grains.push({ el: c, live: false, y: 0, v: 0, x: 0 });
+  }
+  function step(ts) {
+    var dt = Math.min(0.05, (ts - (last || ts)) / 1000); last = ts;
+    due -= dt;
+    if (due <= 0) {
+      var free = grains.filter(function (p) { return !p.live; })[0];
+      if (free) { free.live = true; free.y = NECK - 3; free.v = 6; free.x = (Math.random() - 0.5) * 1.4; }
+      due = reduced() ? 1.1 + Math.random() * 0.3 : 0.22 + Math.random() * 0.16;
+    }
+    for (var i = 0; i < grains.length; i++) {
+      var p = grains[i];
+      if (p.live) {
+        p.v += 260 * dt; p.y += p.v * dt;
+        if (p.y >= bottomPeak) p.live = false;
+      }
+      p.el.setAttribute("cx", f(CX + p.x)); p.el.setAttribute("cy", f(p.live ? p.y : -10));
+    }
+    raf = requestAnimationFrame(step);
+  }
+  function animate() {
+    var go = flowing && onScreen && !document.hidden;
+    gHost.style.display = flowing ? "" : "none";
+    if (go && !raf) { last = 0; raf = requestAnimationFrame(step); }
+    if (!go && raf) { cancelAnimationFrame(raf); raf = 0; }
+  }
+  onChange(reduceMQ, animate);
+  document.addEventListener("visibilitychange", animate);
+  if (window.IntersectionObserver) new IntersectionObserver(function (es) { onScreen = es[0].isIntersecting; animate(); }).observe($("glass"));
+
+  // ---- The clock ----
+  function span(ms) {
+    var s = Math.max(0, Math.floor(ms / 1000));
+    return { d: Math.floor(s / 86400), h: Math.floor(s / 3600) % 24, m: Math.floor(s / 60) % 60, s: s % 60 };
+  }
+  function words(ms) {
+    var p = span(ms), out = [];
+    if (p.d) out.push(plural(p.d, "day"));
+    if (p.h || !p.d) out.push(plural(p.h, "hour"));
+    return out.join(" and ");
+  }
+  var lastMinute = -1;
+  function tick() {
+    var now = Date.now(), stopAt = wonAt != null ? Math.min(wonAt, DEADLINE) : DEADLINE;
+    var at = Math.min(now, stopAt), total = DEADLINE - LAUNCH;
+    var left = Math.max(0, Math.min(1, (DEADLINE - at) / total));
+    flowing = now < stopAt;
+    var p = span(DEADLINE - at);
+    $("c-d").textContent = p.d; $("c-h").textContent = pad(p.h); $("c-m").textContent = pad(p.m); $("c-s").textContent = pad(p.s);
+    drawSand(left);
+    animate();
+    var minute = Math.floor(at / 60000);
+    if (minute === lastMinute) return;
+    lastMinute = minute;
+    var pct = (left * 100).toFixed(1);
+    $("meter").style.width = (left * 100).toFixed(2) + "%";
+    $("f-left").innerHTML = "";
+    $("f-left").appendChild(document.createTextNode("Sand left "));
+    var v = document.createElement("span"); v.className = "v"; v.textContent = pct + "%"; $("f-left").appendChild(v);
+    $("f-left").appendChild(document.createTextNode(" · " + (100 - left * 100).toFixed(1) + "% gone"));
+    var count = $("count");
+    count.classList.toggle("won", wonAt != null && wonAt < DEADLINE);
+    count.classList.toggle("done", !(wonAt != null && wonAt < DEADLINE) && now >= DEADLINE);
+    if (wonAt != null && wonAt < DEADLINE) {
+      $("eyebrow").textContent = "The sand stopped " + fmtDay(wonAt);
+      $("headline").textContent = "He hit 60 with " + words(DEADLINE - wonAt) + " to spare";
+      count.setAttribute("aria-label", "Time that was left when he hit 60: " + words(DEADLINE - wonAt));
+    } else if (now >= DEADLINE) {
+      $("eyebrow").textContent = "The sand ran out " + etDate(DEADLINE);
+      $("headline").textContent = "Time's up. Christmas came first.";
+      count.setAttribute("aria-label", "No time left");
+    } else {
+      $("eyebrow").textContent = "Sand left in the bet";
+      $("headline").textContent = "Time left until Christmas";
+      count.setAttribute("aria-label", words(DEADLINE - now) + " left");
+    }
+    $("glass-label").textContent = "An hourglass with " + pct + "% of its sand left";
+  }
+
+  function setText() {
+    $("f-end").textContent = etDate(DEADLINE) + " · " + etTime(DEADLINE) + " ET";
+    $("foot-start").textContent = etDate(LAUNCH) + " at " + etTime(LAUNCH) + " ET";
+    $("foot-end").textContent = etDate(DEADLINE) + " at " + etTime(DEADLINE) + " ET";
+    $("foot-span").textContent = words(DEADLINE - LAUNCH);
+  }
+
+  // Nav status: the deadline, or the settled bet (gold if he hit 60, holly if Christmas came first).
+  function setStatus() {
+    var ns = $("navstatus"), longEl = ns.querySelector(".long"), shortEl = ns.querySelector(".short");
+    ns.classList.toggle("is-gold", wonAt != null);
+    if (wonAt != null) { longEl.textContent = "Bet settled · " + fmtDay(wonAt); shortEl.textContent = "Settled"; }
+    else if (Date.now() >= DEADLINE) { longEl.textContent = "Bet settled · " + etDate(DEADLINE); shortEl.textContent = "Settled"; }
+    else { longEl.textContent = "Deadline · " + etDate(DEADLINE) + " · " + etTime(DEADLINE) + " ET"; shortEl.textContent = etDate(DEADLINE); }
+  }
+
+  function useHistory(h) {
+    H = h;
+    var l = Date.parse(h.launch), d = Date.parse(h.deadline);
+    if (l) LAUNCH = l;
+    if (d) DEADLINE = d;
+    var snaps = (h.snapshots || []).filter(function (s) { return s && typeof s.t === "number"; }).sort(function (a, b) { return a.t - b.t; });
+    var hit = snaps.filter(function (s) { return s.level >= 60; })[0];
+    wonAt = hit ? hit.t : null;
+    var lvl = snaps.reduce(function (m, s) { return Math.max(m, Math.floor(s.level) || 0); }, 0);
+    if (lvl) {
+      $("f-level").textContent = lvl >= 60 ? "He's level 60" : "He's level " + lvl + " · " + plural(60 - lvl, "level") + " to go";
+      $("f-level-row").hidden = false;
+    }
+    lastMinute = -1;
+    setText(); setStatus(); tick();
+  }
+
+  setText(); setStatus(); tick();
+  setInterval(tick, 1000);
+  setInterval(setStatus, 60 * 1000);
+  fetch("data/history.json?ts=" + Date.now(), { cache: "no-store" })
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(useHistory)
+    .catch(function () { /* the clock runs on the built-in dates without it */ });
+  setInterval(function () {
+    fetch("data/history.json?ts=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (h) { if (h) useHistory(h); }).catch(function () {});
+  }, 10 * 60 * 1000);
+
+  // Snow: a canvas behind the header only, at most 110 flakes, stopped under reduced motion.
+  (function snow() {
+    var cv = $("snow"), ctx = cv && cv.getContext && cv.getContext("2d");
+    if (!ctx) return;
+    var color = "#eef1f8", SW = 0, SH = 0, flakes = [], sraf = 0, lastT = 0, visible = true;
+    var seed = 20261107;
+    function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+    function size() {
+      var dpr = Math.min(2, window.devicePixelRatio || 1);
+      SW = cv.clientWidth; SH = cv.clientHeight;
+      if (!SW || !SH) return;
+      cv.width = Math.round(SW * dpr); cv.height = Math.round(SH * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var n = Math.min(110, Math.round(SW * SH / 5000));
+      flakes = [];
+      for (var i = 0; i < n; i++) {
+        var z = rnd(), dur = 9 + (1 - z) * 9;
+        flakes.push({ x: rnd() * SW, y: rnd() * SH, r: (1 + z * 2.4) / 2, o: .25 + z * .55, v: SH * 1.06 / dur, dx: (rnd() - .5) * 60 / dur });
+      }
+    }
+    function paint() {
+      ctx.clearRect(0, 0, SW, SH); ctx.fillStyle = color;
+      for (var i = 0; i < flakes.length; i++) {
+        var fl = flakes[i]; ctx.globalAlpha = fl.o;
+        ctx.beginPath(); ctx.arc(fl.x, fl.y, fl.r, 0, 6.2832); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+    function stepSnow(ts) {
+      var dt = Math.min(.05, (ts - (lastT || ts)) / 1000); lastT = ts;
+      for (var i = 0; i < flakes.length; i++) {
+        var fl = flakes[i]; fl.y += fl.v * dt; fl.x += fl.dx * dt;
+        if (fl.y > SH + 4) { fl.y = -4; fl.x = rnd() * SW; }
+        if (fl.x < -4) fl.x += SW + 8; else if (fl.x > SW + 4) fl.x -= SW + 8;
+      }
+      paint(); sraf = requestAnimationFrame(stepSnow);
+    }
+    function start() { if (!sraf && visible && !reduced()) { lastT = 0; sraf = requestAnimationFrame(stepSnow); } }
+    function stop() { if (sraf) cancelAnimationFrame(sraf); sraf = 0; }
+    size(); paint(); start();
+    onChange(reduceMQ, function () { if (reduced()) stop(); else start(); });
+    var top = cv.parentNode;
+    if (window.ResizeObserver) new ResizeObserver(function () { size(); paint(); }).observe(top);
+    else window.addEventListener("resize", function () { size(); paint(); });
+    if (window.IntersectionObserver) new IntersectionObserver(function (es) { visible = es[0].isIntersecting; if (visible) start(); else stop(); }).observe(top);
+  })();
+})();
+</script>
+<script>
+// Sky: the header follows the viewer's local time of day, as on the other pages. On localhost, ?sky=HH:MM previews a time.
+(function () {
+  "use strict";
+  var host = document.querySelector("[data-sky-host]");
+  if (!host) return;
+  var SKY = [ // [sun altitude in degrees, top, middle, horizon, horizon glow (r,g,b,a)]
+    [-18, "#17243f", "#111b33", "#0a0f1e", [240, 140, 90, 0]],
+    [-9, "#1a2550", "#262c5e", "#352f62", [170, 100, 150, .22]],
+    [-3, "#22306a", "#4a3f7c", "#a56a80", [240, 140, 100, .45]],
+    [3, "#2a4581", "#5f5f94", "#e09068", [255, 170, 100, .5]],
+    [14, "#163d6e", "#22508c", "#4f86bf", [255, 225, 180, .16]],
+    [40, "#13386a", "#1f4c87", "#4a80bb", [255, 225, 180, 0]]
+  ];
+  function rgb(hx) { return [parseInt(hx.slice(1, 3), 16), parseInt(hx.slice(3, 5), 16), parseInt(hx.slice(5, 7), 16)]; }
+  function mix(a, b, t) { return a.map(function (v, i) { return Math.round(v + (b[i] - v) * t); }); }
+  function css(c) { return "rgb(" + c[0] + "," + c[1] + "," + c[2] + ")"; }
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+  var override = null;
+  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) {
+    var m = /[?&]sky=(\d{1,2}):(\d{2})/.exec(location.search);
+    if (m) override = [+m[1], +m[2]];
+  }
+  function sunAltitude(d) {
+    var lat = 40 * Math.PI / 180, n = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 864e5);
+    var decl = -23.44 * Math.PI / 180 * Math.cos(2 * Math.PI / 365 * (n + 10));
+    var ha = (d.getHours() + d.getMinutes() / 60 + d.getSeconds() / 3600 - 12) * 15 * Math.PI / 180;
+    return Math.asin(Math.sin(lat) * Math.sin(decl) + Math.cos(lat) * Math.cos(decl) * Math.cos(ha)) * 180 / Math.PI;
+  }
+  function paint() {
+    var d = new Date();
+    if (override) d.setHours(override[0], override[1], 0, 0);
+    var alt = sunAltitude(d), i = 0;
+    while (i < SKY.length - 2 && alt > SKY[i + 1][0]) i++;
+    var a = SKY[i], b = SKY[i + 1], t = clamp((alt - a[0]) / (b[0] - a[0]), 0, 1), s = host.style;
+    s.setProperty("--sky-top", css(mix(rgb(a[1]), rgb(b[1]), t)));
+    s.setProperty("--sky-mid", css(mix(rgb(a[2]), rgb(b[2]), t)));
+    s.setProperty("--sky-low", css(mix(rgb(a[3]), rgb(b[3]), t)));
+    var g = a[4].map(function (v, k) { return v + (b[4][k] - v) * t; });
+    s.setProperty("--sky-glow", "rgba(" + Math.round(g[0]) + "," + Math.round(g[1]) + "," + Math.round(g[2]) + "," + g[3].toFixed(3) + ")");
+    var light = clamp((alt + 8) / 16, 0, 1);
+    s.setProperty("--hero-ink2", css(mix(rgb("#97a3c2"), rgb("#d6deef"), light)));
+    s.setProperty("--hero-holly", css(mix(rgb("#ec5f55"), rgb("#ff9a92"), light)));
+    s.setProperty("--hero-shadow", (0.55 * light).toFixed(2));
+    s.setProperty("--moon-o", clamp((-4 - alt) / 8, 0, 1).toFixed(3));
+    s.setProperty("--moon-set", clamp((alt + 12) / 8, 0, 1).toFixed(3));
+    s.setProperty("--sun-o", clamp((alt + 3) / 6, 0, 1).toFixed(3));
+    s.setProperty("--sun-rise", (1 - clamp((alt + 2) / 22, 0, 1)).toFixed(3));
+    s.setProperty("--sun-edge", css(mix(rgb("#ff9d5c"), rgb("#ffe7a6"), clamp(alt / 20, 0, 1))));
+    host.setAttribute("data-sky", alt < -9 ? "night" : alt < 3 ? "twilight" : "day");
+  }
+  paint();
+  setInterval(paint, 30000);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) paint(); });
+})();
+</script>
+</body>
+</html>

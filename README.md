@@ -2,6 +2,8 @@
 
 Can Bonita Bluehair hit level 60 in WoW: Forever before Christmas? This site keeps score.
 
+Three pages, one tab each: the race (`index.html`), the record (`stats.html`) and the hourglass (`hourglass.html`). The hourglass needs no data of its own: its top bulb holds the share of the time from launch to the deadline that's left (by the sand's area, so the level drops faster as the bulb narrows), and a grain drips from the neck every fraction of a second, every 1.2 s or so when the viewer's device asks for reduced motion. It reads `data/history.json` only for the dates, his current level, and whether he has hit 60, which stops the sand where it was. After the deadline the top is empty and the drip stops.
+
 ## Open items (as of Nov 15, 2026)
 
 Delete each one once it's done.

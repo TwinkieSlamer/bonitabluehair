@@ -76,7 +76,7 @@ h2 { font-size: clamp(1.7rem, 3.6vw, 2.4rem); line-height: 1.05; }
 .tab[aria-current="page"] { border-color: var(--rule); border-bottom-color: transparent; background: rgba(16, 24, 44, .85); color: var(--moon); }
 .navstatus { --c: var(--holly); display: flex; align-items: center; gap: 7px; padding-bottom: 15px; font: 500 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--c); white-space: nowrap; }
 .navstatus::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-.navstatus .long { display: none; }
+.navstatus .long, .tab .long { display: none; }
 
 /* Hero: moonlight, snow, the character stage, the level and the ledger card */
 /* The hero sky follows the viewer's local time of day (script: "Sky"). These defaults are the night sky. */
@@ -455,8 +455,8 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
   .topnav { padding-top: 16px; }
   .tab { padding: 0 14px; letter-spacing: .12em; }
   .celestial { right: 48px; width: 60px; height: 60px; }
-  .navstatus .long { display: inline; }
-  .navstatus .short { display: none; }
+  .navstatus .long, .tab .long { display: inline; }
+  .navstatus .short, .tab .short { display: none; }
   .advent-inner { padding-block: 36px 40px; }
   .vblock { padding-block: 48px 56px; }
   .board { gap: 28px; padding: 36px 40px 40px; }
@@ -545,10 +545,11 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
   <div class="celestial" aria-hidden="true"><div class="sun"></div><div class="moon"></div></div>
   <nav class="wrap topnav" aria-label="Pages">
     <div class="tabs">
-      <a class="tab" href="./" aria-current="page">The race</a>
-      <a class="tab" href="stats.html">The record</a>
+      <a class="tab" href="./" aria-current="page"><span class="long">The race</span><span class="short">Race</span></a>
+      <a class="tab" href="stats.html"><span class="long">The record</span><span class="short">Record</span></a>
+      <a class="tab" href="hourglass.html"><span class="long">The hourglass</span><span class="short">Hourglass</span></a>
     </div>
-    <span class="navstatus" id="navstatus"><span class="long">Deadline · Dec 25 · 12:00 AM ET</span><span class="short">Dec 25 deadline</span></span>
+    <span class="navstatus" id="navstatus"><span class="long">Deadline · Dec 25 · 12:00 AM ET</span><span class="short">Dec 25</span></span>
   </nav>
   <div class="wrap hero-grid">
     <figure class="stage" id="stage" data-state="render" data-focus="false">
