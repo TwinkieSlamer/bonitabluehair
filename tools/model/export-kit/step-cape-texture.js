@@ -29,8 +29,14 @@ for (const m of mats) for (const fn of ["getTextureFDIDsByMatID", "getTextureFil
 }
 if (!fdids.size) for (const [id, row] of await db2.TextureFileData.getAllRows()) if (mats.includes(row.MaterialResourcesID)) fdids.add(id);
 out.textures = [];
+// Only cape textures are saved, and at most a few. On Nov 22, 2026 the lookup came back with thousands of unrelated
+// texture ids (the fallback scan matched far too much) and the step wrote 5,000 PNGs before it was stopped.
+out.found = fdids.size;
+let saved = 0;
 for (const f of fdids) {
   const entry = { fileDataID: f, name: (listfile.getByID && listfile.getByID(f)) || String(f) };
+  if (!/objectcomponents\/cape\//i.test(entry.name)) continue;
+  if (++saved > 6) { out.more = true; break; }
   try {
     const blp = new BLPFile(await v.casc.getFile(f));
     entry.size = blp.width + "x" + blp.height;

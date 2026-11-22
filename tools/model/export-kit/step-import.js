@@ -31,9 +31,13 @@ await wait(1500);
 // 2. Characters tab, once the customization data is ready.
 app.setActiveModule("tab_characters");
 await until(() => document.querySelector(".character-wowhead-button"), 60000);
+// The tab shows its controls while it is still loading shaders behind the loading screen. Importing then leaves the
+// race selection empty and the tab never finishes loading (Nov 22, 2026), so wait for its race list and for the
+// loading screen to go away.
+const raced = await until(() => (v.chrCustRaces || []).length > 0 && !v.isBusy, 300000);
 await until(() => !v.chrModelLoading, 120000);
 await wait(2000);
-steps.push("characters ready");
+steps.push("characters ready: " + raced);
 // 3. Import from the dressing-room link.
 v.characterImportMode = "WHEAD";
 await wait(400);
