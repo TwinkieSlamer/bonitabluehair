@@ -139,6 +139,10 @@
   {
    "t": 1795242466000,
    "level": 45
+  },
+  {
+   "t": 1795323836000,
+   "level": 46
   }
  ],
  "looks": [
@@ -1348,6 +1352,115 @@
    "h": 681,
    "hash": "287805a62f37a6ef3156bdfa18179732fb21f809b152a23f0b8780e3c203e7e9",
    "picAt": 1795242467000
+  },
+  {
+   "t": 1795323836000,
+   "level": 46,
+   "itemLevel": 38,
+   "gear": [
+    {
+     "slot": "Head",
+     "name": "Twilight Mine Light",
+     "quality": "uncommon",
+     "ilvl": 45
+    },
+    {
+     "slot": "Neck",
+     "name": "Curio-Adorned Necklace",
+     "quality": "rare",
+     "ilvl": 44
+    },
+    {
+     "slot": "Shoulder",
+     "name": "Rune-Etched Epaulets",
+     "quality": "rare",
+     "ilvl": 41
+    },
+    {
+     "slot": "Back",
+     "name": "Royal Cape of the Beast",
+     "quality": "uncommon",
+     "ilvl": 43
+    },
+    {
+     "slot": "Chest",
+     "name": "Scorpashi Breastplate",
+     "quality": "uncommon",
+     "ilvl": 49
+    },
+    {
+     "slot": "Shirt",
+     "name": "Sweat-Stained Shirt",
+     "quality": "common",
+     "ilvl": 1
+    },
+    {
+     "slot": "Tabard",
+     "name": "Farholde Keep Tabard",
+     "quality": "common",
+     "ilvl": 20
+    },
+    {
+     "slot": "Wrist",
+     "name": "Branded Leather Bracers",
+     "quality": "rare",
+     "ilvl": 42
+    },
+    {
+     "slot": "Hands",
+     "name": "Tiger Hunter Gloves",
+     "quality": "uncommon",
+     "ilvl": 37
+    },
+    {
+     "slot": "Waist",
+     "name": "Big-Belly Belt",
+     "quality": "rare",
+     "ilvl": 45
+    },
+    {
+     "slot": "Legs",
+     "name": "Oilskin Leggings",
+     "quality": "rare",
+     "ilvl": 47
+    },
+    {
+     "slot": "Feet",
+     "name": "Imperial Leather Boots",
+     "quality": "uncommon",
+     "ilvl": 43
+    },
+    {
+     "slot": "Finger",
+     "name": "Archaedic Stone of Eluding",
+     "quality": "rare",
+     "ilvl": 47
+    },
+    {
+     "slot": "Finger",
+     "name": "Seal of Wrynn",
+     "quality": "rare",
+     "ilvl": 31
+    },
+    {
+     "slot": "Two-Hand",
+     "name": "Stick No Rock",
+     "quality": "rare",
+     "ilvl": 47
+    },
+    {
+     "slot": "Relic",
+     "name": "Idol of Shifting Tides",
+     "quality": "uncommon",
+     "ilvl": 16
+    }
+   ],
+   "img": "renders/20261121-0627-l45.webp",
+   "w": 399,
+   "h": 681,
+   "hash": "287805a62f37a6ef3156bdfa18179732fb21f809b152a23f0b8780e3c203e7e9",
+   "picAt": 1795242467000,
+   "stalePic": true
   }
  ],
  "character": {
@@ -1358,9 +1471,9 @@
   "className": "Druid",
   "spec": "Feral Combat",
   "faction": "Alliance",
-  "itemLevel": 37,
-  "lastLoginTs": 1795242466000,
-  "xp": 104596,
+  "itemLevel": 38,
+  "lastLoginTs": 1795323836000,
+  "xp": 16006,
   "professions": [
    {
     "name": "Herbalism",
@@ -1395,5 +1508,5 @@
   ]
  },
  "armoryUrl": "https://classicarmory.gg/character/us/forever/bonita-bluehair",
- "checkedAt": "2026-11-22T04:08:09Z"
+ "checkedAt": "2026-11-22T05:08:05Z"
 }
