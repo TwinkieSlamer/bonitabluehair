@@ -147,6 +147,11 @@
   {
    "t": 1795445260000,
    "level": 46
+  },
+  {
+   "t": 1795478884821,
+   "level": 47,
+   "source": "roster"
   }
  ],
  "looks": [
@@ -1511,5 +1516,5 @@
   ]
  },
  "armoryUrl": "https://classicarmory.gg/character/us/forever/bonita-bluehair",
- "checkedAt": "2026-11-23T23:08:07Z"
+ "checkedAt": "2026-11-24T00:08:05Z"
 }
