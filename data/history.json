@@ -1588,12 +1588,11 @@
      "ilvl": 16
     }
    ],
-   "img": "renders/20261122-0503-l46.webp",
-   "w": 400,
-   "h": 681,
-   "hash": "fe94ff63a69e4de6ce8077e3a2e10d7cfeed2cbc7e0fbdfc2e2d759285cfe069",
-   "picAt": 1795323838000,
-   "stalePic": true
+   "img": "renders/20261124-0627-l48.webp",
+   "w": 358,
+   "h": 680,
+   "hash": "a653f31ab69e13b1747797df7e5aa9ed4a443c1c597b821c5a91f279b0556e54",
+   "picAt": 1795501678000
   }
  ],
  "character": {
@@ -1641,5 +1640,5 @@
   ]
  },
  "armoryUrl": "https://classicarmory.gg/character/us/forever/bonita-bluehair",
- "checkedAt": "2026-11-24T08:08:08Z"
+ "checkedAt": "2026-11-24T09:08:09Z"
 }
