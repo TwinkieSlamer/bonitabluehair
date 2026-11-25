@@ -156,6 +156,10 @@
   {
    "t": 1795501673000,
    "level": 48
+  },
+  {
+   "t": 1795574272000,
+   "level": 48
   }
  ],
  "looks": [
@@ -1603,8 +1607,8 @@
   "className": "Druid",
   "spec": "Restoration",
   "faction": "Alliance",
-  "itemLevel": 45,
-  "lastLoginTs": 1795501673000,
+  "itemLevel": null,
+  "lastLoginTs": 1795574272000,
   "xp": 33271,
   "professions": [
    {
@@ -1640,5 +1644,5 @@
   ]
  },
  "armoryUrl": "https://classicarmory.gg/character/us/forever/bonita-bluehair",
- "checkedAt": "2026-11-25T02:08:08Z"
+ "checkedAt": "2026-11-25T03:08:06Z"
 }
