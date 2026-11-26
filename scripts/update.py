@@ -35,6 +35,7 @@ import json
 import math
 import os
 import pathlib
+import re
 import sys
 import time
 import urllib.error
@@ -46,6 +47,7 @@ from PIL import Image, ImageChops
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "history.json"
 RENDERS = ROOT / "renders"
+ITEM_LEVELS = ROOT / "data" / "item-levels.json"   # item id -> item level, kept so each item is looked up once
 # The source is Blizzard's official World of Warcraft API (https://develop.battle.net). WoW: Forever is the "forever"
 # game version there. Its characters have a first and last name and no realm, so he is simply
 # /profile/wow/character/bonita-bluehair in the namespace profile-forever-us. scripts/blizzard_probe.py is how that
@@ -383,6 +385,76 @@ def to_equipment(reply):
     return out
 
 
+# Since Nov 25, 2026 Blizzard's API leaves out item levels: his average in the summary and each item's in the
+# equipment reply. Its item catalogue only knows the older items (the WoW: Forever ones answer 404), so each item's
+# level comes from Wowhead's tooltip feed (data set 16 is WoW: Forever), which agreed with Blizzard on all 18 items
+# both had numbers for. A level is looked up once and kept in data/item-levels.json; levels Blizzard does send are
+# kept there too.
+WOWHEAD_TOOLTIP = "https://nether.wowhead.com/tooltip/item/{}?dataEnv=16&locale=0"
+
+
+def wowhead_level(item_id):
+    """An item's level from Wowhead's tooltip, or None."""
+    try:
+        reply = json.loads(get(WOWHEAD_TOOLTIP.format(int(item_id)), "application/json"))
+    except (urllib.error.URLError, TimeoutError, OSError, ValueError) as exc:
+        print(f"Could not look up item {item_id} on Wowhead ({exc}).")
+        return None
+    m = re.search(r"Item Level (?:<!--ilvl-->)?(\d+)", str((reply or {}).get("tooltip") or ""))
+    return int(m.group(1)) if m else None
+
+
+def fill_item_levels(equipment):
+    """Give every equipped item its level: Blizzard's when it sends one, else the saved table, else Wowhead."""
+    try:
+        table = json.loads(ITEM_LEVELS.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        table = {}
+    changed, looked_up = False, []
+    for it in (equipment or {}).values():
+        key = str(it.get("id"))
+        if it.get("id") is None:
+            continue
+        if it.get("itemLevel") is not None:
+            if table.get(key) != it["itemLevel"]:
+                table[key] = it["itemLevel"]; changed = True
+            continue
+        if key not in table:
+            level = wowhead_level(it["id"])
+            if level is None:
+                continue
+            table[key] = level; changed = True
+            looked_up.append(f"{it.get('name')} {level}")
+            time.sleep(0.3)
+        it["itemLevel"] = table[key]
+    if changed:
+        ITEM_LEVELS.write_text(json.dumps(dict(sorted(table.items(), key=lambda kv: int(kv[0]))), indent=1) + "\n", encoding="utf-8")
+    if looked_up:
+        print("Item levels looked up on Wowhead: " + ", ".join(looked_up) + ".")
+
+
+AVERAGE_SLOTS = ("head", "neck", "shoulder", "back", "chest", "wrist", "hands", "waist", "legs", "feet",
+                 "finger1", "finger2", "trinket1", "trinket2", "mainhand", "offhand")
+
+
+def equipped_level(equipment):
+    """His item level the way Blizzard worked it out: the 16 slots above (no shirt, tabard or relic), a two-handed
+    weapon counted again for the empty off hand, an empty slot as 0, divided by 16 and rounded down. It matched
+    Blizzard's number on all 14 gear frames saved before Nov 25, 2026. None when an equipped item's level is unknown."""
+    eq = equipment or {}
+    total = 0
+    for slot in AVERAGE_SLOTS:
+        it = eq.get(slot)
+        if slot == "offhand" and not it and (eq.get("mainhand") or {}).get("slotLabel") == "Two-Hand":
+            it = eq["mainhand"]
+        if not it:
+            continue
+        if it.get("itemLevel") is None:
+            return None
+        total += it["itemLevel"]
+    return total // 16 if eq else None
+
+
 def to_professions(reply):
     rows = []
     for kind, primary in (("primaries", True), ("secondaries", False)):
@@ -445,6 +517,9 @@ def read_character():
         "guildSlug": (summary.get("guild") or {}).get("slug"),
     }
     api["equipment"] = to_equipment(optional("his gear", CHARACTER + "/equipment"))
+    fill_item_levels(api["equipment"])
+    if api["itemLevel"] is None:
+        api["itemLevel"] = equipped_level(api["equipment"])
     media = optional("his picture's address", CHARACTER + "/character-media")
     api["mainRender"] = next((a.get("value") for a in (media or {}).get("assets") or [] if a.get("key") == "main-raw"), None)
     specs = optional("his talents", CHARACTER + "/specializations")

@@ -1615,7 +1615,7 @@
   "className": "Druid",
   "spec": "Balance",
   "faction": "Alliance",
-  "itemLevel": null,
+  "itemLevel": 45,
   "lastLoginTs": 1795635681000,
   "xp": 15531,
   "professions": [
