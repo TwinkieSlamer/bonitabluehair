@@ -239,6 +239,25 @@ def main():
                 print(f"    {((it.get('slot') or {}).get('name') or '?'):<12} {it.get('item', {}).get('id')!s:<8} {it.get('name')!r} quality={((it.get('quality') or {}).get('type'))} level={((it.get('level') or {}).get('value'))} inv={((it.get('inventory_type') or {}).get('name'))}")
             print("    shape of one item:")
             shape((data.get("equipped_items") or [{}])[0], 2, budget=[40])
+            # Since Nov 25, 2026 the equipment reply leaves out item levels. Each item still links to its entry in
+            # the game's item catalogue; this checks that entry gives the level.
+            print("    item catalogue (each item's own link):")
+            catalogue = {}
+            for it in data.get("equipped_items") or []:
+                href = ((it.get("item") or {}).get("key") or {}).get("href") or ""
+                base, _, query = href.partition("?")
+                cns = (urllib.parse.parse_qs(query).get("namespace") or [""])[0]
+                if not base or not cns:
+                    continue
+                st, entry = get(tok, base, cns, "item " + str((it.get("item") or {}).get("id")))
+                lvl = (entry or {}).get("level") if isinstance(entry, dict) else None
+                catalogue[str((it.get("item") or {}).get("id"))] = entry
+                print(f"      {((it.get('slot') or {}).get('type') or '?'):<10} {it.get('name')!r:<32} {cns}: HTTP {st} level={lvl}"
+                      f" required={(entry or {}).get('required_level') if isinstance(entry, dict) else None}")
+            if catalogue:
+                save("item-catalogue", catalogue)
+                print("    shape of one catalogue entry:")
+                shape(next(iter(catalogue.values())) or {}, 3, budget=[30])
         elif sub == "character-media":
             for a in data.get("assets") or []:
                 print(f"    asset {a.get('key')}: {a.get('value')}")
