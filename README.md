@@ -4,6 +4,8 @@ Can Bonita Bluehair hit level 60 in WoW: Forever before Christmas? This site kee
 
 Three pages, one tab each: the race (`index.html`), the record (`stats.html`) and the hourglass (`hourglass.html`). The hourglass needs no data of its own: its top bulb holds the share of the time from launch to the deadline that's left (by the sand's area, so the level drops faster as the bulb narrows), and a grain drips from the neck every fraction of a second, every 1.2 s or so when the viewer's device asks for reduced motion. It reads `data/history.json` only for the dates, his current level, and whether he has hit 60, which stops the sand where it was. After the deadline the top is empty and the drip stops.
 
+His own goal (announced Nov 26, 2026): level 60 by Dec 9, read as the end of Dec 9 Eastern (`2026-12-10T05:00:00Z`; a `"goal"` timestamp in `data/history.json` would override it on the race page). The bet stays Christmas: the goal is only marked, in gold and dashed. On the race page that is a line under the verdict ("At this pace he makes it with N days to spare", or how much he beat or missed it by), its door in the advent ledger with a legend entry, and a dashed line with a ring on the 60 line in the race chart. On the hourglass it is a dashed line across the top bulb at the height the sand will have then, and a countdown line.
+
 ## Open items (as of Nov 15, 2026)
 
 Delete each one once it's done.
