@@ -168,6 +168,9 @@ h1 { font-size: clamp(2.8rem, 7.4vw, 5.4rem); line-height: .95; }
 .verdict-text { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 .verdict-line { margin: 0; font-size: 18px; line-height: 1.4; }
 .verdict-line strong { font-weight: 600; color: var(--c); }
+/* His own goal (60 by Dec 9): gold and dashed everywhere, a step quieter than Christmas. */
+.goal-line { margin: 0; font-size: 15px; line-height: 1.45; color: var(--mist); }
+.goal-line b { color: var(--gold); font-weight: 600; }
 .basis { display: flex; gap: 8px; align-items: baseline; font: 500 11px/1.45 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
 .basis svg { flex: none; }
 .kit { display: flex; flex-wrap: wrap; gap: 12px 18px; margin: 0; padding-top: 12px; border-top: 1px solid var(--rule); }
@@ -189,6 +192,8 @@ h1 { font-size: clamp(2.8rem, 7.4vw, 5.4rem); line-height: .95; }
 .sw.gain { border: 1px solid rgba(90, 214, 198, .4); background: rgba(90, 214, 198, .1); color: var(--tide); }
 .sw.need { border: 1px solid var(--rule); background: rgba(27, 39, 66, .6); color: var(--mist); }
 .sw.today { width: 18px; height: 18px; border: 2px solid var(--gold); }
+.sw.mine { position: relative; width: 18px; height: 18px; border: 1px dashed var(--gold); background: rgba(242, 201, 107, .08); }
+.sw.mine::after, .door.mine::after { content: ""; position: absolute; top: -4px; right: -4px; width: 7px; height: 7px; background: var(--gold); transform: rotate(45deg); border-radius: 1px; }
 .sw.xmas { width: 18px; height: 18px; border: 1px solid var(--holly); background: rgba(236, 95, 85, .14); }
 .dow { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; font: 500 10px var(--mono); letter-spacing: .12em; text-align: center; color: var(--mist); }
 .weeks { display: flex; flex-direction: column; gap: 5px; }
@@ -204,6 +209,8 @@ h1 { font-size: clamp(2.8rem, 7.4vw, 5.4rem); line-height: .95; }
 .door.today .d { color: var(--gold); }
 .door.today .v { color: var(--tide); }
 .door.future .v.goal { color: var(--gold); }
+.door.mine.future { border-style: dashed; border-color: var(--gold); background: rgba(242, 201, 107, .08); }
+.door.mine.future .d { color: var(--gold); }
 .door.xmas { border-color: var(--holly); background: rgba(236, 95, 85, .12); }
 .door.xmas .d, .door.xmas .v { color: var(--holly); }
 .door.hit { border-color: var(--gold); background: rgba(242, 201, 107, .16); box-shadow: 0 0 0 1px var(--gold), 0 0 18px rgba(242, 201, 107, .35); }
@@ -305,6 +312,9 @@ h1 { font-size: clamp(2.8rem, 7.4vw, 5.4rem); line-height: .95; }
 .c-hollow { fill: var(--night); stroke: var(--tide); stroke-width: 1.5; }
 .c-goal { stroke: var(--gold); stroke-width: 1; stroke-dasharray: 3 4; }
 .c-goal-txt { fill: var(--gold); font: 500 11px var(--mono); }
+.c-mine { stroke: var(--gold); stroke-width: 1.2; stroke-dasharray: 4 4; opacity: .85; }
+.c-mine-txt { fill: var(--gold); font: 500 11px var(--mono); }
+.c-mine-ring { fill: none; stroke: var(--gold); stroke-width: 1.5; }
 .c-xmas { stroke: var(--holly); stroke-width: 1.5; }
 .c-xmas-txt { fill: var(--holly); font: 500 11px var(--mono); }
 .c-now { stroke: var(--moon); stroke-width: 1; opacity: .5; }
@@ -599,6 +609,7 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
           <div class="stamp-wrap"><div class="stamp" id="stamp"><small id="stamp-date">Official call</small><b id="stamp-text">Checking</b></div></div>
           <div class="verdict-text">
             <p class="verdict-line"><span id="v1">Reading the Armory…</span> <strong id="v2"></strong></p>
+            <p class="goal-line" id="vgoal" hidden></p>
             <span class="basis"><svg aria-hidden="true" width="18" height="6" viewBox="0 0 18 6"><path d="M1 3 H17" stroke="#97a3c2" stroke-width="1.5" stroke-dasharray="2 3" stroke-linecap="round"></path></svg><span id="basis"></span></span>
           </div>
         </div>
@@ -622,6 +633,7 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
           <li><span class="sw gain" aria-hidden="true">+N</span>Levels gained</li>
           <li><span class="sw need" aria-hidden="true">LN</span>Needed by that night</li>
           <li><span class="sw today" aria-hidden="true"></span>Today</li>
+          <li><span class="sw mine" aria-hidden="true"></span>His goal</li>
           <li><span class="sw xmas" aria-hidden="true"></span>Deadline</li>
         </ul>
       </div>
@@ -726,13 +738,14 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
     <div class="head">
       <p class="eyebrow">The race line</p>
       <h2 id="h-race">His level against the clock</h2>
-      <p class="lede">The dashed line is the pace he needs to make Christmas. The dotted line is where his own pace takes him. Both bend because the high levels take longer. Anything that dips under the needed pace turns red.</p>
+      <p class="lede">The dashed line is the pace he needs to make Christmas. The dotted line is where his own pace takes him. Both bend because the high levels take longer. Anything that dips under the needed pace turns red. The gold dashed line is his own goal: 60 by Dec 9.</p>
     </div>
     <ul class="legend">
       <li><svg width="28" height="8" aria-hidden="true"><line x1="0" y1="4" x2="28" y2="4" class="c-real"></line></svg>His level</li>
       <li><svg width="28" height="8" aria-hidden="true"><line x1="0" y1="4" x2="28" y2="4" class="c-proj"></line></svg>His projected path</li>
       <li><svg width="28" height="8" aria-hidden="true"><line x1="0" y1="4" x2="28" y2="4" class="c-pace"></line></svg>Pace needed</li>
       <li><svg width="28" height="8" aria-hidden="true"><line x1="0" y1="4" x2="28" y2="4" class="c-real behind"></line></svg>Behind the needed pace</li>
+      <li><svg width="28" height="12" aria-hidden="true"><line x1="14" y1="0" x2="14" y2="12" class="c-mine"></line><circle cx="14" cy="6" r="4" class="c-mine-ring"></circle></svg>His own goal, Dec 9</li>
     </ul>
     <div class="chart" id="chart" role="img" aria-label="Chart of level over time with projection and required pace"></div>
   </section>
@@ -805,6 +818,9 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
 
   function render(D, L) {
     var launch = Date.parse(D.launch), deadline = Date.parse(D.deadline), now = Date.now();
+    // His own goal, which he announced on Nov 26: level 60 by the end of Dec 9, Eastern time. The bet stays Christmas;
+    // the goal is only marked (in gold): a line under the verdict, its door in the advent ledger, a line on the chart.
+    var GOAL = Date.parse(D.goal || "2026-12-10T05:00:00Z"), GOAL_DAY = "Dec 9";
     var deadlineYear = new Date(deadline).getFullYear();
     function fmtDay(t) {
       var d = new Date(t), o = { month: "short", day: "numeric" };
@@ -925,6 +941,27 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
     $("v1").textContent = line1;
     $("v2").textContent = line2;
     $("basis").textContent = basis;
+    (function goalLine() {
+      function span(ms) {
+        var h = Math.round(Math.abs(ms) / 36e5);
+        if (h < 1) return "less than an hour";
+        if (h < 36) return plural(h, "hour");
+        return plural(Math.round(h / 24), "day");
+      }
+      var g = $("vgoal"), head = document.createElement("b"), text;
+      head.textContent = "His own goal: ";
+      if (reached != null) {
+        text = reached <= GOAL ? "60 by " + GOAL_DAY + ". He beat it by " + span(GOAL - reached) + "."
+                               : "60 by " + GOAL_DAY + ". He missed it by " + span(reached - GOAL) + ".";
+      } else if (now >= GOAL) {
+        text = "60 by " + GOAL_DAY + ". He missed it, at level " + levelAt(GOAL) + ".";
+      } else if (isFinite(proj60)) {
+        text = "60 by " + GOAL_DAY + ". At this pace he " + (proj60 <= GOAL ? "makes it with " + span(GOAL - proj60) + " to spare." : "misses it by " + span(proj60 - GOAL) + ".");
+      } else {
+        text = "60 by " + GOAL_DAY + ".";
+      }
+      g.textContent = ""; g.appendChild(head); g.appendChild(document.createTextNode(text)); g.hidden = false;
+    })();
 
     var profs = (C.professions || []).filter(function (p) { return p.primary; }).map(function (p) { return p.name + " " + p.skill; });
     var kit = [["Last seen", C.lastLoginTs ? fmtWhen(C.lastLoginTs) : "—", ""], ["Item level", C.itemLevel != null ? C.itemLevel : "—", ""]];
@@ -983,12 +1020,13 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
         var need = de >= deadline ? 60 : Math.max(1, Math.floor(paceLevel(de)));
         door.kind = "future"; door.val = "L" + need; door.goal = need >= 60; door.sr = label + ": needs level " + need + " by that night";
       }
+      if (ds < GOAL && GOAL <= de) { door.mine = true; door.sr += ", his own goal for level 60"; }
       doors.push(door);
     }
     function doorEl(d) {
       var li = document.createElement("li");
       if (!d) { li.className = "door blank"; li.setAttribute("aria-hidden", "true"); return li; }
-      li.className = "door " + d.kind;
+      li.className = "door " + d.kind + (d.mine ? " mine" : "");
       var a = document.createElement("span"), b = document.createElement("span"), s = document.createElement("span");
       a.className = "d"; a.textContent = d.day; a.setAttribute("aria-hidden", "true");
       b.className = "v" + (d.goal ? " goal" : ""); b.textContent = d.val; b.setAttribute("aria-hidden", "true");
@@ -1310,7 +1348,10 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
         if (proj60 <= deadline) {
           s.push('<circle class="c-finish" cx="' + f(x(proj60)) + '" cy="' + f(y(60)) + '" r="6"></circle>');
           var lx = x(proj60), anchor = lx > W - 120 ? "end" : "start", off = anchor === "end" ? -10 : 10;
-          s.push('<text class="c-goal-txt" x="' + f(lx + off) + '" y="' + f(y(60) - 9) + '" text-anchor="' + anchor + '">60 ≈ ' + fmtDay(proj60) + "</text>");
+          var lab60 = "60 ≈ " + fmtDay(proj60), right60 = anchor === "end" ? lx + off : lx + off + lab60.length * 6.8;
+          // On a narrow chart the label can run into "Christmas" (same row, at the right edge): then it goes under the 60 line.
+          var ly60 = right60 > x(deadline) - 9 * 6.8 - 8 ? y(60) + 16 : y(60) - 9;
+          s.push('<text class="c-goal-txt" x="' + f(lx + off) + '" y="' + f(ly60) + '" text-anchor="' + anchor + '">' + lab60 + "</text>");
         } else {
           var lc = projLevel(deadline);
           s.push('<circle class="c-hollow behind" cx="' + f(x(deadline)) + '" cy="' + f(y(lc)) + '" r="5"></circle>');
@@ -1355,6 +1396,13 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
         var nx = x(now);
         s.push('<line class="c-now" x1="' + f(nx) + '" x2="' + f(nx) + '" y1="' + m.t + '" y2="' + (H - m.b) + '"></line>');
         s.push('<text class="c-now-txt" x="' + f(nx) + '" y="' + (m.t - 8) + '" text-anchor="middle">Now</text>');
+      }
+      if (GOAL > launch && GOAL < deadline) {
+        var gx = x(GOAL);
+        s.push('<line class="c-mine" x1="' + f(gx) + '" x2="' + f(gx) + '" y1="' + m.t + '" y2="' + (H - m.b) + '"></line>');
+        s.push('<circle class="c-mine-ring" cx="' + f(gx) + '" cy="' + f(y(60)) + '" r="6"></circle>');
+        // Labelled at the foot of its line: the top is where the projection's "60 ≈ date" label lands.
+        s.push('<text class="c-mine-txt" x="' + f(gx + 6) + '" y="' + (H - m.b - 8) + '" text-anchor="start">His goal · ' + GOAL_DAY + '</text>');
       }
       s.push('<line class="c-xmas" x1="' + f(x(deadline)) + '" x2="' + f(x(deadline)) + '" y1="' + m.t + '" y2="' + (H - m.b) + '"></line>');
       s.push('<text class="c-xmas-txt" x="' + f(x(deadline)) + '" y="' + (m.t - 8) + '" text-anchor="end">Christmas</text>');

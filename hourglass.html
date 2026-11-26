@@ -102,6 +102,7 @@ h1 { font-family: var(--font-display); font-weight: 800; text-wrap: balance; mar
 .facts { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
 .facts li { display: flex; justify-content: center; gap: 8px; }
 .facts .v { color: var(--moon); }
+.facts .goal { color: var(--gold); }
 .meter { position: relative; width: min(100%, 360px); height: 8px; border-radius: 4px; background: #1b2742; overflow: hidden; }
 .meter span { position: absolute; inset: 0 auto 0 0; border-radius: 4px 0 0 4px; background: var(--gold); }
 
@@ -176,6 +177,14 @@ footer { border-top: 1px solid var(--rule); }
         </g>
         <path id="glass-edge" fill="none" stroke="#eef1f8" stroke-opacity=".38" stroke-width="1.6"/>
         <path id="glass-shine" fill="none" stroke="#ffffff" stroke-opacity=".16" stroke-width="3" stroke-linecap="round"/>
+        <!-- His own goal: where the top of the sand will be at the end of Dec 9. -->
+        <g id="goal-mark">
+          <!-- A dark underlay keeps the gold dashes readable while the sand is still above them. -->
+          <line id="goal-under" stroke="#1a1208" stroke-opacity=".7" stroke-width="3.6"/>
+          <line id="goal-line" stroke="#ffe39a" stroke-width="1.6" stroke-dasharray="6 4"/>
+          <path id="goal-notch" fill="#f2c96b"/>
+          <text id="goal-text" fill="#ffe39a" stroke="#1a1208" stroke-opacity=".8" stroke-width="3" paint-order="stroke" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" letter-spacing="1">HIS GOAL · DEC 9</text>
+        </g>
         <rect x="14" y="6" width="272" height="28" rx="6" fill="url(#wood)"/>
         <rect x="22" y="29" width="256" height="5" rx="2" fill="#2a1c0f"/>
         <rect x="14" y="506" width="272" height="28" rx="6" fill="url(#wood)"/>
@@ -198,6 +207,7 @@ footer { border-top: 1px solid var(--rule); }
       <ul class="facts lbl">
         <li><span id="f-left">Sand left</span></li>
         <li>Runs out <span class="v" id="f-end">Dec 25 · 12:00 AM ET</span></li>
+        <li><span class="goal">His own goal</span> 60 by <span class="v">Dec 9</span> · <span id="f-goal"></span></li>
         <li id="f-level-row" hidden><span class="v" id="f-level"></span></li>
       </ul>
     </div>
@@ -206,7 +216,7 @@ footer { border-top: 1px solid var(--rule); }
 
 <footer>
   <div class="wrap foot">
-    <p><b>How the hourglass works.</b> The sand runs from launch, <span id="foot-start">Nov 4 at 6:00 PM ET</span>, to the deadline, <span id="foot-end">Dec 25 at 12:00 AM ET</span>: <span id="foot-span">50 days and 6 hours</span>. The top bulb always holds the share of that time that's left, measured by the sand's volume, so it drains in real time, about 2% a day. The clock is your device's clock.</p>
+    <p><b>How the hourglass works.</b> The sand runs from launch, <span id="foot-start">Nov 4 at 6:00 PM ET</span>, to the deadline, <span id="foot-end">Dec 25 at 12:00 AM ET</span>: <span id="foot-span">50 days and 6 hours</span>. The top bulb always holds the share of that time that's left, measured by the sand's volume, so it drains in real time, about 2% a day. The clock is your device's clock. The gold dashed line on the glass is his own goal, 60 by the end of Dec 9: the top of the sand reaches it then.</p>
     <p>His level comes from the same hourly check of Blizzard's character data as <a href="./">the race</a>.</p>
   </div>
 </footer>
@@ -215,6 +225,8 @@ footer { border-top: 1px solid var(--rule); }
 (function () {
   "use strict";
   var LAUNCH = Date.parse("2026-11-04T23:00:00Z"), DEADLINE = Date.parse("2026-12-25T05:00:00Z");
+  // His own goal (announced Nov 26): level 60 by the end of Dec 9, Eastern. Christmas stays the bet; this is a mark.
+  var GOAL = Date.parse("2026-12-10T05:00:00Z");
   var H = null, wonAt = null;
   function $(id) { return document.getElementById(id); }
   function pad(n) { return (n < 10 ? "0" : "") + n; }
@@ -327,6 +339,24 @@ footer { border-top: 1px solid var(--rule); }
   document.addEventListener("visibilitychange", animate);
   if (window.IntersectionObserver) new IntersectionObserver(function (es) { onScreen = es[0].isIntersecting; animate(); }).observe($("glass"));
 
+  // ---- The goal mark: a dashed line across the top bulb at the height the sand will have on Dec 9. ----
+  function drawGoal() {
+    var left = Math.max(0, Math.min(1, (DEADLINE - GOAL) / (DEADLINE - LAUNCH)));
+    var t = tForArea(left * CAP), y = NECK - t * HALF, half = w(t) - 3;
+    var tx = $("goal-text");
+    ["goal-under", "goal-line"].forEach(function (id) {
+      var ln = $(id);
+      ln.setAttribute("x1", f(CX - half)); ln.setAttribute("x2", f(CX + half));
+      ln.setAttribute("y1", f(y)); ln.setAttribute("y2", f(y));
+    });
+    // Small gold arrowheads just outside the glass on both sides, pointing at the line.
+    var xl = CX - w(t) - 3, xr = CX + w(t) + 3;
+    $("goal-notch").setAttribute("d", "M" + f(xl - 8) + "," + f(y - 4.5) + " L" + f(xl) + "," + f(y) + " L" + f(xl - 8) + "," + f(y + 4.5) + " Z" +
+      " M" + f(xr + 8) + "," + f(y - 4.5) + " L" + f(xr) + "," + f(y) + " L" + f(xr + 8) + "," + f(y + 4.5) + " Z");
+    tx.setAttribute("x", CX); tx.setAttribute("y", f(y - 6)); tx.setAttribute("text-anchor", "middle");
+  }
+  drawGoal();
+
   // ---- The clock ----
   function span(ms) {
     var s = Math.max(0, Math.floor(ms / 1000));
@@ -374,6 +404,11 @@ footer { border-top: 1px solid var(--rule); }
       count.setAttribute("aria-label", words(DEADLINE - now) + " left");
     }
     $("glass-label").textContent = "An hourglass with " + pct + "% of its sand left";
+    var goalText;
+    if (wonAt != null) goalText = wonAt <= GOAL ? "he made it" : "he missed it by " + words(wonAt - GOAL);
+    else if (now < GOAL) goalText = words(GOAL - now) + " left";
+    else goalText = "he missed it";
+    $("f-goal").textContent = goalText;
   }
 
   function setText() {
@@ -406,7 +441,7 @@ footer { border-top: 1px solid var(--rule); }
       $("f-level-row").hidden = false;
     }
     lastMinute = -1;
-    setText(); setStatus(); tick();
+    drawGoal(); setText(); setStatus(); tick();
   }
 
   setText(); setStatus(); tick();
