@@ -172,6 +172,10 @@
   {
    "t": 1795683105000,
    "level": 49
+  },
+  {
+   "t": 1795760599000,
+   "level": 49
   }
  ],
  "looks": [
@@ -1620,8 +1624,8 @@
   "spec": "Balance",
   "faction": "Alliance",
   "itemLevel": 45,
-  "lastLoginTs": 1795683105000,
-  "xp": 56445,
+  "lastLoginTs": 1795760599000,
+  "xp": 99262,
   "professions": [
    {
     "name": "Herbalism",
@@ -1643,8 +1647,8 @@
    },
    {
     "name": "Cooking",
-    "skill": 223,
-    "max": 225,
+    "skill": 228,
+    "max": 300,
     "primary": false
    },
    {
@@ -1656,5 +1660,5 @@
   ]
  },
  "armoryUrl": "https://classicarmory.gg/character/us/forever/bonita-bluehair",
- "checkedAt": "2026-11-27T06:08:14Z"
+ "checkedAt": "2026-11-27T07:08:04Z"
 }
