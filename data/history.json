@@ -193,6 +193,10 @@
   {
    "t": 1795878672000,
    "level": 50
+  },
+  {
+   "t": 1795885315000,
+   "level": 50
   }
  ],
  "looks": [
@@ -1745,12 +1749,11 @@
      "ilvl": 16
     }
    ],
-   "img": "renders/20261124-0627-l48.webp",
-   "w": 358,
+   "img": "renders/20261128-0735-l50.webp",
+   "w": 359,
    "h": 680,
-   "hash": "a653f31ab69e13b1747797df7e5aa9ed4a443c1c597b821c5a91f279b0556e54",
-   "picAt": 1795501678000,
-   "stalePic": true
+   "hash": "6cb3c8ad1dc26ee38519bad93e56d2e69b95088f91cceed6bd4b531539bb9bcf",
+   "picAt": 1795851582000
   }
  ],
  "character": {
@@ -1759,11 +1762,11 @@
   "ruleset": "Normal",
   "race": "Night Elf",
   "className": "Druid",
-  "spec": "Restoration",
+  "spec": "Balance",
   "faction": "Alliance",
   "itemLevel": 45,
-  "lastLoginTs": 1795878672000,
-  "xp": 100895,
+  "lastLoginTs": 1795885315000,
+  "xp": 144780,
   "professions": [
    {
     "name": "Herbalism",
@@ -1798,5 +1801,5 @@
   ]
  },
  "armoryUrl": "https://classicarmory.gg/character/us/forever/bonita-bluehair",
- "checkedAt": "2026-11-28T16:57:33Z"
+ "checkedAt": "2026-11-28T17:08:11Z"
 }
