@@ -1355,7 +1355,15 @@ footer { border-top: 1px solid var(--rule); background: var(--surface); }
         } else {
           var lc = projLevel(deadline);
           s.push('<circle class="c-hollow behind" cx="' + f(x(deadline)) + '" cy="' + f(y(lc)) + '" r="5"></circle>');
-          s.push('<text class="c-lab behind" x="' + f(x(deadline) - 10) + '" y="' + f(y(lc) - 10) + '" text-anchor="end">≈ ' + Math.floor(lc) + " at Christmas</text>");
+          // Near the top of the chart (a projection in the high 50s) the label would sit on "Christmas", which is on
+          // the row above the 60 line at this same edge: then it goes under both lines instead, clear of them along
+          // its whole width (they climb to the right, so their height at the label's left end is the one that counts).
+          var labC = "≈ " + Math.floor(lc) + " at Christmas", lyc = y(lc) - 10;
+          if (y(lc) < m.t + 26) {
+            var tLeft = deadline - (labC.length * 7.4 + 14) / iw * (deadline - launch);
+            lyc = Math.max(y(paceLevel(tLeft)), y(projLevel(tLeft))) + 20;
+          }
+          s.push('<text class="c-lab behind" x="' + f(x(deadline) - 10) + '" y="' + f(lyc) + '" text-anchor="end">' + labC + "</text>");
         }
       }
       if (snaps.length) {
