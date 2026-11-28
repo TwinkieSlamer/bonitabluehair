@@ -185,6 +185,10 @@
    "t": 1795846085238,
    "level": 50,
    "source": "roster"
+  },
+  {
+   "t": 1795851352000,
+   "level": 50
   }
  ],
  "looks": [
@@ -1622,6 +1626,127 @@
    "h": 680,
    "hash": "a653f31ab69e13b1747797df7e5aa9ed4a443c1c597b821c5a91f279b0556e54",
    "picAt": 1795501678000
+  },
+  {
+   "t": 1795851352000,
+   "level": 50,
+   "itemLevel": 45,
+   "gear": [
+    {
+     "slot": "Head",
+     "name": "Soothsayer's Headdress",
+     "quality": "rare",
+     "ilvl": 52
+    },
+    {
+     "slot": "Neck",
+     "name": "Courier's Clasp",
+     "quality": "rare",
+     "ilvl": 55
+    },
+    {
+     "slot": "Shoulder",
+     "name": "Rugwood Mantle",
+     "quality": "uncommon",
+     "ilvl": 48
+    },
+    {
+     "slot": "Back",
+     "name": "Royal Cape of the Beast",
+     "quality": "uncommon",
+     "ilvl": 43
+    },
+    {
+     "slot": "Chest",
+     "name": "Twilight Robe of the Elder",
+     "quality": "uncommon",
+     "ilvl": 40
+    },
+    {
+     "slot": "Shirt",
+     "name": "Sweat-Stained Shirt",
+     "quality": "common",
+     "ilvl": 1
+    },
+    {
+     "slot": "Tabard",
+     "name": "Farholde Keep Tabard",
+     "quality": "common",
+     "ilvl": 20
+    },
+    {
+     "slot": "Wrist",
+     "name": "Overgrown Cuffs",
+     "quality": "rare",
+     "ilvl": 43
+    },
+    {
+     "slot": "Hands",
+     "name": "Tiger Hunter Gloves",
+     "quality": "uncommon",
+     "ilvl": 37
+    },
+    {
+     "slot": "Waist",
+     "name": "Big-Belly Belt",
+     "quality": "rare",
+     "ilvl": 45
+    },
+    {
+     "slot": "Legs",
+     "name": "Jinxed Hoodoo Kilt",
+     "quality": "rare",
+     "ilvl": 49
+    },
+    {
+     "slot": "Feet",
+     "name": "Gaea's Slippers of Intellect",
+     "quality": "uncommon",
+     "ilvl": 47
+    },
+    {
+     "slot": "Finger",
+     "name": "Woodseed Hoop",
+     "quality": "uncommon",
+     "ilvl": 49
+    },
+    {
+     "slot": "Finger",
+     "name": "Seal of Wrynn",
+     "quality": "rare",
+     "ilvl": 31
+    },
+    {
+     "slot": "Trinket",
+     "name": "Carrot on a Stick",
+     "quality": "uncommon",
+     "ilvl": 50
+    },
+    {
+     "slot": "Trinket",
+     "name": "Satchel of Potions",
+     "quality": "uncommon",
+     "ilvl": 33
+    },
+    {
+     "slot": "Two-Hand",
+     "name": "Resurgence Rod",
+     "quality": "rare",
+     "ilvl": 53
+    },
+    {
+     "slot": "Relic",
+     "name": "Idol of Shifting Tides",
+     "quality": "uncommon",
+     "ilvl": 16
+    }
+   ],
+   "img": "renders/20261124-0627-l48.webp",
+   "w": 358,
+   "h": 680,
+   "hash": "a653f31ab69e13b1747797df7e5aa9ed4a443c1c597b821c5a91f279b0556e54",
+   "picAt": 1795501678000,
+   "stalePic": true
   }
  ],
  "character": {
@@ -1630,11 +1755,11 @@
   "ruleset": "Normal",
   "race": "Night Elf",
   "className": "Druid",
-  "spec": "Balance",
+  "spec": "Restoration",
   "faction": "Alliance",
   "itemLevel": 45,
-  "lastLoginTs": 1795799735000,
-  "xp": 132789,
+  "lastLoginTs": 1795851352000,
+  "xp": 96541,
   "professions": [
    {
     "name": "Herbalism",
@@ -1669,5 +1794,5 @@
   ]
  },
  "armoryUrl": "https://classicarmory.gg/character/us/forever/bonita-bluehair",
- "checkedAt": "2026-11-28T07:08:11Z"
+ "checkedAt": "2026-11-28T08:00:01Z"
 }
